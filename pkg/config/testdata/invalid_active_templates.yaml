@@ -1,0 +1,5 @@
+options:
+  active_templates:
+  - testduplicate
+  - testduplicate
+  - new

@@ -1,0 +1,24 @@
+package: drawbridge
+import:
+- package: github.com/spf13/viper
+- package: gopkg.in/urfave/cli.v2
+- package: github.com/kvz/logstreamer
+- package: github.com/fatih/color
+  version: ^1.6.0
+- package: github.com/xeipuuv/gojsonschema
+- package: github.com/xeipuuv/gojsonpointer
+- package: github.com/xeipuuv/gojsonreference
+- package: gopkg.in/yaml.v2
+  version: ~2.2.1
+- package: github.com/mitchellh/go-homedir
+- package: github.com/Jeffail/gabs
+  version: ^1.0.0
+testImport:
+- package: github.com/matryer/moq
+- package: github.com/golang/mock
+  subpackages:
+  - gomock
+- package: github.com/stretchr/testify
+  version: ^1.1.4
+  subpackages:
+  - assert

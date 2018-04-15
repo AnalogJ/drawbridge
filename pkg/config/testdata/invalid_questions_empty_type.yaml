@@ -1,0 +1,9 @@
+questions:
+  environment:
+    description: what is the stack environment
+    default_value: stage
+    schema:
+      type: ''
+      required: True
+      maxLength: 10
+

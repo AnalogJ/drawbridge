@@ -1,0 +1,5 @@
+unsupported:
+  environment:
+    description: what is the stack environment
+    default_value: stage
+

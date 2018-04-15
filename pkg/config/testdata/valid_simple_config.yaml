@@ -1,0 +1,5 @@
+options:
+  pem_dir: '~/.ssh/drawbridge/pem'
+  active_templates:
+  - default
+  - knife
