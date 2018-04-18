@@ -1,0 +1,60 @@
+version: 2
+jobs:
+  build:
+    working_directory: /go/src/drawbridge
+    docker:
+      - image: docker:17.06.1-ce-git
+        environment:
+          GOROOT: /usr/lib/go
+          GOPATH: /go
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 17.05.0-ce
+      - run:
+          name: Install dependencies
+          command: |
+            env
+            docker info
+            apk --update-cache --allow-untrusted \
+                add go build-base bash curl \
+                && rm -rf /var/cache/apk/*
+
+            mkdir -p /coverage
+
+            # Configure Go
+            mkdir -p ${GOPATH}/src ${GOPATH}/bin
+
+# Use docker image caching if this is slow.
+# https://circleci.com/blog/how-to-build-a-docker-image-on-circleci-2-0/
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build -f ci/Dockerfile --tag analogj/drawbridge:latest .
+
+      - run:
+          name: Run Base Docker containers with coverage
+          shell: bash
+          command: |
+            docker run -e "CI=true" \
+              --name drawbridge \
+              analogj/drawbridge:latest \
+              ./ci/coverage.sh
+
+            docker cp drawbridge:/coverage/coverage-drawbridge.txt /coverage
+#      - run:
+#          name: Merge coverage reports and submit
+#          shell: bash
+#          command: |
+#            ls -alt /coverage
+#
+#            # upload to codecov.
+#            bash <(curl -s https://codecov.io/bash) -f "*.txt" -s /coverage
+
+#      - run:
+#          name: Merge generated coverage reports using webhook.
+#          command: |
+
+
+
+#

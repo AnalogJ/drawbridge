@@ -1,0 +1,25 @@
+options:
+  pem_dir: '~/.ssh/drawbridge/pem'
+  config_dir: '~/.ssh/drawbridge/pem'
+  active_config_template: default
+  ui_group_priority:
+  - environment
+  - username
+  active_templates:
+  - default
+questions:
+  environment:
+    description: what is the stack environment
+    default_value: stage
+    ui_group_priority: 1
+    schema:
+      type: string
+      required: true
+      maxLength: 10
+  domain:
+    description: what is the base domain
+    default_value: example.com
+    ui_group_priority: 2
+    schema:
+      type: string
+      required: true

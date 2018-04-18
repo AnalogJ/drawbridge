@@ -86,7 +86,7 @@ func (c *configuration) Init() error {
 	StrictHostKeyChecking no
 
 	Host bastion
-	    Hostname bastion.{{.environment}}.{{.domain}}
+	    Hostname bastion.example.com
 	    User {{.username}}
 	    IdentityFile {{.pem_dir}}/{{.pem_filename}}
 	    LocalForward localhost:{{uniquePort .}} localhost:8080
@@ -119,7 +119,7 @@ func (c *configuration) ReadConfig(configFilePath string) error {
 	}
 
 	if !utils.FileExists(configFilePath) {
-		log.Print("The configuration file could not be found. Skipping")
+		log.Printf("No configuration file found at %v. Skipping", configFilePath)
 		return errors.ConfigFileMissingError("The configuration file could not be found.")
 	}
 
@@ -223,24 +223,24 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 						"type": "string"
 					},
 					"active_config_template": {
-						"type":"string",
+						"type":"string"
 					},
 					"active_extra_templates": {
 						"type":"array",
 						"uniqueItems": true,
 						"items":[{"type":"string"}]
-					}
+					},
 					"ui_group_priority": {
 						"type":"array",
 						"uniqueItems": true,
-						"items":[{"type":"string"}]
+						"items":[{"type":"string"}],
 						"maxItems": 3
 					},
 					"ui_question_hidden": {
 						"type":"array",
 						"uniqueItems": true,
 						"items":[{"type":"string"}]
-					},
+					}
 				}
 			},
 			"questions":{
@@ -289,7 +289,7 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 			"config_templates":{
 				"type": "object",
 				"additionalProperties":false
-			}
+			},
 			"extra_templates":{
 				"type": "object",
 				"additionalProperties":false

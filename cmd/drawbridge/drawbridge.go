@@ -11,6 +11,10 @@ import (
 	"gopkg.in/urfave/cli.v2"
 	"drawbridge/pkg/create"
 	"drawbridge/pkg/list"
+	"drawbridge/pkg/connect"
+	"bufio"
+	"strconv"
+	"strings"
 )
 
 var goos string
@@ -91,6 +95,30 @@ func main() {
 
 					listEngine := list.ListEngine{ Config: config }
 					return listEngine.Start()
+				},
+
+				Flags: flags,
+			},
+			{
+				Name:  "connect",
+				Usage: "Connect to a drawbridge managed ssh config",
+				Action: func(c *cli.Context) error {
+
+					listEngine := list.ListEngine{ Config: config }
+					listEngine.Start()
+
+					reader := bufio.NewReader(os.Stdin)
+					text, _ := reader.ReadString('\n')
+					fmt.Println(text)
+					text = strings.TrimSpace(text)
+					i, err := strconv.Atoi(text)
+					if err != nil{
+						return err
+					}
+					answerIndex := i - 1
+
+					connectEngine := connect.ConnectEngine{ Config: config }
+					return connectEngine.Start(listEngine.OrderedAnswers[answerIndex].(map[string]interface{}))
 				},
 
 				Flags: flags,
