@@ -22,27 +22,36 @@ jobs:
           name: Run unit tests
           command: |
             set -e
-            mkdir -p /coverage
-            echo "" > /coverage/coverage.txt
+            mkdir -p /tmp/coverage
+            echo "" > /tmp/coverage/coverage.txt
 
             for d in $(go list ./... | grep -v vendor); do
                 go test -race -coverprofile=profile.out -covermode=atomic $d
                 if [ -f profile.out ]; then
-                    cat profile.out >> /coverage/coverage.txt
+                    cat profile.out >> /tmp/coverage/coverage.txt
                     rm profile.out
                 fi
             done
 
-            ls /coverage
+            ls /tmp//coverage
 
       - save_cache:
           key: v1-pkg-cache
           paths:
             - "/go/src/drawbridge/vendor"
 
+      - run:
+          name: Merge coverage reports and submit
+          shell: bash
+          command: |
+            ls -alt /tmp/coverage
+
+            # upload to codecov.
+            bash <(curl -s https://codecov.io/bash) -f "*.txt" -s /tmp/coverage
+
       - store_artifacts:
-          path: /coverage
+          path: /tmp/coverage
           destination: raw-test-output
 
       - store_test_results:
-          path: /coverage
+          path: /tmp/coverage
