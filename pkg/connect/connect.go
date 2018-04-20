@@ -20,17 +20,21 @@ func (e *ConnectEngine) Start(answerData map[string]interface{}) error {
 	if err != nil {
 		return nil
 	}
-	tmplConfigName, err := utils.PopulateTemplate(tmplData.FilePath, answerData)
+	tmplConfigFilepath, err := utils.PopulateTemplate(tmplData.FilePath, answerData)
 	if err != nil {
 		return nil
 	}
-
+	tmplConfigFilepath, err = utils.ExpandPath(filepath.Join(e.Config.GetString("options.config_dir"), tmplConfigFilepath))
+	if err != nil {
+		return nil
+	}
 	//Print the lines we're running.
 	//Check that the bastion host is accessible.
 
+
 	return syscall.Exec("/bin/bash", []string{"-c",
-		fmt.Sprintf("ssh-add %v; ssh bastion -F %v;",
-			filepath.Join(e.Config.GetString("options.pem_dir"), e.Config.GetString("options.pem_filename")),
-			filepath.Join(e.Config.GetString("options.config_dir"), tmplConfigName)),
+		fmt.Sprintf("ssh bastion -F %v",
+			//filepath.Join(e.Config.GetString("options.pem_dir"), e.Config.GetString("options.pem_filename")),
+			tmplConfigFilepath),
 	}, []string{})
 }
