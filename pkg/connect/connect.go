@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"syscall"
+	"os"
 )
 
 type ConnectEngine struct {
@@ -30,11 +31,12 @@ func (e *ConnectEngine) Start(answerData map[string]interface{}) error {
 	}
 	//Print the lines we're running.
 	//Check that the bastion host is accessible.
-
+	//https://gobyexample.com/execing-processes
+	//https://groob.io/posts/golang-execve/
 
 	return syscall.Exec("/bin/bash", []string{"-c",
 		fmt.Sprintf("ssh bastion -F %v",
 			//filepath.Join(e.Config.GetString("options.pem_dir"), e.Config.GetString("options.pem_filename")),
 			tmplConfigFilepath),
-	}, []string{})
+	}, os.Environ())
 }

@@ -34,6 +34,8 @@ func (c *configuration) Init() error {
 	c.SetDefault("options.config_dir", "~/.ssh/drawbridge")
 	c.SetDefault("options.pem_dir", "~/.ssh")
 	c.SetDefault("options.active_config_template", "default")
+	c.SetDefault("options.active_pem_template", "default")
+
 	c.SetDefault("options.active_extra_templates", []string{})
 	c.SetDefault("options.ui_group_priority", []string{"environment", "username"})
 	c.SetDefault("options.ui_question_hidden", []string{})
@@ -75,6 +77,10 @@ func (c *configuration) Init() error {
 	})
 	c.SetDefault("answers", []map[string]interface{}{})
 
+
+
+	c.SetDefault("pem_templates.default", "{{pem_dir}}/{{.environment}}-{{.username}}-pem")
+
 	c.SetDefault("config_templates.default.filepath", "{{.environment}}-{{.username}}-config")
 	c.SetDefault("config_templates.default.content", utils.StripIndent(
 		`
@@ -87,7 +93,7 @@ func (c *configuration) Init() error {
 	Host bastion
 	    Hostname bastion.example.com
 	    User {{.username}}
-	    IdentityFile {{.pem_dir}}/{{.pem_filename}}
+	    IdentityFile {{.pem_filepath}}
 	    LocalForward localhost:{{uniquePort .}} localhost:8080
 	    UserKnownHostsFile=/dev/null
 	    StrictHostKeyChecking=no
@@ -300,6 +306,14 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 								"type": "string"
 							}
 						}
+					}
+				}
+			},
+			"pem_templates":{
+				"type": "object",
+				"patternProperties": {
+					"^[a-z0-9]*$":{
+						"type":"string"
 					}
 				}
 			},
