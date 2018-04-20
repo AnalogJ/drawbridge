@@ -1,3 +1,15 @@
+# Drawbridge
+
+
+[![Circle CI](https://img.shields.io/circleci/project/github/AnalogJ/drawbridge.svg?style=flat-square)](https://circleci.com/gh/AnalogJ/drawbridge)
+[![Coverage Status](https://img.shields.io/codecov/c/github/AnalogJ/drawbridge.svg?style=flat-square)](https://codecov.io/gh/AnalogJ/drawbridge)
+[![GitHub license](https://img.shields.io/github/license/AnalogJ/drawbridge.svg?style=flat-square)](https://github.com/AnalogJ/drawbridge/blob/master/LICENSE)
+[![Godoc](https://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/analogj/drawbridge)
+[![Go Report Card](https://goreportcard.com/badge/github.com/AnalogJ/drawbridge?style=flat-square)](https://goreportcard.com/report/github.com/AnalogJ/drawbridge)
+[![GitHub release](http://img.shields.io/github/release/AnalogJ/drawbridge.svg?style=flat-square)](https://github.com/AnalogJ/drawbridge/releases)
+[![Docker Pulls](https://img.shields.io/docker/pulls/analogj/drawbridge.svg?style=flat-square)](https://hub.docker.com/r/analogj/drawbridge)
+[![Github All Releases](https://img.shields.io/github/downloads/analogj/drawbridge/total.svg?style=flat-square)](https://github.com/AnalogJ/drawbridge/releases)
+
 
 # Goals
 - generate SSH config files for servers spread across multiple enviornments and stacks (configure)
