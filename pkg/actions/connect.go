@@ -99,9 +99,9 @@ func (e *ConnectAction) SshAgentAddPemKey(pemFilepath string) error {
 	if x509.IsEncryptedPEMBlock(block) {
 		//inform the user that the key is encrypted.
 		passphrase := utils.StdinQuery(fmt.Sprintf("The key at %v is encrypted and requires a passphrase. Please enter it below:", pemFilepath))
-		privateKeyData, err = ssh.ParseRawPrivateKeyWithPassphrase(block, []byte(passphrase))
+		privateKeyData, err = ssh.ParseRawPrivateKeyWithPassphrase(block.Bytes, []byte(passphrase))
 	} else {
-		privateKeyData, err = ssh.ParseRawPrivateKey(block)
+		privateKeyData, err = ssh.ParseRawPrivateKey(block.Bytes)
 	}
 
 	// register the privatekey with ssh-agent
