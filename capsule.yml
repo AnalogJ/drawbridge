@@ -1,8 +1,10 @@
 ---
 engine_enable_code_mutation: true
 engine_cmd_compile:
-  - 'go build -ldflags "-X main.goos=darwin -X main.goarch=amd64" -o drawbridge-darwin-amd64 -tags "static" $(go list ./cmd/...)'
-  - 'go build -ldflags "-X main.goos=linux -X main.goarch=amd64" -o drawbridge-linux-amd64 -tags "static" $(go list ./cmd/...)'
+  - 'GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.goos=darwin -X main.goarch=amd64" -o drawbridge-darwin-amd64 -tags "static" $(go list ./cmd/...)'
+  - 'chmod +x drawbridge-darwin-amd64'
+  - 'GOOS=linux GOARCH=amd64 go build -ldflags "-X main.goos=linux -X main.goarch=amd64" -o drawbridge-linux-amd64 -tags "static" $(go list ./cmd/...)'
+  - 'chmod +x drawbridge-linux-amd64'
 engine_cmd_test: 'go test -v -tags "static" $(glide novendor)'
 engine_cmd_lint: 'gometalinter.v1 --vendor --config=gometalinter.json ./...'
 scm_enable_branch_cleanup: true
