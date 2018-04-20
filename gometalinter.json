@@ -1,0 +1,12 @@
+{
+  "Errors": true,
+  "Debug": true,
+  "Deadline": "30m",
+  "Enable": [
+    "golint",
+    "goimports",
+    "goconst",
+    "gosimple",
+    "staticcheck"
+  ]
+}

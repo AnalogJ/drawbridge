@@ -1,16 +1,13 @@
 ---
 engine_enable_code_mutation: true
 engine_cmd_compile:
-  - mkdir -p vendor/gopkg.in/libgit2/git2go.v25/vendor/libgit2/build/
-  - cp /usr/local/osx-ndk-x86/macports/pkgs/opt/local/lib/pkgconfig/libgit2.pc vendor/gopkg.in/libgit2/git2go.v25/vendor/libgit2/build/libgit2.pc
-  - '. /scripts/toolchains/osx/osx-build-env.sh &&  go build -ldflags "-X main.goos=darwin -X main.goarch=amd64" -o capsulecd-darwin-amd64 -tags "static" $(go list ./cmd/...)'
-  - cp /usr/local/linux/lib/pkgconfig/libgit2.pc vendor/gopkg.in/libgit2/git2go.v25/vendor/libgit2/build/libgit2.pc
-  - '. /scripts/toolchains/linux/linux-build-env.sh && go build -ldflags "-X main.goos=linux -X main.goarch=amd64" -o capsulecd-linux-amd64 -tags "static" $(go list ./cmd/...)'
+  - 'go build -ldflags "-X main.goos=darwin -X main.goarch=amd64" -o drawbridge-darwin-amd64 -tags "static" $(go list ./cmd/...)'
+  - 'go build -ldflags "-X main.goos=linux -X main.goarch=amd64" -o drawbridge-linux-amd64 -tags "static" $(go list ./cmd/...)'
 engine_cmd_test: 'go test -v -tags "static" $(glide novendor)'
 engine_cmd_lint: 'gometalinter.v1 --vendor --config=gometalinter.json ./...'
 scm_enable_branch_cleanup: true
 scm_release_assets:
-  - local_path: capsulecd-linux-amd64
-    artifact_name: capsulecd-linux-amd64
-  - local_path: capsulecd-darwin-amd64
-    artifact_name: capsulecd-darwin-amd64
+  - local_path: drawbridge-linux-amd64
+    artifact_name: drawbridge-linux-amd64
+  - local_path: drawbridge-darwin-amd64
+    artifact_name: drawbridge-darwin-amd64
