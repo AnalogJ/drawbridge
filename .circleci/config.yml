@@ -15,6 +15,9 @@ jobs:
       # we've added it here for the sake of explanation.
       - run: go get github.com/Masterminds/glide
 
+      # install dependencies
+      - run: glide install
+
       - run:
           name: Run unit tests
           command: go test $(glide novendor)
