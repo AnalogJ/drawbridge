@@ -158,6 +158,6 @@ func TestConfiguration_ReadConfig_OverrideDefaultConfigTemplate(t *testing.T) {
 
 	//assert
 	require.NoError(t, err, "should allow overriding default config template.")
-	require.Equal(t,"{{.environment}}-{{.username}}", configTmpl.FilePath)
+	require.Equal(t, "{{.environment}}-{{.username}}", configTmpl.FilePath)
 
 }
