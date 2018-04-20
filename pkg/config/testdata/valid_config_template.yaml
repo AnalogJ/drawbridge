@@ -1,0 +1,19 @@
+options:
+  pem_dir: '~/.ssh/drawbridge/pem'
+config_templates:
+  default:
+    filepath: '{{.environment}}-{{.username}}'
+    content: |
+      ForwardAgent yes
+      ForwardX11 no
+      HashKnownHosts yes
+      IdentitiesOnly yes
+      StrictHostKeyChecking no
+
+      Host bastion
+          Hostname bastion.example.com
+          User {{.username}}
+          IdentityFile {{.pem_dir}}/{{.pem_filename}}
+          LocalForward localhost:{{uniquePort .}} localhost:8080
+          UserKnownHostsFile=/dev/null
+          StrictHostKeyChecking=no
