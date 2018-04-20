@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.8
-    working_directory: /go/src/{{REPO_NAME}}
+    working_directory: /go/src/drawbridge
     steps:
       - checkout
 
