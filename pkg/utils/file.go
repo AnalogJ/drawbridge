@@ -2,13 +2,12 @@ package utils
 
 import (
 	"fmt"
+	"github.com/mitchellh/go-homedir"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"github.com/mitchellh/go-homedir"
 )
-
 
 func ExpandPath(filePath string) (string, error) {
 	filePath, err := homedir.Expand(filePath)
@@ -24,7 +23,7 @@ func ExpandPath(filePath string) (string, error) {
 }
 
 func FileWrite(filePath string, content string, perm os.FileMode) error {
-	filePath, err :=  ExpandPath(filePath)
+	filePath, err := ExpandPath(filePath)
 	if err != nil {
 		return err
 	}
@@ -35,7 +34,7 @@ func FileWrite(filePath string, content string, perm os.FileMode) error {
 }
 
 func FileExists(filePath string) bool {
-	filePath, err :=  ExpandPath(filePath)
+	filePath, err := ExpandPath(filePath)
 	if err != nil {
 		return false
 	}

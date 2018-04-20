@@ -3,23 +3,23 @@ package list
 import (
 	"drawbridge/pkg/config"
 	//"io/ioutil"
-	"fmt"
-	"drawbridge/pkg/utils"
-	"path/filepath"
-	"gopkg.in/yaml.v2"
 	"bytes"
-	"os"
-	"log"
+	"drawbridge/pkg/utils"
+	"fmt"
 	"github.com/Jeffail/gabs"
-	"strings"
 	"github.com/fatih/color"
+	"gopkg.in/yaml.v2"
+	"log"
+	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 type ListEngine struct {
-	Config       config.Interface
+	Config         config.Interface
 	GroupedAnswers *gabs.Container
-	OrderedAnswers 	[]interface{}
+	OrderedAnswers []interface{}
 }
 
 func (e *ListEngine) Start() error {
@@ -69,7 +69,7 @@ func (e *ListEngine) Start() error {
 	// Group By for existing configs.
 	priorityOrder := e.Config.GetStringSlice("options.ui_group_priority")
 	groupedAnswers := gabs.New()
-	if(len(priorityOrder) > 0){
+	if len(priorityOrder) > 0 {
 
 		for _, answerData := range answersList {
 			//subGroup := groupedAnswers
@@ -87,9 +87,9 @@ func (e *ListEngine) Start() error {
 			//subGroup = append(subGroup, answerData)
 
 			keyValues := []string{}
-			for _, questionKey := range priorityOrder{
+			for _, questionKey := range priorityOrder {
 				if value, ok := answerData[questionKey]; ok {
-					keyValues = append(keyValues, fmt.Sprintf("%v",value))
+					keyValues = append(keyValues, fmt.Sprintf("%v", value))
 				} else {
 					keyValues = append(keyValues, "")
 				}
@@ -112,15 +112,14 @@ func (e *ListEngine) Start() error {
 
 	e.PrintUI(0, []string{}, groupedAnswers)
 
-
 	return nil
 }
 
-func (e *ListEngine) PrintUI(level int, groups []string,  groupedAnswers *gabs.Container) error {
+func (e *ListEngine) PrintUI(level int, groups []string, groupedAnswers *gabs.Container) error {
 	children, _ := groupedAnswers.ChildrenMap()
 	for groupKey, child := range children {
 		nextGroups := []string{}
-		if(level == 0){
+		if level == 0 {
 			coloredPrintf(level, "%v\n", groupKey)
 		} else {
 			nextGroups = append(nextGroups, groups...)
@@ -134,11 +133,10 @@ func (e *ListEngine) PrintUI(level int, groups []string,  groupedAnswers *gabs.C
 
 			printGroupHeader(nextGroups)
 
-			for _, answer := range child.Data().([]interface{}){
+			for _, answer := range child.Data().([]interface{}) {
 				e.OrderedAnswers = append(e.OrderedAnswers, answer)
 
-
-				answerStr := printAnswer(len(e.OrderedAnswers), answer.(map[string]interface{}), e.Config.GetStringSlice("options.ui_question_hidden"), e.Config.GetStringSlice("options.ui_group_priority") )
+				answerStr := printAnswer(len(e.OrderedAnswers), answer.(map[string]interface{}), e.Config.GetStringSlice("options.ui_question_hidden"), e.Config.GetStringSlice("options.ui_group_priority"))
 				fmt.Printf(answerStr)
 
 			}
@@ -152,19 +150,19 @@ func (e *ListEngine) PrintUI(level int, groups []string,  groupedAnswers *gabs.C
 
 func printGroupHeader(secondaryGroups []string) {
 	header := ":::: "
-	if(len(secondaryGroups) >= 1){
+	if len(secondaryGroups) >= 1 {
 		header += fmt.Sprintf("%v ", color.GreenString(secondaryGroups[0]))
 	}
-	if(len(secondaryGroups) >= 2){
+	if len(secondaryGroups) >= 2 {
 		header += fmt.Sprintf("%v ", color.CyanString(secondaryGroups[1]))
 	}
-	if(len(secondaryGroups) >= 3){
+	if len(secondaryGroups) >= 3 {
 		header += fmt.Sprintf("(%v) ", color.YellowString(secondaryGroups[2]))
 	}
 
 	maxLength := 50
 
-	header += fmt.Sprintf("%v\n", strings.Repeat(":", (maxLength - ( 1+ len(header)))))
+	header += fmt.Sprintf("%v\n", strings.Repeat(":", (maxLength-(1+len(header)))))
 
 	fmt.Print(header)
 }
@@ -175,7 +173,7 @@ func printAnswer(id int, answer map[string]interface{}, uiHiddenKeys []string, u
 
 	answerStr := fmt.Sprintf("\t%v\t", color.YellowString(strconv.Itoa(id)))
 	for k, v := range answer {
-		if(utils.StringInSlice(uiHiddenKeys, k) || utils.StringInSlice(uiGroupPriority, k)){
+		if utils.StringInSlice(uiHiddenKeys, k) || utils.StringInSlice(uiGroupPriority, k) {
 			continue
 		}
 		answerStr += fmt.Sprintf("%v: %v\n\t\t", k, v)
@@ -184,16 +182,14 @@ func printAnswer(id int, answer map[string]interface{}, uiHiddenKeys []string, u
 	return answerStr
 }
 
-func coloredPrintf(level int, formattedStr string, data ...interface{}){
-	if(level == 0){
+func coloredPrintf(level int, formattedStr string, data ...interface{}) {
+	if level == 0 {
 		color.Red(formattedStr, data...)
-	} else if (level == 1){
+	} else if level == 1 {
 		color.Green(formattedStr, data...)
-	} else if (level == 2){
+	} else if level == 2 {
 		color.Cyan(formattedStr, data...)
 	} else {
 		fmt.Print("Unkonw int type")
 	}
 }
-
-

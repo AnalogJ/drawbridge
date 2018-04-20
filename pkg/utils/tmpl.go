@@ -2,9 +2,9 @@ package utils
 
 import (
 	"bytes"
-	"text/template"
-	"hash/fnv"
 	"encoding/json"
+	"hash/fnv"
+	"text/template"
 )
 
 func PopulateTemplate(tmplContent string, data map[string]interface{}) (string, error) {
@@ -33,7 +33,7 @@ func PopulateTemplate(tmplContent string, data map[string]interface{}) (string, 
 // https://play.golang.org/p/k8bws03uid
 func UniquePort(data map[string]interface{}) (int, error) {
 	jsonString, err := json.Marshal(StringifyYAMLMapKeys(data))
-	if(err != nil){
+	if err != nil {
 		return 0, err
 	}
 
@@ -41,7 +41,7 @@ func UniquePort(data map[string]interface{}) (int, error) {
 	hash.Write([]byte(jsonString))
 
 	//last port - last privileged port.
-	portRange :=  65535 - 1023
+	portRange := 65535 - 1023
 
 	uniquePort := (hash.Sum32() % uint32(portRange)) + 1023
 	return int(uniquePort), nil

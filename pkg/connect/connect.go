@@ -3,13 +3,13 @@ package connect
 import (
 	"drawbridge/pkg/config"
 	"drawbridge/pkg/utils"
-	"syscall"
 	"fmt"
 	"path/filepath"
+	"syscall"
 )
 
 type ConnectEngine struct {
-	Config       config.Interface
+	Config config.Interface
 }
 
 func (e *ConnectEngine) Start(answerData map[string]interface{}) error {
@@ -32,5 +32,5 @@ func (e *ConnectEngine) Start(answerData map[string]interface{}) error {
 		fmt.Sprintf("ssh-add %v; ssh bastion -F %v;",
 			filepath.Join(e.Config.GetString("options.pem_dir"), e.Config.GetString("options.pem_filename")),
 			filepath.Join(e.Config.GetString("options.config_dir"), tmplConfigName)),
-	}, []string{});
+	}, []string{})
 }

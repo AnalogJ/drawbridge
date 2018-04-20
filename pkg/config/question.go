@@ -1,14 +1,14 @@
 package config
 
 import (
-	"github.com/xeipuuv/gojsonschema"
 	"drawbridge/pkg/errors"
+	"github.com/xeipuuv/gojsonschema"
 )
 
 type Question struct {
-	Description string `mapstructure:"description"`
-	DefaultValue interface{} `mapstructure:"default_value"`
-	Schema map[string]interface{} `mapstructure:"schema"`
+	Description  string                 `mapstructure:"description"`
+	DefaultValue interface{}            `mapstructure:"default_value"`
+	Schema       map[string]interface{} `mapstructure:"schema"`
 }
 
 func (q *Question) GetType() string {
@@ -30,22 +30,22 @@ func (q *Question) Validate(questionKey string, testValue interface{}) error {
 
 	//fix viper case-insensitivity & cleanup Schema
 	properRuleKeys := map[string]string{
-		"allof": "allOf",
-		"anyof": "anyOf",
-		"maxitems": "maxItems",
-		"maxlength": "maxLength",
-		"maxproperties": "maxProperties",
-		"minitems": "minItems",
-		"minlength": "minLength",
-		"minproperties": "minProperties",
-		"multipleof": "multipleOf",
-		"oneof": "oneOf",
+		"allof":             "allOf",
+		"anyof":             "anyOf",
+		"maxitems":          "maxItems",
+		"maxlength":         "maxLength",
+		"maxproperties":     "maxProperties",
+		"minitems":          "minItems",
+		"minlength":         "minLength",
+		"minproperties":     "minProperties",
+		"multipleof":        "multipleOf",
+		"oneof":             "oneOf",
 		"patternproperties": "patternProperties",
-		"uniqueitems": "uniqueItems",
+		"uniqueitems":       "uniqueItems",
 	}
 
 	for ruleKey, ruleValue := range q.Schema {
-		if(ruleKey == "required"){
+		if ruleKey == "required" {
 			//skip, required is already handled above.
 			continue
 		}
@@ -59,7 +59,6 @@ func (q *Question) Validate(questionKey string, testValue interface{}) error {
 			actualKey = ruleKey
 		}
 
-
 		questionSchema["properties"].(map[string]map[string]interface{})[questionKey][actualKey] = ruleValue
 	}
 
@@ -72,15 +71,14 @@ func (q *Question) Validate(questionKey string, testValue interface{}) error {
 	documentLoader := gojsonschema.NewGoLoader(testData)
 
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
-	if err != nil{
+	if err != nil {
 		return err
 	}
-	if(!result.Valid()){
+	if !result.Valid() {
 		//TODO: populate with actual errors from result obj.
 		return errors.QuestionValidationError("There was an error validating this answer")
 	}
 	return nil
 }
-
 
 //TODO: we should specify a schema for the Question files.

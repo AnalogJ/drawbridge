@@ -1,15 +1,15 @@
 package config
 
 import (
-	"drawbridge/pkg/utils"
-	"drawbridge/pkg/errors"
-	"github.com/spf13/viper"
-	"log"
-	"os"
-	"fmt"
 	"bytes"
+	"drawbridge/pkg/errors"
+	"drawbridge/pkg/utils"
+	"fmt"
+	"github.com/spf13/viper"
 	"github.com/xeipuuv/gojsonschema"
 	"gopkg.in/yaml.v2"
+	"log"
+	"os"
 )
 
 // When initializing this class the following methods must be called:
@@ -41,44 +41,43 @@ func (c *configuration) Init() error {
 
 	c.SetDefault("questions", map[string]Question{
 		"pem_filename": {
-			Description: "Pem key used to ssh to bastion",
+			Description:  "Pem key used to ssh to bastion",
 			DefaultValue: "id_rsa",
 			Schema: map[string]interface{}{
-				"type": "string",
+				"type":     "string",
 				"required": true,
 			},
 		},
 		"environment": {
-			Description: "Environment name for this stack",
+			Description:  "Environment name for this stack",
 			DefaultValue: "test",
 			Schema: map[string]interface{}{
-				"type": "string",
+				"type":     "string",
 				"required": true,
 			},
 		},
 		"username": {
-			Description: "Username used to log into this stack",
+			Description:  "Username used to log into this stack",
 			DefaultValue: "root",
 			Schema: map[string]interface{}{
-				"type": "string",
+				"type":     "string",
 				"required": true,
 			},
 		},
 		"domain": {
-			Description: "Base domain name for all stacks",
+			Description:  "Base domain name for all stacks",
 			DefaultValue: "example.com",
 			Schema: map[string]interface{}{
-				"type": "string",
+				"type":     "string",
 				"required": true,
 			},
 		},
-
 	})
 	c.SetDefault("answers", []map[string]interface{}{})
 
 	c.SetDefault("config_templates.default.filepath", "{{.environment}}-{{.username}}-config")
 	c.SetDefault("config_templates.default.content", utils.StripIndent(
-	`
+		`
 	ForwardAgent yes
 	ForwardX11 no
 	HashKnownHosts yes
@@ -94,17 +93,16 @@ func (c *configuration) Init() error {
 	    StrictHostKeyChecking=no
 	`))
 
-
 	//if you want to load a non-standard location system config file (~/drawbridge.yml), use ReadConfig
 	c.SetConfigType("yaml")
 	//c.SetConfigName("drawbridge")
 	//c.AddConfigPath("$HOME/")
 
 	//we're going to load the config file manually, since we need to validate it.
-	err := c.ReadConfig("~/drawbridge.yaml") // Find and read the config file
+	err := c.ReadConfig("~/drawbridge.yaml")              // Find and read the config file
 	if _, ok := err.(errors.ConfigFileMissingError); ok { // Handle errors reading the config file
 		//ignore "could not find config file"
-	} else if (err != nil) {
+	} else if err != nil {
 		return err
 	}
 
@@ -173,7 +171,6 @@ func (c *configuration) ValidateConfig() error {
 
 	return nil
 }
-
 
 func (c *configuration) ValidateConfigFile(configFilePath string) error {
 	configFilePath, err := utils.ExpandPath(configFilePath)
@@ -302,10 +299,10 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 	documentLoader := gojsonschema.NewGoLoader(configContent)
 
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
-	if err != nil{
+	if err != nil {
 		return err
 	}
-	if(!result.Valid()){
+	if !result.Valid() {
 		errorMsg := ""
 		for _, err := range result.Errors() {
 			// Err implements the ResultError interface
@@ -352,14 +349,13 @@ func (c *configuration) GetActiveConfigTemplate() (Template, error) {
 	activeTemplateName := c.GetString("options.active_config_template")
 
 	allTemplates, err := c.GetConfigTemplates()
-	if err != nil{
+	if err != nil {
 		return Template{}, err
 	}
 
 	activeTemplate := allTemplates[activeTemplateName]
 	return activeTemplate, nil
 }
-
 
 func (c *configuration) GetExtraTemplates() (map[string]Template, error) {
 	//deserialize Templates
@@ -372,13 +368,11 @@ func (c *configuration) GetActiveExtraTemplates() ([]Template, error) {
 	//deserialize Templates
 	activeTemplateNames := c.GetStringSlice("options.active_extra_templates")
 
-
 	allTemplates, err := c.GetExtraTemplates()
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	activeTemplates := []Template{}
-
 
 	for _, activeTemplateName := range activeTemplateNames {
 		activeTemplate := allTemplates[activeTemplateName]
@@ -386,5 +380,3 @@ func (c *configuration) GetActiveExtraTemplates() ([]Template, error) {
 	}
 	return activeTemplates, nil
 }
-
-

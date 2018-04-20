@@ -1,21 +1,19 @@
 package config
 
 import (
-	"os"
-	"path/filepath"
-	"log"
-	"fmt"
-	"path"
-	"drawbridge/pkg/utils"
 	"drawbridge/pkg/errors"
+	"drawbridge/pkg/utils"
+	"fmt"
+	"log"
+	"os"
+	"path"
+	"path/filepath"
 )
 
 type Template struct {
-	Content string `mapstructure:"content"`
+	Content  string `mapstructure:"content"`
 	FilePath string `mapstructure:"filepath"`
 }
-
-
 
 func (t *Template) WriteConfigTemplate(answerData map[string]interface{}, configDir string) error {
 	// modify/tweak the config template because its a known type.
@@ -44,7 +42,6 @@ func configTemplatePrefix(answerData map[string]interface{}) string {
 	return prefix
 }
 
-
 func (t *Template) WriteTemplate(answerData map[string]interface{}) error {
 	templatedFilePath, err := utils.PopulateTemplate(t.FilePath, answerData)
 	if err != nil {
@@ -60,7 +57,7 @@ func (t *Template) WriteTemplate(answerData map[string]interface{}) error {
 		return err
 	}
 
-	if !utils.FileExists(templatedFilePath){
+	if !utils.FileExists(templatedFilePath) {
 
 		//make the file's parent directory.
 		err = os.MkdirAll(filepath.Dir(templatedFilePath), 0777)
@@ -69,7 +66,7 @@ func (t *Template) WriteTemplate(answerData map[string]interface{}) error {
 		}
 
 		log.Printf("Writing template to %v", templatedFilePath)
-		err = utils.FileWrite(templatedFilePath,templatedContent, 0644)
+		err = utils.FileWrite(templatedFilePath, templatedContent, 0644)
 		if err != nil {
 			return err
 		}

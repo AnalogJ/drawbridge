@@ -5,14 +5,14 @@ import (
 	"os"
 	"time"
 
-	"drawbridge/pkg/utils"
+	"bufio"
 	"drawbridge/pkg/config"
-	"drawbridge/pkg/version"
-	"gopkg.in/urfave/cli.v2"
+	"drawbridge/pkg/connect"
 	"drawbridge/pkg/create"
 	"drawbridge/pkg/list"
-	"drawbridge/pkg/connect"
-	"bufio"
+	"drawbridge/pkg/utils"
+	"drawbridge/pkg/version"
+	"gopkg.in/urfave/cli.v2"
 	"strconv"
 	"strings"
 )
@@ -33,7 +33,6 @@ func main() {
 		fmt.Printf("FATAL: %+v\n", err)
 		os.Exit(1)
 	}
-
 
 	app := &cli.App{
 		Name:     "drawbridge",
@@ -81,7 +80,7 @@ func main() {
 						return err
 					}
 
-					createEngine := create.CreateEngine{ Config: config }
+					createEngine := create.CreateEngine{Config: config}
 					return createEngine.Start(cliAnswers)
 				},
 
@@ -92,8 +91,7 @@ func main() {
 				Usage: "List all drawbridge managed ssh configs",
 				Action: func(c *cli.Context) error {
 
-
-					listEngine := list.ListEngine{ Config: config }
+					listEngine := list.ListEngine{Config: config}
 					return listEngine.Start()
 				},
 
@@ -104,7 +102,7 @@ func main() {
 				Usage: "Connect to a drawbridge managed ssh config",
 				Action: func(c *cli.Context) error {
 
-					listEngine := list.ListEngine{ Config: config }
+					listEngine := list.ListEngine{Config: config}
 					listEngine.Start()
 
 					reader := bufio.NewReader(os.Stdin)
@@ -112,12 +110,12 @@ func main() {
 					fmt.Println(text)
 					text = strings.TrimSpace(text)
 					i, err := strconv.Atoi(text)
-					if err != nil{
+					if err != nil {
 						return err
 					}
 					answerIndex := i - 1
 
-					connectEngine := connect.ConnectEngine{ Config: config }
+					connectEngine := connect.ConnectEngine{Config: config}
 					return connectEngine.Start(listEngine.OrderedAnswers[answerIndex].(map[string]interface{}))
 				},
 
@@ -129,15 +127,15 @@ func main() {
 	app.Run(os.Args)
 }
 
-func createFlags(appConfig config.Interface) ([]cli.Flag, error){
+func createFlags(appConfig config.Interface) ([]cli.Flag, error) {
 	flags := []cli.Flag{
 		&cli.StringFlag{
-			Name: "active_config_template",
+			Name:  "active_config_template",
 			Usage: "Active config_template",
 			Value: appConfig.GetString("options.active_config_template"),
 		},
 		&cli.StringSliceFlag{
-			Name: "active_extra_templates",
+			Name:  "active_extra_templates",
 			Usage: "Activated extra_templates",
 			Value: cli.NewStringSlice(appConfig.GetStringSlice("options.active_extra_templates")...),
 		},
@@ -152,8 +150,8 @@ func createFlags(appConfig config.Interface) ([]cli.Flag, error){
 
 		if questionType == "string" {
 			newFlag := &cli.StringFlag{
-				Name:    k,
-				Usage:   v.Description,
+				Name:  k,
+				Usage: v.Description,
 			}
 			defaultValue, ok := v.DefaultValue.(string)
 			if ok {
@@ -163,8 +161,8 @@ func createFlags(appConfig config.Interface) ([]cli.Flag, error){
 			flags = append(flags, newFlag)
 		} else if questionType == "integer" {
 			newFlag := &cli.IntFlag{
-				Name:    k,
-				Usage:   v.Description,
+				Name:  k,
+				Usage: v.Description,
 			}
 			defaultValue, ok := v.DefaultValue.(int)
 			if ok {
@@ -174,8 +172,8 @@ func createFlags(appConfig config.Interface) ([]cli.Flag, error){
 			flags = append(flags, newFlag)
 		} else if questionType == "boolean" {
 			newFlag := &cli.BoolFlag{
-				Name:    k,
-				Usage:   v.Description,
+				Name:  k,
+				Usage: v.Description,
 			}
 			defaultValue, ok := v.DefaultValue.(bool)
 			if ok {
@@ -188,13 +186,13 @@ func createFlags(appConfig config.Interface) ([]cli.Flag, error){
 	return flags, nil
 }
 
-func createFlagAnswers(appConfig config.Interface, cliFlags []string, c *cli.Context) (map[string]interface{}, error){
+func createFlagAnswers(appConfig config.Interface, cliFlags []string, c *cli.Context) (map[string]interface{}, error) {
 
 	cliAnswers := map[string]interface{}{}
 
 	for _, questionKey := range cliFlags {
 		question, err := appConfig.GetQuestion(questionKey)
-		if err != nil{
+		if err != nil {
 			return nil, err
 		}
 

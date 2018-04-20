@@ -1,16 +1,16 @@
 package utils_test
 
 import (
-	"testing"
-	"github.com/stretchr/testify/require"
 	"drawbridge/pkg/utils"
+	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 func TestPopulateTemplate(t *testing.T) {
 	t.Parallel()
 
 	//test
-	actual, err := utils.PopulateTemplate("test {{.example}}", map[string]interface{}{"example": "17"} )
+	actual, err := utils.PopulateTemplate("test {{.example}}", map[string]interface{}{"example": "17"})
 
 	//assert
 	require.NoError(t, err, "should not throw an error")
@@ -31,7 +31,7 @@ func TestPopulateTemplate_UniquePort(t *testing.T) {
 	t.Parallel()
 
 	//test
-	str, err := utils.PopulateTemplate("test {{uniquePort .}}", map[string]interface{}{"example1": "17"} )
+	str, err := utils.PopulateTemplate("test {{uniquePort .}}", map[string]interface{}{"example1": "17"})
 
 	//assert
 	require.NoError(t, err, "should throw an error if missing template data")
@@ -49,12 +49,11 @@ func TestUniquePort(t *testing.T) {
 	require.Equal(t, 48275, port, "should generate repeatible unique port from data")
 }
 
-
 func TestUniquePort_WithNonStringValues(t *testing.T) {
 	t.Parallel()
 
 	//test
-	port, err := utils.UniquePort(map[string]interface{}{"example1": "17", "example2":18})
+	port, err := utils.UniquePort(map[string]interface{}{"example1": "17", "example2": 18})
 
 	//assert
 	require.NoError(t, err, "should not raise an error")

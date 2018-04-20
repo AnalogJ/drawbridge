@@ -1,10 +1,10 @@
 package config_test
 
 import (
-	"testing"
-	"path"
-	"github.com/stretchr/testify/require"
 	"drawbridge/pkg/config"
+	"github.com/stretchr/testify/require"
+	"path"
+	"testing"
 )
 
 func TestConfiguration_GetQuestion(t *testing.T) {
@@ -18,9 +18,8 @@ func TestConfiguration_GetQuestion(t *testing.T) {
 
 	//assert
 	require.NoError(t, err, "should not have an error when requesting question by key")
-	require.EqualValues(t, question.Description, "what is the stack environment","should retrieve correct question description")
+	require.EqualValues(t, question.Description, "what is the stack environment", "should retrieve correct question description")
 }
-
 
 func TestConfiguration_GetQuestion_Invalid(t *testing.T) {
 

@@ -26,4 +26,3 @@ func StringifyYAMLMapKeys(in interface{}) interface{} {
 		return in
 	}
 }
-

@@ -1,21 +1,21 @@
 package create
 
 import (
-	"drawbridge/pkg/config"
-	"strings"
 	"bufio"
-	"os"
-	"fmt"
+	"drawbridge/pkg/config"
 	"drawbridge/pkg/errors"
-	"log"
-	"strconv"
-	"path"
 	"drawbridge/pkg/utils"
+	"fmt"
 	"gopkg.in/yaml.v2"
+	"log"
+	"os"
+	"path"
+	"strconv"
+	"strings"
 )
 
 type CreateEngine struct {
-	Config       config.Interface
+	Config config.Interface
 }
 
 func (e *CreateEngine) Start(cliAnswerData map[string]interface{}) error {
@@ -55,7 +55,7 @@ func (e *CreateEngine) Start(cliAnswerData map[string]interface{}) error {
 	}
 
 	err = activeConfigTemplate.WriteConfigTemplate(answerData, e.Config.GetString("options.config_dir"))
-	if(err != nil){
+	if err != nil {
 		return err
 	}
 
@@ -67,7 +67,7 @@ func (e *CreateEngine) Start(cliAnswerData map[string]interface{}) error {
 
 	for _, template := range activeExtraTemplates {
 		err := template.WriteTemplate(answerData)
-		if(err != nil){
+		if err != nil {
 			return err
 		}
 	}
@@ -80,7 +80,7 @@ func (e *CreateEngine) Start(cliAnswerData map[string]interface{}) error {
 	}
 
 	answersFileContent, err := yaml.Marshal(answerData)
-	if(err != nil){
+	if err != nil {
 		return err
 	}
 	err = utils.FileWrite(answersFilePath, string(answersFileContent), 0600)
@@ -94,7 +94,7 @@ func (e *CreateEngine) Start(cliAnswerData map[string]interface{}) error {
 func (e *CreateEngine) Query(questions map[string]config.Question, answerData map[string]interface{}) (map[string]interface{}, error) {
 	for questionKey, questionData := range questions {
 
-		val , ok := questionData.Schema["required"]
+		val, ok := questionData.Schema["required"]
 		required := ok && val.(bool)
 
 		if _, ok := answerData[questionKey]; !ok && required {
@@ -106,7 +106,7 @@ func (e *CreateEngine) Query(questions map[string]config.Question, answerData ma
 	return answerData, nil
 }
 
-func  (e *CreateEngine) queryResponse(questionKey string, question config.Question) interface{} {
+func (e *CreateEngine) queryResponse(questionKey string, question config.Question) interface{} {
 
 	for true {
 		//this question is not answered, and it is required. We should ask the user.
@@ -129,39 +129,34 @@ func  (e *CreateEngine) queryResponse(questionKey string, question config.Questi
 			return answerTyped
 		}
 
-
 	}
 	//return answerTyped
 	return nil
 }
 
-func convertAnswerType(answer string, questionType string) (interface{}, error){
-	if(questionType == "integer"){
+func convertAnswerType(answer string, questionType string) (interface{}, error) {
+	if questionType == "integer" {
 		answer, err := strconv.ParseInt(answer, 10, 64)
-		if(err != nil){
+		if err != nil {
 			return nil, err
 		}
 		return answer, nil
-	} else if(questionType == "number"){
+	} else if questionType == "number" {
 		answer, err := strconv.ParseFloat(answer, 64)
-		if(err != nil){
+		if err != nil {
 			return nil, err
 		}
 		return answer, nil
-	} else if(questionType == "boolean"){
+	} else if questionType == "boolean" {
 		answer, err := strconv.ParseBool(answer)
-		if(err != nil){
+		if err != nil {
 			return nil, err
 		}
 		return answer, nil
-	} else if(questionType == "string"){
+	} else if questionType == "string" {
 		return answer, nil
 	} else {
 		return nil, errors.AnswerFormatError(fmt.Sprintf("could not convert %v to unknown %v type", answer, questionType))
 	}
 
 }
-
-
-
-

@@ -44,7 +44,7 @@ func TestConfiguration_ReadConfig_Simple(t *testing.T) {
 	//assert
 	require.NoError(t, err, "should be valid config file")
 	require.Equal(t, "~/.ssh/drawbridge", testConfig.GetString("options.config_dir"), "should populate config_dir with default")
-	require.Equal(t, []string{"default","knife"}, testConfig.GetStringSlice("options.active_extra_templates"), "should populate active_extra_templates with overrides")
+	require.Equal(t, []string{"default", "knife"}, testConfig.GetStringSlice("options.active_extra_templates"), "should populate active_extra_templates with overrides")
 	require.Equal(t, "~/.ssh/drawbridge/pem", testConfig.GetString("options.pem_dir"), "should populate pem_dir with overrides")
 
 }
