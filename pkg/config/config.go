@@ -285,11 +285,39 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 			},
 			"config_templates":{
 				"type": "object",
-				"additionalProperties":false
+				"patternProperties": {
+					"^[a-z0-9]*$":{
+						"type":"object",
+						"additionalProperties":false,
+						"required": ["filepath", "content"],
+						"properties": {
+							"filepath": {
+								"type": "string"
+							},
+							"content": {
+								"type": "string"
+							}
+						}
+					}
+				}
 			},
 			"extra_templates":{
 				"type": "object",
-				"additionalProperties":false
+				"patternProperties": {
+					"^[a-z0-9]*$":{
+						"type":"object",
+						"additionalProperties":false,
+						"required": ["filepath","content"],
+						"properties": {
+							"filepath": {
+								"type": "string"
+							},
+							"content": {
+								"type": "string"
+							}
+						}
+					}
+				}
 			}
 		}
 	}

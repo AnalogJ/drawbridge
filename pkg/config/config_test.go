@@ -143,3 +143,21 @@ func TestConfiguration_ReadConfig_DuplicateActiveTemplates(t *testing.T) {
 	//assert
 	require.Error(t, err, "should return an error if there is an duplicate active template")
 }
+
+func TestConfiguration_ReadConfig_OverrideDefaultConfigTemplate(t *testing.T) {
+	t.Parallel()
+
+	//setup
+	testConfig, _ := config.Create()
+
+	//test
+	err := testConfig.ReadConfig(path.Join("testdata", "valid_config_template.yaml"))
+	require.NoError(t, err, "should allow overriding default config template.")
+
+	configTmpl, err := testConfig.GetActiveConfigTemplate()
+
+	//assert
+	require.NoError(t, err, "should allow overriding default config template.")
+	require.Equal(t,"{{.environment}}-{{.username}}", configTmpl.FilePath)
+
+}
