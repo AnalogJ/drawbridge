@@ -7,9 +7,7 @@ import (
 
 	"bufio"
 	"drawbridge/pkg/config"
-	"drawbridge/pkg/connect"
-	"drawbridge/pkg/create"
-	"drawbridge/pkg/list"
+	"drawbridge/pkg/actions"
 	"drawbridge/pkg/utils"
 	"drawbridge/pkg/version"
 	"gopkg.in/urfave/cli.v2"
@@ -81,7 +79,7 @@ func main() {
 						return err
 					}
 
-					createEngine := create.CreateEngine{Config: config}
+					createEngine := actions.CreateAction{Config: config}
 					return createEngine.Start(cliAnswers)
 				},
 
@@ -92,7 +90,7 @@ func main() {
 				Usage: "List all drawbridge managed ssh configs",
 				Action: func(c *cli.Context) error {
 
-					listEngine := list.ListEngine{Config: config}
+					listEngine := actions.ListAction{Config: config}
 					return listEngine.Start()
 				},
 
@@ -103,7 +101,7 @@ func main() {
 				Usage: "Connect to a drawbridge managed ssh config",
 				Action: func(c *cli.Context) error {
 
-					listEngine := list.ListEngine{Config: config}
+					listEngine := actions.ListAction{Config: config}
 					listEngine.Start()
 
 					reader := bufio.NewReader(os.Stdin)
@@ -116,7 +114,7 @@ func main() {
 					}
 					answerIndex := i - 1
 
-					connectEngine := connect.ConnectEngine{Config: config}
+					connectEngine := actions.ConnectAction{Config: config}
 					return connectEngine.Start(listEngine.OrderedAnswers[answerIndex].(map[string]interface{}))
 				},
 

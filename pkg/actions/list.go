@@ -1,4 +1,4 @@
-package list
+package actions
 
 import (
 	"drawbridge/pkg/config"
@@ -16,13 +16,13 @@ import (
 	"strings"
 )
 
-type ListEngine struct {
+type ListAction struct {
 	Config         config.Interface
 	GroupedAnswers *gabs.Container
 	OrderedAnswers []interface{}
 }
 
-func (e *ListEngine) Start() error {
+func (e *ListAction) Start() error {
 
 	configDir := e.Config.GetString("options.config_dir")
 	configDir, err := utils.ExpandPath(configDir)
@@ -115,7 +115,7 @@ func (e *ListEngine) Start() error {
 	return nil
 }
 
-func (e *ListEngine) PrintUI(level int, groups []string, groupedAnswers *gabs.Container) error {
+func (e *ListAction) PrintUI(level int, groups []string, groupedAnswers *gabs.Container) error {
 	children, _ := groupedAnswers.ChildrenMap()
 	for groupKey, child := range children {
 		nextGroups := []string{}

@@ -1,5 +1,7 @@
 package config
 
+import "drawbridge/pkg/config/template"
+
 // Create mock using:
 // mockgen -source=pkg/config/interface.go -destination=pkg/config/mock/mock_config.go
 type Interface interface {
@@ -21,8 +23,8 @@ type Interface interface {
 	//GetQuestionsSchema() (map[string]interface{}, error)
 	//GetQuestionSchema(question Question) (map[string]interface{}, error)
 
-	GetConfigTemplates() (map[string]Template, error)
-	GetActiveConfigTemplate() (Template, error)
-	GetExtraTemplates() (map[string]Template, error)
-	GetActiveExtraTemplates() ([]Template, error)
+	GetConfigTemplates() (map[string]template.ConfigTemplate, error)
+	GetActiveConfigTemplate() (template.ConfigTemplate, error)
+	GetExtraTemplates() (map[string]template.FileTemplate, error)
+	GetActiveExtraTemplates() ([]template.FileTemplate, error)
 }
