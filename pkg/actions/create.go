@@ -1,17 +1,14 @@
 package actions
 
 import (
-	"bufio"
 	"drawbridge/pkg/config"
 	"drawbridge/pkg/errors"
 	"drawbridge/pkg/utils"
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"log"
-	"os"
 	"path"
 	"strconv"
-	"strings"
 )
 
 type CreateAction struct {
@@ -122,11 +119,8 @@ func (e *CreateAction) queryResponse(questionKey string, question config.Questio
 
 	for true {
 		//this question is not answered, and it is required. We should ask the user.
-		stdReader := bufio.NewReader(os.Stdin)
-		s := fmt.Sprintf("Please enter a value for `%s` [%s] - %s:", questionKey, question.GetType(), question.Description)
-		fmt.Println(s)
-		answer, _ := stdReader.ReadString('\n')
-		answer = strings.Trim(answer, "\n")
+		answer := utils.StdinQuery(fmt.Sprintf("Please enter a value for `%s` [%s] - %s:", questionKey, question.GetType(), question.Description))
+
 		answerTyped, err := convertAnswerType(answer, question.GetType())
 		if err != nil {
 			fmt.Printf("%v\n", err)

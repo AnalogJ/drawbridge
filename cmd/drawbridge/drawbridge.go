@@ -5,14 +5,12 @@ import (
 	"os"
 	"time"
 
-	"bufio"
 	"drawbridge/pkg/config"
 	"drawbridge/pkg/actions"
 	"drawbridge/pkg/utils"
 	"drawbridge/pkg/version"
 	"gopkg.in/urfave/cli.v2"
 	"strconv"
-	"strings"
 	"log"
 )
 
@@ -104,10 +102,7 @@ func main() {
 					listEngine := actions.ListAction{Config: config}
 					listEngine.Start()
 
-					reader := bufio.NewReader(os.Stdin)
-					text, _ := reader.ReadString('\n')
-					fmt.Println(text)
-					text = strings.TrimSpace(text)
+					text := utils.StdinQuery("Enter number of ssh config you would like to connect to:")
 					i, err := strconv.Atoi(text)
 					if err != nil {
 						return err

@@ -13,6 +13,7 @@ import:
 - package: github.com/mitchellh/go-homedir
 - package: github.com/Jeffail/gabs
   version: ^1.0.0
+- package: golang.org/x/crypto
 testImport:
 - package: github.com/matryer/moq
 - package: github.com/golang/mock
