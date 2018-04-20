@@ -6,7 +6,6 @@ jobs:
     working_directory: /go/src/{{REPO_NAME}}
     steps:
       - checkout
-      - run: mkdir -p $TEST_RESULTS
 
       - restore_cache:
           keys:
@@ -25,9 +24,9 @@ jobs:
           paths:
             - "/go/src/drawbridge/vendor"
 
-      - store_artifacts:
-          path: /tmp/test-results
-          destination: raw-test-output
-
-      - store_test_results:
-          path: /tmp/test-results
+#      - store_artifacts:
+#          path: /tmp/test-results
+#          destination: raw-test-output
+#
+#      - store_test_results:
+#          path: /tmp/test-results
