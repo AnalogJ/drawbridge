@@ -33,7 +33,7 @@ jobs:
                 fi
             done
 
-            ls /tmp//coverage
+            ls /tmp/coverage
 
       - save_cache:
           key: v1-pkg-cache
