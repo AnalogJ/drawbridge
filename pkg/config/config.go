@@ -268,7 +268,9 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 									"not": {},
 									"oneOf": {},
 									"pattern": {},
-									"required": {},
+									"required": {
+										"type": "boolean"
+									},
 									"type": {
 										"type": "string",
 										"enum": ["integer", "number", "string", "boolean", "null"]

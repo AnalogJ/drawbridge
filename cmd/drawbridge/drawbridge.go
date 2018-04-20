@@ -15,6 +15,7 @@ import (
 	"gopkg.in/urfave/cli.v2"
 	"strconv"
 	"strings"
+	"log"
 )
 
 var goos string
@@ -124,7 +125,11 @@ func main() {
 		},
 	}
 
-	app.Run(os.Args)
+	err = app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }
 
 func createFlags(appConfig config.Interface) ([]cli.Flag, error) {

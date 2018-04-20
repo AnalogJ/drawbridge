@@ -40,13 +40,25 @@ func (e *CreateEngine) Start(cliAnswerData map[string]interface{}) error {
 		answerData[cliAnswerKey] = cliAnswerValue
 	}
 
-	log.Printf("all answers found before questioning: %v \n", answerData)
+	log.Printf("answers found before questioning: %v \n", answerData)
 
 	// ensuer that that all questions are answered, query user if missing anything.
 	answerData, err = e.Query(questions, answerData)
 	if err != nil {
 		return err
 	}
+
+	//set any optional keys to nil value.
+	for questionKey, question := range questions {
+		if !question.Required() {
+
+			if _, ok := answerData[questionKey]; !ok {
+				//answerdata does not contain this optional key
+				answerData[questionKey] = nil
+			}
+		}
+	}
+
 
 	// write the config template, make sure we "fix" the config filepath
 	activeConfigTemplate, err := e.Config.GetActiveConfigTemplate()

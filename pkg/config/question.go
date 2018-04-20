@@ -15,6 +15,11 @@ func (q *Question) GetType() string {
 	return q.Schema["type"].(string)
 }
 
+func (q *Question) Required() bool {
+	isRequired, isSet := q.Schema["required"].(bool)
+	return isRequired && isSet
+}
+
 func (q *Question) Validate(questionKey string, testValue interface{}) error {
 	questionSchema := map[string]interface{}{
 		"properties": map[string]map[string]interface{}{
