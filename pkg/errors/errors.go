@@ -59,8 +59,6 @@ func (str AnswerFormatError) Error() string {
 	return fmt.Sprintf("AnswerFormatError: %q", string(str))
 }
 
-
-
 // Raised when we cannot find a new version
 type UpdateNotAvailableError string
 

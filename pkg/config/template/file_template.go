@@ -4,10 +4,10 @@ import (
 	"drawbridge/pkg/errors"
 	"drawbridge/pkg/utils"
 	"fmt"
+	"github.com/fatih/color"
 	"log"
 	"os"
 	"path/filepath"
-	"github.com/fatih/color"
 )
 
 type FileTemplate struct {

@@ -18,7 +18,6 @@ func (t *ConfigTemplate) DeleteTemplate(answerData map[string]interface{}) error
 	return t.FileTemplate.DeleteTemplate(answerData)
 }
 
-
 func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignoreKeys []string) error {
 	//TODO: validate that we have all the required templates variables populated.
 

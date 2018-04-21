@@ -2,10 +2,10 @@ package utils
 
 import (
 	"bufio"
+	"fmt"
+	"github.com/fatih/color"
 	"os"
 	"strings"
-	"github.com/fatih/color"
-	"fmt"
 )
 
 func StdinQuery(question string) string {

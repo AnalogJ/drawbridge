@@ -121,8 +121,8 @@ func (e *ConnectAction) SshAgentAddPemKey(pemFilepath string) error {
 	agentClient := agent.NewClient(conn)
 
 	err = agentClient.Add(agent.AddedKey{
-		PrivateKey: privateKeyData,
-		Comment:    fmt.Sprintf("(drawbridge) - %v", pemFilepath),
+		PrivateKey:   privateKeyData,
+		Comment:      fmt.Sprintf("(drawbridge) - %v", pemFilepath),
 		LifetimeSecs: 3600, //for safety we should limit this key's use for 1h
 	})
 

@@ -2,19 +2,19 @@ package actions
 
 import (
 	"drawbridge/pkg/config"
-	"net/http"
-	"io/ioutil"
-	"encoding/json"
-	"fmt"
-	"os"
-	"time"
-	"drawbridge/pkg/version"
-	"github.com/inconshreveable/go-update"
-	"runtime"
 	"drawbridge/pkg/errors"
 	"drawbridge/pkg/utils"
-	"strconv"
+	"drawbridge/pkg/version"
+	"encoding/json"
+	"fmt"
 	"github.com/fatih/color"
+	"github.com/inconshreveable/go-update"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"runtime"
+	"strconv"
+	"time"
 )
 
 type UpdateAction struct {
@@ -22,15 +22,14 @@ type UpdateAction struct {
 }
 
 type GithubReleaseInfo struct {
-	TagName string `json:"tag_name"`
-	PublishedAt time.Time `json:"published_at"`
-	ReleaseNotesUrl string `json:"html_url"`
-	Assets []struct {
-		Url string `json:"browser_download_url"`
+	TagName         string    `json:"tag_name"`
+	PublishedAt     time.Time `json:"published_at"`
+	ReleaseNotesUrl string    `json:"html_url"`
+	Assets          []struct {
+		Url  string `json:"browser_download_url"`
 		Name string `json:"name"`
 	} `json:"assets"`
 }
-
 
 // https://github.com/hyperhq/hypercli/blob/302a6b530148f6a777cd6b8772f706ab5e3da46b/pkg/selfupdate/selfupdate.go
 // https://github.com/hyperhq/hypercli/blob/302a6b530148f6a777cd6b8772f706ab5e3da46b/hyper/hyper.go
@@ -48,7 +47,6 @@ func (e *UpdateAction) Start() error {
 		return err
 	}
 
-
 	//parse json
 	releaseInfo := GithubReleaseInfo{}
 	err = json.Unmarshal(respBodyJson, &releaseInfo)
@@ -56,29 +54,28 @@ func (e *UpdateAction) Start() error {
 		return err
 	}
 
-
 	//compare the current version to the destination version
 	currentTimestamp, err := e.currentBinaryTimestamp()
-	if err != nil{
+	if err != nil {
 		return err
 	}
 
 	fmt.Printf("Current: %v [%v]. Available: %v [%v]\nRelease notes are available here: %v\n",
 		e.currentBinaryVersion(),
-		currentTimestamp.Format("2006-01-02") ,
+		currentTimestamp.Format("2006-01-02"),
 		releaseInfo.TagName,
 		releaseInfo.PublishedAt.Format("2006-01-02"),
 		releaseInfo.ReleaseNotesUrl,
-		)
+	)
 
-	if releaseInfo.TagName == e.currentBinaryVersion(){
+	if releaseInfo.TagName == e.currentBinaryVersion() {
 		//TODO: return errors.UpdateNotAvailableError("No new version found.")
 	}
 
 	//see if theres a binary for this OS/Arch
 	assetUrl := ""
 	requiredOsArch := fmt.Sprintf("drawbridge-%v-%v", runtime.GOOS, runtime.GOARCH)
-	for _, asset := range releaseInfo.Assets{
+	for _, asset := range releaseInfo.Assets {
 		if asset.Name == requiredOsArch {
 			assetUrl = asset.Url
 		}
@@ -87,7 +84,6 @@ func (e *UpdateAction) Start() error {
 	if len(assetUrl) == 0 {
 		return errors.UpdateBinaryOsArchMissingError(fmt.Sprintf("Cannot find a drawbridge binary for OS/Arch: %v", requiredOsArch))
 	}
-
 
 	//TODO: ask user if we should update.
 	stdinResp := utils.StdinQuery(fmt.Sprintf("Are you sure you would like to update drawbridge to %v?\nPlease confirm [true/false]:", releaseInfo.TagName))
@@ -100,20 +96,17 @@ func (e *UpdateAction) Start() error {
 		return nil
 	}
 
-
 	releaseBinaryReq, err := http.Get(assetUrl)
 	if err != nil {
 		return err
 	}
 	defer releaseBinaryReq.Body.Close()
 
-
 	err = update.Apply(releaseBinaryReq.Body, update.Options{})
 	if err != nil {
 		// error handling
 		return err
 	}
-
 
 	return nil
 }
@@ -131,5 +124,5 @@ func (e *UpdateAction) currentBinaryTimestamp() (time.Time, error) {
 }
 
 func (e *UpdateAction) currentBinaryVersion() string {
-	return fmt.Sprintf("v%v",version.VERSION)
+	return fmt.Sprintf("v%v", version.VERSION)
 }

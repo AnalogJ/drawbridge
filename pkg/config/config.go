@@ -360,7 +360,7 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 
 func (c *configuration) InternalQuestionKeys() []string {
 	//list of internal keys, can be filtered out when printing, etc.
-	return []string{ "config_dir", "pem_dir", "active_config_template", "active_extra_templates","ui_group_priority", "ui_question_hidden", "pem_filepath", "filepath" }
+	return []string{"config_dir", "pem_dir", "active_config_template", "active_extra_templates", "ui_group_priority", "ui_question_hidden", "pem_filepath", "filepath"}
 }
 
 func (c *configuration) GetQuestion(questionKey string) (Question, error) {

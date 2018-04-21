@@ -26,7 +26,6 @@ func (e *DeleteAction) All(answerDataList []map[string]interface{}, force bool) 
 }
 func (e *DeleteAction) One(answerData map[string]interface{}, force bool) error {
 
-
 	//delete the config file by answerData
 	renderedConfigFilePath := answerData["filepath"].(string)
 
@@ -34,8 +33,8 @@ func (e *DeleteAction) One(answerData map[string]interface{}, force bool) error 
 
 		questionStr := []string{"Are you sure you would like to delete this config and associated templates? (PEM files will not be deleted)\n"}
 
-		for k,v := range answerData {
-			if utils.StringInSlice(e.Config.InternalQuestionKeys(), k){
+		for k, v := range answerData {
+			if utils.StringInSlice(e.Config.InternalQuestionKeys(), k) {
 				continue
 			}
 			questionStr = append(questionStr, fmt.Sprintf("%v: %v", k, v))
@@ -54,12 +53,11 @@ func (e *DeleteAction) One(answerData map[string]interface{}, force bool) error 
 	}
 
 	fmt.Printf("Deleting config file: %v\n", renderedConfigFilePath)
-	if utils.FileExists(renderedConfigFilePath){
+	if utils.FileExists(renderedConfigFilePath) {
 		utils.FileDelete(renderedConfigFilePath)
 	} else {
 		color.Yellow(" - Skipping. Could not find config file at: %v", renderedConfigFilePath)
 	}
-
 
 	//delete any extra templates.
 	if val, ok := answerData["active_extra_templates"]; ok {
@@ -86,7 +84,7 @@ func (e *DeleteAction) One(answerData map[string]interface{}, force bool) error 
 	//delete the .answers.yaml
 	fmt.Println("Deleting answers file")
 	answersFilePath := path.Join(answerData["config_dir"].(string), fmt.Sprintf(".%v.answers.yaml", path.Base(renderedConfigFilePath)))
-	if utils.FileExists(answersFilePath){
+	if utils.FileExists(answersFilePath) {
 		utils.FileDelete(answersFilePath)
 	} else {
 		color.Yellow(" - Skipping. Could not find answers file at: %v", answersFilePath)

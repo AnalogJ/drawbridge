@@ -2,8 +2,8 @@ package config
 
 import (
 	"drawbridge/pkg/errors"
-	"github.com/xeipuuv/gojsonschema"
 	"fmt"
+	"github.com/xeipuuv/gojsonschema"
 )
 
 type Question struct {

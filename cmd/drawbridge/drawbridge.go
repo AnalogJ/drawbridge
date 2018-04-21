@@ -7,14 +7,14 @@ import (
 
 	"drawbridge/pkg/actions"
 	"drawbridge/pkg/config"
+	"drawbridge/pkg/errors"
 	"drawbridge/pkg/utils"
 	"drawbridge/pkg/version"
+	"github.com/fatih/color"
 	"gopkg.in/urfave/cli.v2"
 	"log"
 	"strconv"
 	"strings"
-	"github.com/fatih/color"
-	"drawbridge/pkg/errors"
 )
 
 var goos string
@@ -110,7 +110,7 @@ func main() {
 
 					var answerIndex int
 
-					if c.IsSet("drawbridge_id"){
+					if c.IsSet("drawbridge_id") {
 						answerIndex = c.Int("drawbridge_id")
 					} else {
 						text := utils.StdinQuery("Enter number of drawbridge config you would like to connect to:")
@@ -141,10 +141,10 @@ func main() {
 				},
 			},
 			{
-				Name:  "download",
-				Aliases: []string{"scp"},
-				Usage: "Download a file from an internal server using drawbridge managed ssh config, syntax is similar to scp command. ",
-				ArgsUsage:   "destination_hostname:remote_filepath local_filepath",
+				Name:      "download",
+				Aliases:   []string{"scp"},
+				Usage:     "Download a file from an internal server using drawbridge managed ssh config, syntax is similar to scp command. ",
+				ArgsUsage: "destination_hostname:remote_filepath local_filepath",
 				Action: func(c *cli.Context) error {
 					fmt.Fprintln(c.App.Writer, c.Command.Usage)
 
@@ -162,7 +162,7 @@ func main() {
 
 					var answerIndex int
 
-					if c.IsSet("drawbridge_id"){
+					if c.IsSet("drawbridge_id") {
 						answerIndex = c.Int("drawbridge_id")
 					} else {
 						text := utils.StdinQuery("Enter number of drawbridge config you would like to download from:")
@@ -210,7 +210,7 @@ func main() {
 
 						var answerIndex int
 
-						if c.IsSet("drawbridge_id"){
+						if c.IsSet("drawbridge_id") {
 							answerIndex = c.Int("drawbridge_id")
 						} else {
 							text := utils.StdinQuery("Enter number of drawbridge config you would like to delete:")
@@ -229,7 +229,7 @@ func main() {
 						deleteAction := actions.DeleteAction{Config: config}
 						err := deleteAction.One(listAction.OrderedAnswers[answerIndex].(map[string]interface{}), c.Bool("force"))
 
-						if err != nil{
+						if err != nil {
 							//print an error message here:
 							return err
 						} else {
@@ -260,7 +260,7 @@ func main() {
 				Action: func(c *cli.Context) error {
 					fmt.Fprintln(c.App.Writer, c.Command.Usage)
 
-					if len(goos) == 0 && len(goarch) == 0{
+					if len(goos) == 0 && len(goarch) == 0 {
 						//dev mode,
 						color.Yellow("WARNING: Binary was built from source, not released. Auto-update may not work correctly")
 					}

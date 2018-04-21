@@ -5,11 +5,11 @@ import (
 	"drawbridge/pkg/errors"
 	"drawbridge/pkg/utils"
 	"fmt"
+	"github.com/fatih/color"
 	"gopkg.in/yaml.v2"
 	"path"
-	"strconv"
-	"github.com/fatih/color"
 	"sort"
+	"strconv"
 )
 
 type CreateAction struct {
@@ -44,15 +44,14 @@ func (e *CreateAction) Start(cliAnswerData map[string]interface{}) error {
 
 	questionKeys := utils.MapKeys(answerData)
 	for _, questionKey := range questionKeys {
-		if utils.StringInSlice(e.Config.InternalQuestionKeys(), questionKey){
+		if utils.StringInSlice(e.Config.InternalQuestionKeys(), questionKey) {
 			continue
 		}
 
 		fmt.Printf("%v: %v\n",
 			questionKey,
-			color.GreenString(fmt.Sprintf("%v",answerData[questionKey])))
+			color.GreenString(fmt.Sprintf("%v", answerData[questionKey])))
 	}
-
 
 	// ensuer that that all questions are answered, query user if missing anything.
 	answerData, err = e.Query(questions, answerData)
@@ -121,7 +120,6 @@ func (e *CreateAction) Query(questions map[string]config.Question, answerData ma
 		questionKeys = append(questionKeys, k)
 	}
 	sort.Strings(questionKeys)
-
 
 	for _, questionKey := range questionKeys {
 		questionData := questions[questionKey]

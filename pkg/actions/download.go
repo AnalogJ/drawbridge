@@ -18,7 +18,6 @@ type DownloadAction struct {
 
 func (e *DownloadAction) Start(answerData map[string]interface{}, destHostname string, remoteFilePath string, localFilePath string) error {
 
-
 	tmplData, err := e.Config.GetActiveConfigTemplate()
 	if err != nil {
 		return nil
@@ -60,4 +59,3 @@ func (e *DownloadAction) Start(answerData map[string]interface{}, destHostname s
 
 	return syscall.Exec(scpBin, args, os.Environ())
 }
-

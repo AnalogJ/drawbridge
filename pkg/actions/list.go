@@ -8,14 +8,14 @@ import (
 	"fmt"
 	"github.com/Jeffail/gabs"
 	"github.com/fatih/color"
+	"github.com/xlab/treeprint"
 	"gopkg.in/yaml.v2"
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
-	"github.com/xlab/treeprint"
-	"sort"
 )
 
 type ListAction struct {
@@ -40,7 +40,7 @@ func (e *ListAction) Start() error {
 
 //this is a list of all the answers that have been used to populate templates & config files.
 //will be ordered by config file name
-func (e *ListAction) RenderedAnswersList()([]map[string]interface{}, error) {
+func (e *ListAction) RenderedAnswersList() ([]map[string]interface{}, error) {
 	files, err := e.FindAllAnswerFiles()
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func (e *ListAction) RenderedAnswersList()([]map[string]interface{}, error) {
 	return e.ParseAnswerFiles(files)
 }
 
-func (e *ListAction) FindAllAnswerFiles() ([]string,error) {
+func (e *ListAction) FindAllAnswerFiles() ([]string, error) {
 	configDir := e.Config.GetString("options.config_dir")
 	configDir, err := utils.ExpandPath(configDir)
 	if err != nil {
@@ -93,7 +93,7 @@ func (e *ListAction) ParseAnswerFiles(files []string) ([]map[string]interface{},
 	return answersList, nil
 }
 
-func (e *ListAction) GroupAnswerList(answersList []map[string]interface{}, groupKeys []string) (*gabs.Container) {
+func (e *ListAction) GroupAnswerList(answersList []map[string]interface{}, groupKeys []string) *gabs.Container {
 	// Group By for existing configs.
 
 	groupedAnswers := gabs.New()
@@ -122,7 +122,6 @@ func (e *ListAction) GroupAnswerList(answersList []map[string]interface{}, group
 	return groupedAnswers
 }
 
-
 func (e *ListAction) PrintTree(groupedAnswers *gabs.Container) error {
 	treeprint.EdgeTypeStart = "Rendered Drawbridge Configs:"
 	tree := treeprint.New()
@@ -132,8 +131,7 @@ func (e *ListAction) PrintTree(groupedAnswers *gabs.Container) error {
 	return nil
 }
 
-func(e *ListAction) recursivePrintTree(level int, parentTree treeprint.Tree,  groupedAnswers *gabs.Container) error {
-
+func (e *ListAction) recursivePrintTree(level int, parentTree treeprint.Tree, groupedAnswers *gabs.Container) error {
 
 	questionKeys := e.Config.GetStringSlice("options.ui_group_priority")
 
@@ -145,16 +143,15 @@ func(e *ListAction) recursivePrintTree(level int, parentTree treeprint.Tree,  gr
 	}
 	sort.Strings(groupKeys)
 
-
 	for _, groupKey := range groupKeys {
 		child := children[groupKey]
 		currentTree := parentTree
 
 		//ensure the current groupKey is not empty.
-		if len(groupKey)>0 { //TODO: figure out how to skip the last group level. && level < len(questionKeys)-2{
+		if len(groupKey) > 0 { //TODO: figure out how to skip the last group level. && level < len(questionKeys)-2{
 
 			// handle following cases:
-			if level + 1 < len(questionKeys){
+			if level+1 < len(questionKeys) {
 				currentTree = parentTree.AddMetaBranch(e.coloredString(level, groupKey), questionKeys[level])
 			}
 		}
@@ -186,7 +183,7 @@ func(e *ListAction) recursivePrintTree(level int, parentTree treeprint.Tree,  gr
 	return nil
 }
 
-func(e *ListAction) answerString(highlightGroupKey string, answer map[string]interface{}) string {
+func (e *ListAction) answerString(highlightGroupKey string, answer map[string]interface{}) string {
 
 	uiHiddenKeys := e.Config.GetStringSlice("options.ui_question_hidden")
 	uiGroupPriority := e.Config.GetStringSlice("options.ui_group_priority")
@@ -218,8 +215,7 @@ func(e *ListAction) answerString(highlightGroupKey string, answer map[string]int
 	return strings.Join(answerStr, ", ")
 }
 
-
-func (e *ListAction) coloredString(level int, data string) (string) {
+func (e *ListAction) coloredString(level int, data string) string {
 	if level == 0 {
 		return color.RedString(data)
 	} else if level == 1 {
@@ -230,7 +226,6 @@ func (e *ListAction) coloredString(level int, data string) (string) {
 		return data
 	}
 }
-
 
 //func (e *ListAction) PrintUI(groupedAnswers *gabs.Container) error {
 //	return e.recursivePrintUI(0, []string{}, groupedAnswers)
