@@ -43,7 +43,8 @@ func configTemplatePrefix(answerData map[string]interface{}) string {
 		#
 		# Answers:`)
 	for key, value := range answerData {
-		if key == "config_dir" || key == "pem_dir" || key == "active_extra_templates" || key == "ui_group_priority" {
+		if key == "config_dir" || key == "filepath" || key == "pem_dir" || key == "pem_filepath" ||
+			key == "active_extra_templates" || key == "ui_group_priority" {
 			continue
 		}
 

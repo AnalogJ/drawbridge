@@ -137,7 +137,7 @@ func (e *ListAction) recursivePrintUI(level int, groups []string, groupedAnswers
 
 		switch v := child.Data().(type) {
 		case map[string]interface{}:
-			e.PrintUI(level+1, nextGroups, child)
+			e.recursivePrintUI(level+1, nextGroups, child)
 		case []interface{}:
 
 			printGroupHeader(nextGroups)

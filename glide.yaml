@@ -14,6 +14,7 @@ import:
 - package: github.com/Jeffail/gabs
   version: ^1.0.0
 - package: golang.org/x/crypto
+- package: github.com/xlab/treeprint
 testImport:
 - package: github.com/matryer/moq
 - package: github.com/golang/mock

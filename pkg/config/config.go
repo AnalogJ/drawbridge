@@ -233,7 +233,7 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 						"type":"array",
 						"uniqueItems": true,
 						"items":[{"type":"string"}],
-						"maxItems": 3
+						"maxItems": 4
 					},
 					"ui_question_hidden": {
 						"type":"array",
