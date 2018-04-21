@@ -46,10 +46,10 @@ func (str QuestionKeyInvalidError) Error() string {
 	return fmt.Sprintf("QuestionKeyInvalidError: %q", string(str))
 }
 
-type QuestionValidationError string
+type AnswerValidationError string
 
-func (str QuestionValidationError) Error() string {
-	return fmt.Sprintf("QuestionValidationError: %q", string(str))
+func (str AnswerValidationError) Error() string {
+	return fmt.Sprintf("AnswerValidationError: %q", string(str))
 }
 
 // Raised when we cant convert the answer to the correct format (string, boolean, integer, etc)

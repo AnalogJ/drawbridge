@@ -7,11 +7,31 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"github.com/fatih/color"
 )
 
 type FileTemplate struct {
 	Template `mapstructure:",squash"`
 	FilePath string `mapstructure:"filepath"`
+}
+
+func (t *FileTemplate) DeleteTemplate(answerData map[string]interface{}) error {
+	templatedFilePath, err := utils.PopulateTemplate(t.FilePath, answerData)
+	if err != nil {
+		return err
+	}
+	templatedFilePath, err = utils.ExpandPath(templatedFilePath)
+	if err != nil {
+		return err
+	}
+
+	if !utils.FileExists(templatedFilePath) {
+		// warn that this file does not exist
+		color.Yellow(" - Skipping. Could not find file: %v", templatedFilePath)
+		return nil
+	} else {
+		return os.Remove(templatedFilePath)
+	}
 }
 
 func (t *FileTemplate) WriteTemplate(answerData map[string]interface{}) error {

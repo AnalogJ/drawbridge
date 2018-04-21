@@ -206,6 +206,7 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 	// TODO: look at the dependencies key for matching the questions with answers keys.
 	// TODO: look at the dependenices key for matching the options.active_templates with templates keys
 	// TODO: ensure that all config_template.filepaths are relative, they will be created in the options.config_dir
+	// language=json
 	configFileSchema := `
 	{
 		"type": "object",
@@ -352,7 +353,7 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 			errorMsg += fmt.Sprintf("- %s\n", err)
 		}
 
-		return errors.QuestionValidationError(fmt.Sprintf("There was an error validating this config:\n %v ", errorMsg))
+		return errors.ConfigValidationError(fmt.Sprintf("There was an error validating this config:\n %v ", errorMsg))
 	}
 	return nil
 }

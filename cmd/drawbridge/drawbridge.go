@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"strings"
 	"github.com/fatih/color"
+	"drawbridge/pkg/errors"
 )
 
 var goos string
@@ -112,12 +113,16 @@ func main() {
 					if c.IsSet("drawbridge_id"){
 						answerIndex = c.Int("drawbridge_id")
 					} else {
-						text := utils.StdinQuery("Enter number of ssh config you would like to connect to:")
+						text := utils.StdinQuery("Enter number of drawbridge config you would like to connect to:")
 						i, err := strconv.Atoi(text)
 						if err != nil {
 							return err
 						}
 						answerIndex = i - 1
+						maxAnswerIndex := len(listAction.OrderedAnswers)
+						if answerIndex >= maxAnswerIndex {
+							return errors.AnswerValidationError(fmt.Sprintf("Invalid selection. Please enter a number from 1-%v", maxAnswerIndex))
+						}
 					}
 
 					connectAction := actions.ConnectAction{Config: config}
@@ -160,12 +165,16 @@ func main() {
 					if c.IsSet("drawbridge_id"){
 						answerIndex = c.Int("drawbridge_id")
 					} else {
-						text := utils.StdinQuery("Enter number of ssh config you would like to connect to:")
+						text := utils.StdinQuery("Enter number of drawbridge config you would like to download from:")
 						i, err := strconv.Atoi(text)
 						if err != nil {
 							return err
 						}
 						answerIndex = i - 1
+						maxAnswerIndex := len(listAction.OrderedAnswers)
+						if answerIndex >= maxAnswerIndex {
+							return errors.AnswerValidationError(fmt.Sprintf("Invalid selection. Please enter a number from 1-%v", maxAnswerIndex))
+						}
 					}
 
 					downloadAction := actions.DownloadAction{Config: config}
@@ -204,16 +213,29 @@ func main() {
 						if c.IsSet("drawbridge_id"){
 							answerIndex = c.Int("drawbridge_id")
 						} else {
-							text := utils.StdinQuery("Enter number of ssh config you would like to connect to:")
+							text := utils.StdinQuery("Enter number of drawbridge config you would like to delete:")
 							i, err := strconv.Atoi(text)
 							if err != nil {
 								return err
 							}
 							answerIndex = i - 1
+
+							maxAnswerIndex := len(listAction.OrderedAnswers)
+							if answerIndex >= maxAnswerIndex {
+								return errors.AnswerValidationError(fmt.Sprintf("Invalid selection. Please enter a number from 1-%v", maxAnswerIndex))
+							}
 						}
 
 						deleteAction := actions.DeleteAction{Config: config}
-						return deleteAction.One(listAction.OrderedAnswers[answerIndex].(map[string]interface{}), c.Bool("force"))
+						err := deleteAction.One(listAction.OrderedAnswers[answerIndex].(map[string]interface{}), c.Bool("force"))
+
+						if err != nil{
+							//print an error message here:
+							return err
+						} else {
+							color.Green("Finished")
+							return nil
+						}
 					}
 				},
 

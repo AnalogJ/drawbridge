@@ -32,7 +32,7 @@ func TestErrors(t *testing.T) {
 	require.Implements(t, (*error)(nil), errors.ConfigValidationError("test"), "should implement the error interface")
 	require.Implements(t, (*error)(nil), errors.TemplateFileExistsError("test"), "should implement the error interface")
 	require.Implements(t, (*error)(nil), errors.QuestionKeyInvalidError("test"), "should implement the error interface")
-	require.Implements(t, (*error)(nil), errors.QuestionValidationError("test"), "should implement the error interface")
+	require.Implements(t, (*error)(nil), errors.AnswerValidationError("test"), "should implement the error interface")
 	require.Implements(t, (*error)(nil), errors.AnswerFormatError("test"), "should implement the error interface")
 	require.Implements(t, (*error)(nil), errors.DependencyMissingError("test"), "should implement the error interface")
 	require.Implements(t, (*error)(nil), errors.PemKeyMissingError("test"), "should implement the error interface")

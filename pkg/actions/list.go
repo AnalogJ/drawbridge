@@ -86,6 +86,8 @@ func (e *ListAction) ParseAnswerFiles(files []string) ([]map[string]interface{},
 			answerData[k] = utils.StringifyYAMLMapKeys(v)
 		}
 
+		//TODO: warn the user if the answer data would no longer render the same answers.yaml file.
+
 		answersList = append(answersList, answerData)
 	}
 	return answersList, nil

@@ -13,6 +13,12 @@ type ConfigTemplate struct {
 	PemFilePath  string `mapstructure:"pem_filepath"`
 }
 
+func (t *ConfigTemplate) DeleteTemplate(answerData map[string]interface{}) error {
+	t.FilePath = path.Join(answerData["config_dir"].(string), t.FilePath)
+	return t.FileTemplate.DeleteTemplate(answerData)
+}
+
+
 func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignoreKeys []string) error {
 	//TODO: validate that we have all the required templates variables populated.
 
@@ -28,6 +34,8 @@ func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignore
 		return err
 	}
 	answerData["pem_filepath"] = templatedPemFilePath
+
+	//TODO write a warning if the pem file is missing.
 
 	t.FilePath = path.Join(answerData["config_dir"].(string), t.FilePath)
 	t.Content = configTemplatePrefix(answerData, ignoreKeys) + t.Content

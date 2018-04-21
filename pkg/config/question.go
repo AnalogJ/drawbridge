@@ -21,7 +21,7 @@ func (q *Question) Required() bool {
 	return isRequired && isSet
 }
 
-func (q *Question) Validate(questionKey string, testValue interface{}) error {
+func (q *Question) Validate(questionKey string, answerValue interface{}) error {
 	questionSchema := map[string]interface{}{
 		"properties": map[string]map[string]interface{}{
 			questionKey: map[string]interface{}{},
@@ -71,7 +71,7 @@ func (q *Question) Validate(questionKey string, testValue interface{}) error {
 	schemaLoader := gojsonschema.NewGoLoader(questionSchema)
 
 	testData := map[string]interface{}{
-		questionKey: testValue,
+		questionKey: answerValue,
 	}
 
 	documentLoader := gojsonschema.NewGoLoader(testData)
@@ -83,7 +83,7 @@ func (q *Question) Validate(questionKey string, testValue interface{}) error {
 	if !result.Valid() {
 		//TODO: populate with actual errors from result obj.
 
-		return errors.QuestionValidationError(fmt.Sprintf("There was an error validating this answer: %v", result.Errors()))
+		return errors.AnswerValidationError(fmt.Sprintf("There was an error validating this answer: %v", result.Errors()))
 	}
 	return nil
 }
