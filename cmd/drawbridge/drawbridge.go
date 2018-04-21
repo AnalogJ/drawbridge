@@ -13,6 +13,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"github.com/fatih/color"
 )
 
 var goos string
@@ -45,13 +46,13 @@ func main() {
 		},
 		Before: func(c *cli.Context) error {
 
-			drawbridge := "https://blog.thesparktree.com"
+			drawbridge := "https://github.com/AnalogJ/drawbridge"
 
 			versionInfo := fmt.Sprintf("%s.%s-%s", goos, goarch, version.VERSION)
 
 			subtitle := drawbridge + utils.LeftPad2Len(versionInfo, " ", 53-len(drawbridge))
 
-			fmt.Fprintf(c.App.Writer, fmt.Sprintf(utils.StripIndent(
+			color.New(color.FgGreen).Fprintf(c.App.Writer, fmt.Sprintf(utils.StripIndent(
 				`
 			 ____  ____    __    _    _  ____  ____  ____  ____    ___  ____
 			(  _ \(  _ \  /__\  ( \/\/ )(  _ \(  _ \(_  _)(  _ \  / __)( ___)
