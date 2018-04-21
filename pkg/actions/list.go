@@ -14,6 +14,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"github.com/xlab/treeprint"
+	"sort"
 )
 
 type ListAction struct {
@@ -31,9 +33,9 @@ func (e *ListAction) Start() error {
 
 	e.GroupedAnswers = e.GroupAnswerList(answersList, e.Config.GetStringSlice("options.ui_group_priority"))
 
-	e.PrintUI(e.GroupedAnswers)
-
-	return nil
+	//fmt.Printf("%v", e.GroupedAnswers)
+	//e.PrintUI(e.GroupedAnswers)
+	return e.PrintTree(e.GroupedAnswers)
 }
 
 //this is a list of all the answers that have been used to populate templates & config files.
@@ -98,7 +100,7 @@ func (e *ListAction) GroupAnswerList(answersList []map[string]interface{}, group
 		for _, answerData := range answersList {
 			keyValues := []string{}
 			for _, questionKey := range groupKeys {
-				if value, ok := answerData[questionKey]; ok {
+				if value, ok := answerData[questionKey]; ok && value != nil {
 					keyValues = append(keyValues, fmt.Sprintf("%v", value))
 				} else {
 					keyValues = append(keyValues, "")
@@ -119,86 +121,164 @@ func (e *ListAction) GroupAnswerList(answersList []map[string]interface{}, group
 }
 
 
-func (e *ListAction) PrintUI(groupedAnswers *gabs.Container) error {
-	return e.recursivePrintUI(0, []string{}, groupedAnswers)
+func (e *ListAction) PrintTree(groupedAnswers *gabs.Container) error {
+	treeprint.EdgeTypeStart = "Rendered Drawbridge Configs:"
+	tree := treeprint.New()
+
+	e.recursivePrintTree(0, tree, groupedAnswers)
+	fmt.Println(tree.String())
+	return nil
 }
 
+func(e *ListAction) recursivePrintTree(level int, parentTree treeprint.Tree,  groupedAnswers *gabs.Container) error {
 
-func (e *ListAction) recursivePrintUI(level int, groups []string, groupedAnswers *gabs.Container) error {
+
+	questionKeys := e.Config.GetStringSlice("options.ui_group_priority")
+
 	children, _ := groupedAnswers.ChildrenMap()
 	for groupKey, child := range children {
-		nextGroups := []string{}
-		if level == 0 {
-			coloredPrintf(level, "%v\n", groupKey)
-		} else {
-			nextGroups = append(nextGroups, groups...)
-			nextGroups = append(nextGroups, groupKey)
+		currentTree := parentTree
+		if len(groupKey)>0 { //TODO: figure out how to skip the last group level. && level < len(questionKeys)-2{
+			currentTree = parentTree.AddMetaBranch(e.coloredString(level, groupKey), questionKeys[level])
 		}
 
 		switch v := child.Data().(type) {
 		case map[string]interface{}:
-			e.recursivePrintUI(level+1, nextGroups, child)
+			e.recursivePrintTree(level+1, currentTree, child)
 		case []interface{}:
 
-			printGroupHeader(nextGroups)
+			//printGroupHeader(nextGroups)
 
 			for _, answer := range child.Data().([]interface{}) {
 				e.OrderedAnswers = append(e.OrderedAnswers, answer)
 
-				answerStr := printAnswer(len(e.OrderedAnswers), answer.(map[string]interface{}), e.Config.GetStringSlice("options.ui_question_hidden"), e.Config.GetStringSlice("options.ui_group_priority"))
-				fmt.Printf(answerStr)
-
+				//answerStr := printAnswer(len(e.OrderedAnswers), answer.(map[string]interface{}), e.Config.GetStringSlice("options.ui_question_hidden"), e.Config.GetStringSlice("options.ui_group_priority"))
+				currentTree.AddMetaNode(
+					color.YellowString(strconv.Itoa(len(e.OrderedAnswers))),
+					e.answerString(questionKeys[level], answer.(map[string]interface{}), e.Config.GetStringSlice("options.ui_question_hidden"), e.Config.GetStringSlice("options.ui_group_priority")))
 			}
 		default:
 			fmt.Printf("I don't know about type %T!\n", v)
 		}
 	}
 	return nil
-
 }
 
-func printGroupHeader(secondaryGroups []string) {
-	header := ":::: "
-	if len(secondaryGroups) >= 1 {
-		header += fmt.Sprintf("%v ", color.GreenString(secondaryGroups[0]))
+func(e *ListAction) answerString(highlightGroupKey string, answer map[string]interface{}, uiHiddenKeys []string, uiGroupPriority []string) string {
+
+	answerStr := []string{color.CyanString(fmt.Sprintf("%v: %v", highlightGroupKey, answer[highlightGroupKey]))}
+
+	var keys []string
+	for k := range answer {
+		keys = append(keys, k)
 	}
-	if len(secondaryGroups) >= 2 {
-		header += fmt.Sprintf("%v ", color.CyanString(secondaryGroups[1]))
-	}
-	if len(secondaryGroups) >= 3 {
-		header += fmt.Sprintf("(%v) ", color.YellowString(secondaryGroups[2]))
-	}
+	sort.Strings(keys)
 
-	maxLength := 50
+	for _, k := range keys {
+		v := answer[k]
 
-	header += fmt.Sprintf("%v\n", strings.Repeat(":", (maxLength-(1+len(header)))))
-
-	fmt.Print(header)
-}
-
-func printAnswer(id int, answer map[string]interface{}, uiHiddenKeys []string, uiGroupPriority []string) string {
-
-	//fmt.Printf("\t%v\t%v\n", color.YellowString(strconv.Itoa(), answerStr)
-
-	answerStr := fmt.Sprintf("\t%v\t", color.YellowString(strconv.Itoa(id)))
-	for k, v := range answer {
 		if utils.StringInSlice(uiHiddenKeys, k) || utils.StringInSlice(uiGroupPriority, k) {
 			continue
 		}
-		answerStr += fmt.Sprintf("%v: %v\n\t\t", k, v)
+
+		//skip drawbridge properties
+		if k == "pem_filepath" || k == "active_config_template" || k == "config_dir" || k == "pem_dir" || k == "ui_group_priority" ||
+			k == "filepath" {
+			continue
+		}
+
+		//skip highlighted group
+		if k == highlightGroupKey {
+			continue
+		}
+
+		answerStr = append(answerStr, fmt.Sprintf("%v: %v", k, v))
 	}
-	answerStr += "\n"
-	return answerStr
+	return strings.Join(answerStr, ", ")
 }
 
-func coloredPrintf(level int, formattedStr string, data ...interface{}) {
+
+func (e *ListAction) coloredString(level int, data string) (string) {
 	if level == 0 {
-		color.Red(formattedStr, data...)
+		return color.RedString(data)
 	} else if level == 1 {
-		color.Green(formattedStr, data...)
+		return color.GreenString(data)
 	} else if level == 2 {
-		color.Cyan(formattedStr, data...)
+		return color.CyanString(data)
 	} else {
-		fmt.Print("Unkonw int type")
+		return data
 	}
 }
+
+
+//func (e *ListAction) PrintUI(groupedAnswers *gabs.Container) error {
+//	return e.recursivePrintUI(0, []string{}, groupedAnswers)
+//}
+
+//
+//func (e *ListAction) recursivePrintUI(level int, groups []string, groupedAnswers *gabs.Container) error {
+//	children, _ := groupedAnswers.ChildrenMap()
+//	for groupKey, child := range children {
+//		nextGroups := []string{}
+//		if level == 0 {
+//			coloredPrintf(level, "%v\n", groupKey)
+//		} else {
+//			nextGroups = append(nextGroups, groups...)
+//			nextGroups = append(nextGroups, groupKey)
+//		}
+//
+//		switch v := child.Data().(type) {
+//		case map[string]interface{}:
+//			e.recursivePrintUI(level+1, nextGroups, child)
+//		case []interface{}:
+//
+//			printGroupHeader(nextGroups)
+//
+//			for _, answer := range child.Data().([]interface{}) {
+//				e.OrderedAnswers = append(e.OrderedAnswers, answer)
+//
+//				answerStr := printAnswer(len(e.OrderedAnswers), answer.(map[string]interface{}), e.Config.GetStringSlice("options.ui_question_hidden"), e.Config.GetStringSlice("options.ui_group_priority"))
+//				fmt.Printf(answerStr)
+//
+//			}
+//		default:
+//			fmt.Printf("I don't know about type %T!\n", v)
+//		}
+//	}
+//	return nil
+//
+//}
+//
+//func printGroupHeader(secondaryGroups []string) {
+//	header := ":::: "
+//	if len(secondaryGroups) >= 1 {
+//		header += fmt.Sprintf("%v ", color.GreenString(secondaryGroups[0]))
+//	}
+//	if len(secondaryGroups) >= 2 {
+//		header += fmt.Sprintf("%v ", color.CyanString(secondaryGroups[1]))
+//	}
+//	if len(secondaryGroups) >= 3 {
+//		header += fmt.Sprintf("(%v) ", color.YellowString(secondaryGroups[2]))
+//	}
+//
+//	maxLength := 50
+//
+//	header += fmt.Sprintf("%v\n", strings.Repeat(":", (maxLength-(1+len(header)))))
+//
+//	fmt.Print(header)
+//}
+//
+//func printAnswer(id int, answer map[string]interface{}, uiHiddenKeys []string, uiGroupPriority []string) string {
+//
+//	//fmt.Printf("\t%v\t%v\n", color.YellowString(strconv.Itoa(), answerStr)
+//
+//	answerStr := fmt.Sprintf("\t%v\t", color.YellowString(strconv.Itoa(id)))
+//	for k, v := range answer {
+//		if utils.StringInSlice(uiHiddenKeys, k) || utils.StringInSlice(uiGroupPriority, k) {
+//			continue
+//		}
+//		answerStr += fmt.Sprintf("%v: %v\n\t\t", k, v)
+//	}
+//	answerStr += "\n"
+//	return answerStr
+//}
