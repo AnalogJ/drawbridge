@@ -136,10 +136,25 @@ func(e *ListAction) recursivePrintTree(level int, parentTree treeprint.Tree,  gr
 	questionKeys := e.Config.GetStringSlice("options.ui_group_priority")
 
 	children, _ := groupedAnswers.ChildrenMap()
-	for groupKey, child := range children {
+
+	groupKeys := []string{}
+	for k := range children {
+		groupKeys = append(groupKeys, k)
+	}
+	sort.Strings(groupKeys)
+
+
+	for _, groupKey := range groupKeys {
+		child := children[groupKey]
 		currentTree := parentTree
+
+		//ensure the current groupKey is not empty.
 		if len(groupKey)>0 { //TODO: figure out how to skip the last group level. && level < len(questionKeys)-2{
-			currentTree = parentTree.AddMetaBranch(e.coloredString(level, groupKey), questionKeys[level])
+
+			// handle following cases:
+			if level + 1 < len(questionKeys){
+				currentTree = parentTree.AddMetaBranch(e.coloredString(level, groupKey), questionKeys[level])
+			}
 		}
 
 		switch v := child.Data().(type) {
@@ -149,7 +164,12 @@ func(e *ListAction) recursivePrintTree(level int, parentTree treeprint.Tree,  gr
 
 			//printGroupHeader(nextGroups)
 
-			for _, answer := range child.Data().([]interface{}) {
+			answerList := child.Data().([]interface{})
+			sort.Slice(answerList, func(i, j int) bool {
+				return answerList[i].(map[string]interface{})[groupKey].(string) > answerList[j].(map[string]interface{})[groupKey].(string)
+			})
+
+			for _, answer := range answerList {
 				e.OrderedAnswers = append(e.OrderedAnswers, answer)
 
 				//answerStr := printAnswer(len(e.OrderedAnswers), answer.(map[string]interface{}), e.Config.GetStringSlice("options.ui_question_hidden"), e.Config.GetStringSlice("options.ui_group_priority"))
@@ -166,13 +186,9 @@ func(e *ListAction) recursivePrintTree(level int, parentTree treeprint.Tree,  gr
 
 func(e *ListAction) answerString(highlightGroupKey string, answer map[string]interface{}, uiHiddenKeys []string, uiGroupPriority []string) string {
 
-	answerStr := []string{color.CyanString(fmt.Sprintf("%v: %v", highlightGroupKey, answer[highlightGroupKey]))}
+	answerStr := []string{color.BlueString(fmt.Sprintf("%v: %v", highlightGroupKey, answer[highlightGroupKey]))}
 
-	var keys []string
-	for k := range answer {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
+	keys := utils.MapKeys(answer)
 
 	for _, k := range keys {
 		v := answer[k]
