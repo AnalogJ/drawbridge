@@ -36,7 +36,7 @@ func main() {
 
 	app := &cli.App{
 		Name:     "drawbridge",
-		Usage:    "Bastion tunneling made easy",
+		Usage:    "Bastion/Jumphost tunneling made easy",
 		Version:  version.VERSION,
 		Compiled: time.Now(),
 		Authors: []*cli.Author{
