@@ -15,6 +15,7 @@ import:
   version: ^1.0.0
 - package: golang.org/x/crypto
 - package: github.com/xlab/treeprint
+- package: github.com/inconshreveable/go-update
 testImport:
 - package: github.com/matryer/moq
 - package: github.com/golang/mock
