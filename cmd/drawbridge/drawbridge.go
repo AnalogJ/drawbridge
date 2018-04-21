@@ -12,6 +12,7 @@ import (
 	"gopkg.in/urfave/cli.v2"
 	"log"
 	"strconv"
+	"strings"
 )
 
 var goos string
@@ -25,7 +26,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	flags, err := createFlags(config)
+	createFlags, err := createFlags(config)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)
 		os.Exit(1)
@@ -77,43 +78,102 @@ func main() {
 						return err
 					}
 
-					createEngine := actions.CreateAction{Config: config}
-					return createEngine.Start(cliAnswers)
+					createAction := actions.CreateAction{Config: config}
+					return createAction.Start(cliAnswers)
 				},
 
-				Flags: flags,
+				Flags: createFlags,
 			},
 			{
 				Name:  "list",
 				Usage: "List all drawbridge managed ssh configs",
 				Action: func(c *cli.Context) error {
 
-					listEngine := actions.ListAction{Config: config}
-					return listEngine.Start()
+					listAction := actions.ListAction{Config: config}
+					return listAction.Start()
 				},
-
-				Flags: flags,
 			},
 			{
 				Name:  "connect",
 				Usage: "Connect to a drawbridge managed ssh config",
 				Action: func(c *cli.Context) error {
 
-					listEngine := actions.ListAction{Config: config}
-					listEngine.Start()
+					listAction := actions.ListAction{Config: config}
+					listAction.Start()
 
-					text := utils.StdinQuery("Enter number of ssh config you would like to connect to:")
-					i, err := strconv.Atoi(text)
-					if err != nil {
-						return err
+					var answerIndex int
+
+					if c.IsSet("drawbridge_id"){
+						answerIndex = c.Int("drawbridge_id")
+					} else {
+						text := utils.StdinQuery("Enter number of ssh config you would like to connect to:")
+						i, err := strconv.Atoi(text)
+						if err != nil {
+							return err
+						}
+						answerIndex = i - 1
 					}
-					answerIndex := i - 1
 
-					connectEngine := actions.ConnectAction{Config: config}
-					return connectEngine.Start(listEngine.OrderedAnswers[answerIndex].(map[string]interface{}))
+					connectAction := actions.ConnectAction{Config: config}
+					return connectAction.Start(listAction.OrderedAnswers[answerIndex].(map[string]interface{}), c.String("dest"))
 				},
 
-				Flags: flags,
+				Flags: []cli.Flag{
+					&cli.IntFlag{
+						Name:  "drawbridge_id",
+						Usage: "Specify the drawbridge configuration to use",
+					},
+					&cli.StringFlag{
+						Name:  "dest",
+						Usage: "Specify the `hostname` of the destination/internal server you would like to connect to.",
+					},
+				},
+			},
+			{
+				Name:  "download",
+				Aliases: []string{"scp"},
+				Usage: "Download a file from an internal server using drawbridge managed ssh config, syntax is similar to scp command. ",
+				ArgsUsage:   "destination_hostname:remote_filepath local_filepath",
+				Action: func(c *cli.Context) error {
+
+					listAction := actions.ListAction{Config: config}
+					listAction.Start()
+
+					var answerIndex int
+
+					if c.IsSet("drawbridge_id"){
+						answerIndex = c.Int("drawbridge_id")
+					} else {
+						text := utils.StdinQuery("Enter number of ssh config you would like to connect to:")
+						i, err := strconv.Atoi(text)
+						if err != nil {
+							return err
+						}
+						answerIndex = i - 1
+					}
+
+					if c.NArg() != 2 {
+						return cli.Exit(fmt.Sprintf("Invalid, 2 arguments required: %s", c.Args()), 1)
+					}
+
+					remoteParts := strings.Split(c.Args().First(), ":")
+					if len(remoteParts) != 2 {
+						return cli.Exit(fmt.Sprintf("Invalid, please specify destination hostname and remote path: %s", remoteParts), 1)
+					}
+
+
+
+					downloadAction := actions.DownloadAction{Config: config}
+
+					return downloadAction.Start(listAction.OrderedAnswers[answerIndex].(map[string]interface{}), remoteParts[0], remoteParts[1], c.Args().Get(1))
+				},
+
+				Flags: []cli.Flag{
+					&cli.IntFlag{
+						Name:  "drawbridge_id",
+						Usage: "Specify the drawbridge configuration to use",
+					},
+				},
 			},
 		},
 	}

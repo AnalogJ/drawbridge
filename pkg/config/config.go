@@ -85,6 +85,14 @@ func (c *configuration) Init() error {
 	    LocalForward localhost:{{uniquePort .}} localhost:8080
 	    UserKnownHostsFile=/dev/null
 	    StrictHostKeyChecking=no
+
+	Host bastion+*
+    	ProxyCommand ssh -F {{.filepath}} -W $(echo %h |cut -d+ -f2):%p bastion
+    	User {{.username}}
+    	IdentityFile {{.pem_filepath}}
+    	LogLevel INFO
+    	UserKnownHostsFile=/dev/null
+    	StrictHostKeyChecking=no
 	`))
 
 	//if you want to load a non-standard location system config file (~/drawbridge.yml), use ReadConfig

@@ -23,6 +23,7 @@ func (t *FileTemplate) WriteTemplate(answerData map[string]interface{}) error {
 	if err != nil {
 		return err
 	}
+	answerData["filepath"] = templatedFilePath
 
 	templatedContent, err := utils.PopulateTemplate(t.Content, answerData)
 	if err != nil {

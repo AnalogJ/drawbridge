@@ -21,7 +21,7 @@ type ConnectAction struct {
 	Config config.Interface
 }
 
-func (e *ConnectAction) Start(answerData map[string]interface{}) error {
+func (e *ConnectAction) Start(answerData map[string]interface{}, destHostname string) error {
 
 	//"-c", "command1; command2; command3; ..."
 
@@ -65,7 +65,11 @@ func (e *ConnectAction) Start(answerData map[string]interface{}) error {
 		return errors.DependencyMissingError("ssh is missing")
 	}
 
-	args := []string{"ssh", "bastion", "-F", tmplConfigFilepath}
+	configHost := "bastion"
+	if len(destHostname) > 0 {
+		configHost = fmt.Sprintf("%v+%v", configHost, destHostname)
+	}
+	args := []string{"ssh", configHost, "-F", tmplConfigFilepath}
 
 	return syscall.Exec(sshBin, args, os.Environ())
 }
