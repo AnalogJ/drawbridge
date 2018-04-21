@@ -254,6 +254,21 @@ func main() {
 					},
 				},
 			},
+			{
+				Name:  "update",
+				Usage: "Update drawbridge to the latest version",
+				Action: func(c *cli.Context) error {
+					fmt.Fprintln(c.App.Writer, c.Command.Usage)
+
+					if len(goos) == 0 && len(goarch) == 0{
+						//dev mode,
+						color.Yellow("WARNING: Binary was built from source, not released. Auto-update may not work correctly")
+					}
+
+					updateAction := actions.UpdateAction{Config: config}
+					return updateAction.Start()
+				},
+			},
 		},
 	}
 

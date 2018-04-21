@@ -58,3 +58,12 @@ type AnswerFormatError string
 func (str AnswerFormatError) Error() string {
 	return fmt.Sprintf("AnswerFormatError: %q", string(str))
 }
+
+
+
+// Raised when we cannot find a binary for this OS/Arch
+type UpdateBinaryOsArchMissingError string
+
+func (str UpdateBinaryOsArchMissingError) Error() string {
+	return fmt.Sprintf("UpdateBinaryOsArchMissingError: %q", string(str))
+}
