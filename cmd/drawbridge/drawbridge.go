@@ -174,52 +174,56 @@ func main() {
 					},
 				},
 			},
-			//{
-			//	Name:  "delete",
-			//	Usage: "Delete drawbridge managed ssh config(s)",
-			//	Action: func(c *cli.Context) error {
-			//		listAction := actions.ListAction{Config: config}
-			//
-			//		if c.Bool("all") {
-			//			deleteAction := actions.DeleteAction{Config: config}
-			//			return deleteAction.All(listAction.OrderedAnswers, c.Bool("force"))
-			//		} else {
-			//			listAction := actions.ListAction{Config: config}
-			//			listAction.Start()
-			//
-			//			var answerIndex int
-			//
-			//			if c.IsSet("drawbridge_id"){
-			//				answerIndex = c.Int("drawbridge_id")
-			//			} else {
-			//				text := utils.StdinQuery("Enter number of ssh config you would like to connect to:")
-			//				i, err := strconv.Atoi(text)
-			//				if err != nil {
-			//					return err
-			//				}
-			//				answerIndex = i - 1
-			//			}
-			//
-			//			deleteAction := actions.DeleteAction{Config: config}
-			//			return deleteAction.One(listAction.OrderedAnswers[answerIndex].(map[string]interface{}), c.Bool("force"))
-			//		}
-			//	},
-			//
-			//	Flags: []cli.Flag{
-			//		&cli.BoolFlag{
-			//			Name:  "force",
-			//			Usage: "Force delete with no confirmation",
-			//		},
-			//		&cli.BoolFlag{
-			//			Name:  "all",
-			//			Usage: "Delete all configuration files. ",
-			//		},
-			//		&cli.IntFlag{
-			//			Name:  "drawbridge_id",
-			//			Usage: "Specify the drawbridge configuration to delete",
-			//		},
-			//	},
-			//},
+			{
+				Name:  "delete",
+				Usage: "Delete drawbridge managed ssh config(s)",
+				Action: func(c *cli.Context) error {
+					listAction := actions.ListAction{Config: config}
+
+					if c.Bool("all") {
+						deleteAction := actions.DeleteAction{Config: config}
+						answersList, err := listAction.RenderedAnswersList()
+						if err != nil {
+							return nil
+						}
+						return deleteAction.All(answersList, c.Bool("force"))
+					} else {
+						listAction := actions.ListAction{Config: config}
+						listAction.Start()
+
+						var answerIndex int
+
+						if c.IsSet("drawbridge_id"){
+							answerIndex = c.Int("drawbridge_id")
+						} else {
+							text := utils.StdinQuery("Enter number of ssh config you would like to connect to:")
+							i, err := strconv.Atoi(text)
+							if err != nil {
+								return err
+							}
+							answerIndex = i - 1
+						}
+
+						deleteAction := actions.DeleteAction{Config: config}
+						return deleteAction.One(listAction.OrderedAnswers[answerIndex].(map[string]interface{}), c.Bool("force"))
+					}
+				},
+
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:  "force",
+						Usage: "Force delete with no confirmation",
+					},
+					&cli.BoolFlag{
+						Name:  "all",
+						Usage: "Delete all configuration files. ",
+					},
+					&cli.IntFlag{
+						Name:  "drawbridge_id",
+						Usage: "Specify the drawbridge configuration to delete",
+					},
+				},
+			},
 		},
 	}
 

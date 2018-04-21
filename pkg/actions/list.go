@@ -24,26 +24,48 @@ type ListAction struct {
 
 func (e *ListAction) Start() error {
 
-	configDir := e.Config.GetString("options.config_dir")
-	configDir, err := utils.ExpandPath(configDir)
-	if err != nil {
-		return err
-	}
-	// files, err := ioutil.ReadDir(configDir)
-	files, err := filepath.Glob(filepath.Join(configDir, ".*.answers.yaml"))
+	answersList, err := e.RenderedAnswersList()
 	if err != nil {
 		return err
 	}
 
+	e.GroupedAnswers = e.GroupAnswerList(answersList, e.Config.GetStringSlice("options.ui_group_priority"))
+
+	e.PrintUI(e.GroupedAnswers)
+
+	return nil
+}
+
+//this is a list of all the answers that have been used to populate templates & config files.
+//will be ordered by config file name
+func (e *ListAction) RenderedAnswersList()([]map[string]interface{}, error) {
+	files, err := e.FindAllAnswerFiles()
+	if err != nil {
+		return nil, err
+	}
+
+	return e.ParseAnswerFiles(files)
+}
+
+func (e *ListAction) FindAllAnswerFiles() ([]string,error) {
+	configDir := e.Config.GetString("options.config_dir")
+	configDir, err := utils.ExpandPath(configDir)
+	if err != nil {
+		return nil, err
+	}
+	// files, err := ioutil.ReadDir(configDir)
+	return filepath.Glob(filepath.Join(configDir, ".*.answers.yaml"))
+}
+
+func (e *ListAction) ParseAnswerFiles(files []string) ([]map[string]interface{}, error) {
 	answersList := []map[string]interface{}{}
 	for _, answerFilePath := range files {
-		fmt.Println(answerFilePath)
 
 		//read file
 		answerFileData, err := os.Open(answerFilePath)
 		if err != nil {
 			log.Printf("Error reading answer file: %s", err)
-			return err
+			return nil, err
 		}
 
 		buf := new(bytes.Buffer)
@@ -55,7 +77,7 @@ func (e *ListAction) Start() error {
 		// and change all maps to map[string]interface{} like we would've
 		// gotten from `json`.
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		for k, v := range answerData {
@@ -64,30 +86,18 @@ func (e *ListAction) Start() error {
 
 		answersList = append(answersList, answerData)
 	}
-	fmt.Printf("\nANSWERS LIST\n%v", answersList)
+	return answersList, nil
+}
 
+func (e *ListAction) GroupAnswerList(answersList []map[string]interface{}, groupKeys []string) (*gabs.Container) {
 	// Group By for existing configs.
-	priorityOrder := e.Config.GetStringSlice("options.ui_group_priority")
+
 	groupedAnswers := gabs.New()
-	if len(priorityOrder) > 0 {
+	if len(groupKeys) > 0 {
 
 		for _, answerData := range answersList {
-			//subGroup := groupedAnswers
-			//for index, questionKey := range priorityOrder {
-			//	if _, ok := subGroup[questionKey].(map[string]interface{}); !ok {
-			//		// this level of grouping doesnt exist, we need to create it.
-			//		if(index == len(priorityOrder)){
-			//			subGroup[questionKey] = []map[string]interface{}{};
-			//		} else {
-			//			subGroup[questionKey] = map[string]interface{}{};
-			//		}
-			//	}
-			//	subGroup = subGroup[questionKey]
-			//}
-			//subGroup = append(subGroup, answerData)
-
 			keyValues := []string{}
-			for _, questionKey := range priorityOrder {
+			for _, questionKey := range groupKeys {
 				if value, ok := answerData[questionKey]; ok {
 					keyValues = append(keyValues, fmt.Sprintf("%v", value))
 				} else {
@@ -103,19 +113,18 @@ func (e *ListAction) Start() error {
 		}
 
 	} else {
-		//groupedAnswers.Array("")
 		groupedAnswers.Set(answersList, "")
-
 	}
-	e.GroupedAnswers = groupedAnswers
-	fmt.Printf("\nGROUPED ANSWERSLIST\n%v", groupedAnswers)
-
-	e.PrintUI(0, []string{}, groupedAnswers)
-
-	return nil
+	return groupedAnswers
 }
 
-func (e *ListAction) PrintUI(level int, groups []string, groupedAnswers *gabs.Container) error {
+
+func (e *ListAction) PrintUI(groupedAnswers *gabs.Container) error {
+	return e.recursivePrintUI(0, []string{}, groupedAnswers)
+}
+
+
+func (e *ListAction) recursivePrintUI(level int, groups []string, groupedAnswers *gabs.Container) error {
 	children, _ := groupedAnswers.ChildrenMap()
 	for groupKey, child := range children {
 		nextGroups := []string{}
