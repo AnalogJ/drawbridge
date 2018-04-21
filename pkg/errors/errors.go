@@ -27,6 +27,7 @@ func (str DependencyMissingError) Error() string {
 
 // Raised when a SSH/pem key is not present.
 type PemKeyMissingError string
+
 func (str PemKeyMissingError) Error() string {
 	return fmt.Sprintf("PemKeyMissingError: %q", string(str))
 }
@@ -37,12 +38,6 @@ type TemplateFileExistsError string
 func (str TemplateFileExistsError) Error() string {
 	return fmt.Sprintf("TemplateFileExistsError: %q", string(str))
 }
-
-
-
-
-
-
 
 // Raised when Question does not exist
 type QuestionKeyInvalidError string

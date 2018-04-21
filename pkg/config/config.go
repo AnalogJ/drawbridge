@@ -2,9 +2,9 @@ package config
 
 import (
 	"bytes"
+	"drawbridge/pkg/config/template"
 	"drawbridge/pkg/errors"
 	"drawbridge/pkg/utils"
-	"drawbridge/pkg/config/template"
 	"fmt"
 	"github.com/spf13/viper"
 	"github.com/xeipuuv/gojsonschema"

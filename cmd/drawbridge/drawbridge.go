@@ -5,13 +5,13 @@ import (
 	"os"
 	"time"
 
-	"drawbridge/pkg/config"
 	"drawbridge/pkg/actions"
+	"drawbridge/pkg/config"
 	"drawbridge/pkg/utils"
 	"drawbridge/pkg/version"
 	"gopkg.in/urfave/cli.v2"
-	"strconv"
 	"log"
+	"strconv"
 )
 
 var goos string

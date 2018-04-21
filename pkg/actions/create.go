@@ -56,7 +56,6 @@ func (e *CreateAction) Start(cliAnswerData map[string]interface{}) error {
 		}
 	}
 
-
 	// write the config template, make sure we "fix" the config filepath
 	activeConfigTemplate, err := e.Config.GetActiveConfigTemplate()
 	if err != nil {

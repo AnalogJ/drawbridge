@@ -1,16 +1,16 @@
 package template
 
 import (
-	"path"
-	"fmt"
 	"drawbridge/pkg/utils"
+	"fmt"
+	"path"
 )
 
 // for configs `filepath`, must be relative to config_dir
 //for configs `pem_filepath` must be relative to pem_dir
 type ConfigTemplate struct {
 	FileTemplate `mapstructure:",squash"`
-	PemFilePath string `mapstructure:"pem_filepath"`
+	PemFilePath  string `mapstructure:"pem_filepath"`
 }
 
 func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}) error {

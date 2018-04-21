@@ -2,8 +2,8 @@ package utils
 
 import (
 	"bufio"
-	"os"
 	"fmt"
+	"os"
 	"strings"
 )
 

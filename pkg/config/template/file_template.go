@@ -1,19 +1,18 @@
 package template
 
 import (
+	"drawbridge/pkg/errors"
+	"drawbridge/pkg/utils"
+	"fmt"
+	"log"
 	"os"
 	"path/filepath"
-	"log"
-	"fmt"
-	"drawbridge/pkg/utils"
-	"drawbridge/pkg/errors"
 )
 
 type FileTemplate struct {
 	Template `mapstructure:",squash"`
 	FilePath string `mapstructure:"filepath"`
 }
-
 
 func (t *FileTemplate) WriteTemplate(answerData map[string]interface{}) error {
 	templatedFilePath, err := utils.PopulateTemplate(t.FilePath, answerData)

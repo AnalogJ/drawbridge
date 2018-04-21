@@ -1,20 +1,20 @@
 package actions
 
 import (
+	"crypto/x509"
 	"drawbridge/pkg/config"
-	"drawbridge/pkg/utils"
-	"path/filepath"
-	"syscall"
-	"os"
-	"os/exec"
 	"drawbridge/pkg/errors"
-	"golang.org/x/crypto/ssh/agent"
-	"net"
-	"golang.org/x/crypto/ssh"
+	"drawbridge/pkg/utils"
 	"encoding/pem"
 	"fmt"
+	"golang.org/x/crypto/ssh"
+	"golang.org/x/crypto/ssh/agent"
 	"io/ioutil"
-	"crypto/x509"
+	"net"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"syscall"
 )
 
 type ConnectAction struct {
@@ -51,12 +51,10 @@ func (e *ConnectAction) Start(answerData map[string]interface{}) error {
 
 	//TODO: Check that the bastion host is accessible.
 
-
 	e.SshAgentAddPemKey(tmplPemFilepath)
 
 	//https://gobyexample.com/execing-processes
 	//https://groob.io/posts/golang-execve/
-
 
 	sshBin, lookErr := exec.LookPath("ssh")
 	if lookErr != nil {
@@ -67,7 +65,6 @@ func (e *ConnectAction) Start(answerData map[string]interface{}) error {
 
 	return syscall.Exec(sshBin, args, os.Environ())
 }
-
 
 func (e *ConnectAction) SshAgentAddPemKey(pemFilepath string) error {
 	//first lets ensure that the pemFilepath exists
@@ -114,8 +111,8 @@ func (e *ConnectAction) SshAgentAddPemKey(pemFilepath string) error {
 	agentClient := agent.NewClient(conn)
 
 	err = agentClient.Add(agent.AddedKey{
-		PrivateKey:   privateKeyData,
-		Comment:      fmt.Sprintf("drawbridge -  %v", pemFilepath),
+		PrivateKey: privateKeyData,
+		Comment:    fmt.Sprintf("drawbridge -  %v", pemFilepath),
 		//LifetimeSecs: TODO: for safety we should limit this key's use for 1h
 	})
 
