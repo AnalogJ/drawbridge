@@ -12,6 +12,9 @@ import (
 	"github.com/inconshreveable/go-update"
 	"runtime"
 	"drawbridge/pkg/errors"
+	"drawbridge/pkg/utils"
+	"strconv"
+	"github.com/fatih/color"
 )
 
 type UpdateAction struct {
@@ -21,8 +24,9 @@ type UpdateAction struct {
 type GithubReleaseInfo struct {
 	TagName string `json:"tag_name"`
 	PublishedAt time.Time `json:"published_at"`
+	ReleaseNotesUrl string `json:"html_url"`
 	Assets []struct {
-		Url string `json:"url"`
+		Url string `json:"browser_download_url"`
 		Name string `json:"name"`
 	} `json:"assets"`
 }
@@ -44,10 +48,14 @@ func (e *UpdateAction) Start() error {
 		return err
 	}
 
+
 	//parse json
 	releaseInfo := GithubReleaseInfo{}
-	json.Unmarshal(respBodyJson, &releaseInfo)
-	releaseVersion := fmt.Sprintf("v%v", releaseInfo.TagName)
+	err = json.Unmarshal(respBodyJson, &releaseInfo)
+	if err != nil {
+		return err
+	}
+
 
 	//compare the current version to the destination version
 	currentTimestamp, err := e.currentBinaryTimestamp()
@@ -55,10 +63,16 @@ func (e *UpdateAction) Start() error {
 		return err
 	}
 
-	fmt.Printf("Current: v%v [%v]. Available: %v [%v]", e.currentBinaryVersion(),currentTimestamp.Format("2006-01-02") , releaseVersion, releaseInfo.PublishedAt.Format("2006-01-02") )
+	fmt.Printf("Current: %v [%v]. Available: %v [%v]\nRelease notes are available here: %v\n",
+		e.currentBinaryVersion(),
+		currentTimestamp.Format("2006-01-02") ,
+		releaseInfo.TagName,
+		releaseInfo.PublishedAt.Format("2006-01-02"),
+		releaseInfo.ReleaseNotesUrl,
+		)
 
-	if releaseVersion == e.currentBinaryVersion(){
-		return nil
+	if releaseInfo.TagName == e.currentBinaryVersion(){
+		//TODO: return errors.UpdateNotAvailableError("No new version found.")
 	}
 
 	//see if theres a binary for this OS/Arch
@@ -76,6 +90,16 @@ func (e *UpdateAction) Start() error {
 
 
 	//TODO: ask user if we should update.
+	stdinResp := utils.StdinQuery(fmt.Sprintf("Are you sure you would like to update drawbridge to %v?\nPlease confirm [true/false]:", releaseInfo.TagName))
+	val, err := strconv.ParseBool(stdinResp)
+	if err != nil {
+		return err
+	}
+	if !val {
+		color.Red("Cancelled delete operation.")
+		return nil
+	}
+
 
 	releaseBinaryReq, err := http.Get(assetUrl)
 	if err != nil {
@@ -107,5 +131,5 @@ func (e *UpdateAction) currentBinaryTimestamp() (time.Time, error) {
 }
 
 func (e *UpdateAction) currentBinaryVersion() string {
-	return version.VERSION
+	return fmt.Sprintf("v%v",version.VERSION)
 }

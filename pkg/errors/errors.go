@@ -61,6 +61,13 @@ func (str AnswerFormatError) Error() string {
 
 
 
+// Raised when we cannot find a new version
+type UpdateNotAvailableError string
+
+func (str UpdateNotAvailableError) Error() string {
+	return fmt.Sprintf("UpdateNotAvailableError: %q", string(str))
+}
+
 // Raised when we cannot find a binary for this OS/Arch
 type UpdateBinaryOsArchMissingError string
 
