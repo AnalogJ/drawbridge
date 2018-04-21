@@ -51,11 +51,15 @@ func (e *ConnectAction) Start(answerData map[string]interface{}) error {
 
 	//TODO: Check that the bastion host is accessible.
 
-	e.SshAgentAddPemKey(tmplPemFilepath)
+	err = e.SshAgentAddPemKey(tmplPemFilepath)
+	if err != nil {
+		return err
+	}
 
 	//https://gobyexample.com/execing-processes
 	//https://groob.io/posts/golang-execve/
 
+	fmt.Println("Opening ssh tunnel")
 	sshBin, lookErr := exec.LookPath("ssh")
 	if lookErr != nil {
 		return errors.DependencyMissingError("ssh is missing")
@@ -92,13 +96,15 @@ func (e *ConnectAction) SshAgentAddPemKey(pemFilepath string) error {
 
 	//https://github.com/golang/crypto/blob/master/ssh/keys.go
 
+	fmt.Printf("Adding `%v` PEM key to ssh-agent\n", block.Type)
+
 	var privateKeyData interface{}
 	if x509.IsEncryptedPEMBlock(block) {
 		//inform the user that the key is encrypted.
 		passphrase := utils.StdinQuery(fmt.Sprintf("The key at %v is encrypted and requires a passphrase. Please enter it below:", pemFilepath))
-		privateKeyData, err = ssh.ParseRawPrivateKeyWithPassphrase(block.Bytes, []byte(passphrase))
+		privateKeyData, err = ssh.ParsePrivateKeyWithPassphrase(keyData, []byte(passphrase))
 	} else {
-		privateKeyData, err = ssh.ParseRawPrivateKey(block.Bytes)
+		privateKeyData, err = ssh.ParseRawPrivateKey(keyData)
 	}
 
 	// register the privatekey with ssh-agent
@@ -112,8 +118,8 @@ func (e *ConnectAction) SshAgentAddPemKey(pemFilepath string) error {
 
 	err = agentClient.Add(agent.AddedKey{
 		PrivateKey: privateKeyData,
-		Comment:    fmt.Sprintf("drawbridge -  %v", pemFilepath),
-		//LifetimeSecs: TODO: for safety we should limit this key's use for 1h
+		Comment:    fmt.Sprintf("(drawbridge) - %v", pemFilepath),
+		LifetimeSecs: 3600, //for safety we should limit this key's use for 1h
 	})
 
 	return err
