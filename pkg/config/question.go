@@ -3,6 +3,7 @@ package config
 import (
 	"drawbridge/pkg/errors"
 	"github.com/xeipuuv/gojsonschema"
+	"fmt"
 )
 
 type Question struct {
@@ -81,7 +82,8 @@ func (q *Question) Validate(questionKey string, testValue interface{}) error {
 	}
 	if !result.Valid() {
 		//TODO: populate with actual errors from result obj.
-		return errors.QuestionValidationError("There was an error validating this answer")
+
+		return errors.QuestionValidationError(fmt.Sprintf("There was an error validating this answer: %v", result.Errors()))
 	}
 	return nil
 }
