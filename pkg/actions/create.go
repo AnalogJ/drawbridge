@@ -9,6 +9,8 @@ import (
 	"log"
 	"path"
 	"strconv"
+	"github.com/fatih/color"
+	"sort"
 )
 
 type CreateAction struct {
@@ -100,7 +102,17 @@ func (e *CreateAction) Start(cliAnswerData map[string]interface{}) error {
 }
 
 func (e *CreateAction) Query(questions map[string]config.Question, answerData map[string]interface{}) (map[string]interface{}, error) {
-	for questionKey, questionData := range questions {
+
+	questionKeys := []string{}
+	for k := range questions {
+		questionKeys = append(questionKeys, k)
+	}
+	sort.Strings(questionKeys)
+
+
+	for _, questionKey := range questionKeys {
+	//for questionKey, questionData := range questions {
+		questionData := questions[questionKey]
 
 		val, ok := questionData.Schema["required"]
 		required := ok && val.(bool)
@@ -129,7 +141,8 @@ func (e *CreateAction) queryResponse(questionKey string, question config.Questio
 
 		err = question.Validate(questionKey, answerTyped)
 		if err != nil {
-			fmt.Printf("%v\n", err)
+			color.HiRed("%v\n", err)
+			//fmt.Printf("%v\n", err)
 		} else {
 			return answerTyped
 		}
