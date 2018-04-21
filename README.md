@@ -84,3 +84,12 @@
 - https://stackoverflow.com/questions/35612456/how-to-use-golang-template-missingkey-option
 - https://medium.com/@dgryski/consistent-hashing-algorithmic-tradeoffs-ef6b8e2fcae8
 - https://github.com/mitchellh/go-homedir
+- https://gobyexample.com/execing-processes
+- https://groob.io/posts/golang-execve/
+- https://www.digitalocean.com/community/tutorials/how-to-configure-custom-connection-options-for-your-ssh-client
+
+- https://github.com/zalando/go-keyring
+- https://github.com/tmc/keyring
+- https://github.com/jaraco/keyring
+- https://github.com/99designs/keyring
+- https://unix.stackexchange.com/questions/64795/must-i-store-a-private-key-in-a-file

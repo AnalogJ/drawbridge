@@ -1,24 +1,21 @@
-package create
+package actions
 
 import (
-	"bufio"
 	"drawbridge/pkg/config"
 	"drawbridge/pkg/errors"
 	"drawbridge/pkg/utils"
 	"fmt"
 	"gopkg.in/yaml.v2"
 	"log"
-	"os"
 	"path"
 	"strconv"
-	"strings"
 )
 
-type CreateEngine struct {
+type CreateAction struct {
 	Config config.Interface
 }
 
-func (e *CreateEngine) Start(cliAnswerData map[string]interface{}) error {
+func (e *CreateAction) Start(cliAnswerData map[string]interface{}) error {
 
 	// prepare answer data with config.options
 	answerData := map[string]interface{}{}
@@ -66,7 +63,7 @@ func (e *CreateEngine) Start(cliAnswerData map[string]interface{}) error {
 		return err
 	}
 
-	err = activeConfigTemplate.WriteConfigTemplate(answerData, e.Config.GetString("options.config_dir"))
+	err = activeConfigTemplate.WriteTemplate(answerData)
 	if err != nil {
 		return err
 	}
@@ -103,7 +100,7 @@ func (e *CreateEngine) Start(cliAnswerData map[string]interface{}) error {
 	return nil
 }
 
-func (e *CreateEngine) Query(questions map[string]config.Question, answerData map[string]interface{}) (map[string]interface{}, error) {
+func (e *CreateAction) Query(questions map[string]config.Question, answerData map[string]interface{}) (map[string]interface{}, error) {
 	for questionKey, questionData := range questions {
 
 		val, ok := questionData.Schema["required"]
@@ -118,15 +115,12 @@ func (e *CreateEngine) Query(questions map[string]config.Question, answerData ma
 	return answerData, nil
 }
 
-func (e *CreateEngine) queryResponse(questionKey string, question config.Question) interface{} {
+func (e *CreateAction) queryResponse(questionKey string, question config.Question) interface{} {
 
 	for true {
 		//this question is not answered, and it is required. We should ask the user.
-		stdReader := bufio.NewReader(os.Stdin)
-		s := fmt.Sprintf("Please enter a value for `%s` [%s] - %s:", questionKey, question.GetType(), question.Description)
-		fmt.Println(s)
-		answer, _ := stdReader.ReadString('\n')
-		answer = strings.Trim(answer, "\n")
+		answer := utils.StdinQuery(fmt.Sprintf("Please enter a value for `%s` [%s] - %s:", questionKey, question.GetType(), question.Description))
+
 		answerTyped, err := convertAnswerType(answer, question.GetType())
 		if err != nil {
 			fmt.Printf("%v\n", err)

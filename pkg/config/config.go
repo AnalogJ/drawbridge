@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"drawbridge/pkg/errors"
 	"drawbridge/pkg/utils"
+	"drawbridge/pkg/config/template"
 	"fmt"
 	"github.com/spf13/viper"
 	"github.com/xeipuuv/gojsonschema"
@@ -34,20 +35,13 @@ func (c *configuration) Init() error {
 	c.SetDefault("options.config_dir", "~/.ssh/drawbridge")
 	c.SetDefault("options.pem_dir", "~/.ssh")
 	c.SetDefault("options.active_config_template", "default")
+
 	c.SetDefault("options.active_extra_templates", []string{})
 	c.SetDefault("options.ui_group_priority", []string{"environment", "username"})
 	c.SetDefault("options.ui_question_hidden", []string{})
 	//TODO: options.overwrite == false/
 
 	c.SetDefault("questions", map[string]Question{
-		"pem_filename": {
-			Description:  "Pem key used to ssh to bastion",
-			DefaultValue: "id_rsa",
-			Schema: map[string]interface{}{
-				"type":     "string",
-				"required": true,
-			},
-		},
 		"environment": {
 			Description:  "Environment name for this stack",
 			DefaultValue: "test",
@@ -74,7 +68,7 @@ func (c *configuration) Init() error {
 		},
 	})
 	c.SetDefault("answers", []map[string]interface{}{})
-
+	c.SetDefault("config_templates.default.pem_filepath", "{{.environment}}-{{.username}}-pem")
 	c.SetDefault("config_templates.default.filepath", "{{.environment}}-{{.username}}-config")
 	c.SetDefault("config_templates.default.content", utils.StripIndent(
 		`
@@ -87,7 +81,7 @@ func (c *configuration) Init() error {
 	Host bastion
 	    Hostname bastion.example.com
 	    User {{.username}}
-	    IdentityFile {{.pem_dir}}/{{.pem_filename}}
+	    IdentityFile {{.pem_filepath}}
 	    LocalForward localhost:{{uniquePort .}} localhost:8080
 	    UserKnownHostsFile=/dev/null
 	    StrictHostKeyChecking=no
@@ -285,6 +279,14 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 				"type": "array",
 				"additionalProperties":false
 			},
+			"variables":{
+				"type": "object",
+				"patternProperties": {
+					"^[a-z0-9]*$":{
+						"type":"string"
+					}
+				}
+			},
 			"config_templates":{
 				"type": "object",
 				"patternProperties": {
@@ -297,6 +299,9 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 								"type": "string"
 							},
 							"content": {
+								"type": "string"
+							},
+							"pem_filepath": {
 								"type": "string"
 							}
 						}
@@ -367,34 +372,34 @@ func (c *configuration) GetQuestions() (map[string]Question, error) {
 	return questionsMap, err
 }
 
-func (c *configuration) GetConfigTemplates() (map[string]Template, error) {
+func (c *configuration) GetConfigTemplates() (map[string]template.ConfigTemplate, error) {
 	//deserialize Templates
-	templateMap := map[string]Template{}
+	templateMap := map[string]template.ConfigTemplate{}
 	err := c.UnmarshalKey("config_templates", &templateMap)
 	return templateMap, err
 }
 
-func (c *configuration) GetActiveConfigTemplate() (Template, error) {
+func (c *configuration) GetActiveConfigTemplate() (template.ConfigTemplate, error) {
 	//deserialize Templates
 	activeTemplateName := c.GetString("options.active_config_template")
 
 	allTemplates, err := c.GetConfigTemplates()
 	if err != nil {
-		return Template{}, err
+		return template.ConfigTemplate{}, err
 	}
 
 	activeTemplate := allTemplates[activeTemplateName]
 	return activeTemplate, nil
 }
 
-func (c *configuration) GetExtraTemplates() (map[string]Template, error) {
+func (c *configuration) GetExtraTemplates() (map[string]template.FileTemplate, error) {
 	//deserialize Templates
-	templateMap := map[string]Template{}
+	templateMap := map[string]template.FileTemplate{}
 	err := c.UnmarshalKey("extra_templates", &templateMap)
 	return templateMap, err
 }
 
-func (c *configuration) GetActiveExtraTemplates() ([]Template, error) {
+func (c *configuration) GetActiveExtraTemplates() ([]template.FileTemplate, error) {
 	//deserialize Templates
 	activeTemplateNames := c.GetStringSlice("options.active_extra_templates")
 
@@ -402,7 +407,7 @@ func (c *configuration) GetActiveExtraTemplates() ([]Template, error) {
 	if err != nil {
 		return nil, err
 	}
-	activeTemplates := []Template{}
+	activeTemplates := []template.FileTemplate{}
 
 	for _, activeTemplateName := range activeTemplateNames {
 		activeTemplate := allTemplates[activeTemplateName]
