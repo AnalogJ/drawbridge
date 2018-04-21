@@ -61,6 +61,7 @@ func main() {
 			%s
 
 			`), subtitle))
+
 			return nil
 		},
 
@@ -68,7 +69,9 @@ func main() {
 			{
 				Name:  "create",
 				Usage: "Create a drawbridge managed ssh config & associated files",
+				//UsageText:   "doo - does the dooing",
 				Action: func(c *cli.Context) error {
+					fmt.Fprintln(c.App.Writer, c.Command.Usage)
 					//TODO: list the existing configurations from answers, ask user to specify an exiting config, or create a new one.
 
 					//TODO: check if the user decides to create one from scratch.
@@ -89,6 +92,7 @@ func main() {
 				Name:  "list",
 				Usage: "List all drawbridge managed ssh configs",
 				Action: func(c *cli.Context) error {
+					fmt.Fprintln(c.App.Writer, c.Command.Usage)
 
 					listAction := actions.ListAction{Config: config}
 					return listAction.Start()
@@ -98,6 +102,7 @@ func main() {
 				Name:  "connect",
 				Usage: "Connect to a drawbridge managed ssh config",
 				Action: func(c *cli.Context) error {
+					fmt.Fprintln(c.App.Writer, c.Command.Usage)
 
 					listAction := actions.ListAction{Config: config}
 					listAction.Start()
@@ -136,6 +141,7 @@ func main() {
 				Usage: "Download a file from an internal server using drawbridge managed ssh config, syntax is similar to scp command. ",
 				ArgsUsage:   "destination_hostname:remote_filepath local_filepath",
 				Action: func(c *cli.Context) error {
+					fmt.Fprintln(c.App.Writer, c.Command.Usage)
 
 					if c.NArg() != 2 {
 						return cli.Exit(fmt.Sprintf("Invalid, 2 arguments required: %s", c.Args()), 1)
@@ -178,6 +184,8 @@ func main() {
 				Name:  "delete",
 				Usage: "Delete drawbridge managed ssh config(s)",
 				Action: func(c *cli.Context) error {
+					fmt.Fprintln(c.App.Writer, c.Command.Usage)
+
 					listAction := actions.ListAction{Config: config}
 
 					if c.Bool("all") {

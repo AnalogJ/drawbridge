@@ -175,7 +175,7 @@ func(e *ListAction) recursivePrintTree(level int, parentTree treeprint.Tree,  gr
 				//answerStr := printAnswer(len(e.OrderedAnswers), answer.(map[string]interface{}), e.Config.GetStringSlice("options.ui_question_hidden"), e.Config.GetStringSlice("options.ui_group_priority"))
 				currentTree.AddMetaNode(
 					color.YellowString(strconv.Itoa(len(e.OrderedAnswers))),
-					e.answerString(questionKeys[level], answer.(map[string]interface{}), e.Config.GetStringSlice("options.ui_question_hidden"), e.Config.GetStringSlice("options.ui_group_priority")))
+					e.answerString(questionKeys[level], answer.(map[string]interface{})))
 			}
 		default:
 			fmt.Printf("I don't know about type %T!\n", v)
@@ -184,7 +184,11 @@ func(e *ListAction) recursivePrintTree(level int, parentTree treeprint.Tree,  gr
 	return nil
 }
 
-func(e *ListAction) answerString(highlightGroupKey string, answer map[string]interface{}, uiHiddenKeys []string, uiGroupPriority []string) string {
+func(e *ListAction) answerString(highlightGroupKey string, answer map[string]interface{}) string {
+
+	uiHiddenKeys := e.Config.GetStringSlice("options.ui_question_hidden")
+	uiGroupPriority := e.Config.GetStringSlice("options.ui_group_priority")
+	internalKeys := e.Config.InternalQuestionKeys()
 
 	answerStr := []string{color.BlueString(fmt.Sprintf("%v: %v", highlightGroupKey, answer[highlightGroupKey]))}
 
@@ -198,8 +202,7 @@ func(e *ListAction) answerString(highlightGroupKey string, answer map[string]int
 		}
 
 		//skip drawbridge properties
-		if k == "pem_filepath" || k == "active_config_template" || k == "config_dir" || k == "pem_dir" || k == "ui_group_priority" ||
-			k == "filepath" {
+		if utils.StringInSlice(internalKeys, k) {
 			continue
 		}
 

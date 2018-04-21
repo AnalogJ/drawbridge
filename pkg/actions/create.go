@@ -6,7 +6,6 @@ import (
 	"drawbridge/pkg/utils"
 	"fmt"
 	"gopkg.in/yaml.v2"
-	"log"
 	"path"
 	"strconv"
 	"github.com/fatih/color"
@@ -39,7 +38,21 @@ func (e *CreateAction) Start(cliAnswerData map[string]interface{}) error {
 		answerData[cliAnswerKey] = cliAnswerValue
 	}
 
-	log.Printf("answers found before questioning: %v \n", answerData)
+	//log.Printf("answers found before questioning: %v \n", answerData)
+
+	fmt.Println("Current Answers:")
+
+	questionKeys := utils.MapKeys(answerData)
+	for _, questionKey := range questionKeys {
+		if utils.StringInSlice(e.Config.InternalQuestionKeys(), questionKey){
+			continue
+		}
+
+		fmt.Printf("%v: %v\n",
+			questionKey,
+			color.GreenString(fmt.Sprintf("%v",answerData[questionKey])))
+	}
+
 
 	// ensuer that that all questions are answered, query user if missing anything.
 	answerData, err = e.Query(questions, answerData)
@@ -64,7 +77,7 @@ func (e *CreateAction) Start(cliAnswerData map[string]interface{}) error {
 		return err
 	}
 
-	err = activeConfigTemplate.WriteTemplate(answerData)
+	err = activeConfigTemplate.WriteTemplate(answerData, e.Config.InternalQuestionKeys())
 	if err != nil {
 		return err
 	}
@@ -111,7 +124,6 @@ func (e *CreateAction) Query(questions map[string]config.Question, answerData ma
 
 
 	for _, questionKey := range questionKeys {
-	//for questionKey, questionData := range questions {
 		questionData := questions[questionKey]
 
 		val, ok := questionData.Schema["required"]
