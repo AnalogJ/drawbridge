@@ -9,7 +9,7 @@ import (
 // for configs `filepath`, must be relative to config_dir
 //for configs `pem_filepath` must be relative to pem_dir
 type ConfigTemplate struct {
-	*FileTemplate
+	FileTemplate `mapstructure:",squash"`
 	PemFilePath string `mapstructure:"pem_filepath"`
 }
 

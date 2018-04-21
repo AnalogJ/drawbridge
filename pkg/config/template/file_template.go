@@ -10,7 +10,7 @@ import (
 )
 
 type FileTemplate struct {
-	*Template
+	Template `mapstructure:",squash"`
 	FilePath string `mapstructure:"filepath"`
 }
 
