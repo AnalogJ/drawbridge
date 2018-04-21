@@ -136,6 +136,15 @@ func main() {
 				ArgsUsage:   "destination_hostname:remote_filepath local_filepath",
 				Action: func(c *cli.Context) error {
 
+					if c.NArg() != 2 {
+						return cli.Exit(fmt.Sprintf("Invalid, 2 arguments required: %s", c.Args()), 1)
+					}
+
+					remoteParts := strings.Split(c.Args().First(), ":")
+					if len(remoteParts) != 2 {
+						return cli.Exit(fmt.Sprintf("Invalid, please specify destination hostname and remote path: %s", remoteParts), 1)
+					}
+
 					listAction := actions.ListAction{Config: config}
 					listAction.Start()
 
@@ -152,17 +161,6 @@ func main() {
 						answerIndex = i - 1
 					}
 
-					if c.NArg() != 2 {
-						return cli.Exit(fmt.Sprintf("Invalid, 2 arguments required: %s", c.Args()), 1)
-					}
-
-					remoteParts := strings.Split(c.Args().First(), ":")
-					if len(remoteParts) != 2 {
-						return cli.Exit(fmt.Sprintf("Invalid, please specify destination hostname and remote path: %s", remoteParts), 1)
-					}
-
-
-
 					downloadAction := actions.DownloadAction{Config: config}
 
 					return downloadAction.Start(listAction.OrderedAnswers[answerIndex].(map[string]interface{}), remoteParts[0], remoteParts[1], c.Args().Get(1))
@@ -175,6 +173,52 @@ func main() {
 					},
 				},
 			},
+			//{
+			//	Name:  "delete",
+			//	Usage: "Delete drawbridge managed ssh config(s)",
+			//	Action: func(c *cli.Context) error {
+			//		listAction := actions.ListAction{Config: config}
+			//
+			//		if c.Bool("all") {
+			//			deleteAction := actions.DeleteAction{Config: config}
+			//			return deleteAction.All(listAction.OrderedAnswers, c.Bool("force"))
+			//		} else {
+			//			listAction := actions.ListAction{Config: config}
+			//			listAction.Start()
+			//
+			//			var answerIndex int
+			//
+			//			if c.IsSet("drawbridge_id"){
+			//				answerIndex = c.Int("drawbridge_id")
+			//			} else {
+			//				text := utils.StdinQuery("Enter number of ssh config you would like to connect to:")
+			//				i, err := strconv.Atoi(text)
+			//				if err != nil {
+			//					return err
+			//				}
+			//				answerIndex = i - 1
+			//			}
+			//
+			//			deleteAction := actions.DeleteAction{Config: config}
+			//			return deleteAction.One(listAction.OrderedAnswers[answerIndex].(map[string]interface{}), c.Bool("force"))
+			//		}
+			//	},
+			//
+			//	Flags: []cli.Flag{
+			//		&cli.BoolFlag{
+			//			Name:  "force",
+			//			Usage: "Force delete with no confirmation",
+			//		},
+			//		&cli.BoolFlag{
+			//			Name:  "all",
+			//			Usage: "Delete all configuration files. ",
+			//		},
+			//		&cli.IntFlag{
+			//			Name:  "drawbridge_id",
+			//			Usage: "Specify the drawbridge configuration to delete",
+			//		},
+			//	},
+			//},
 		},
 	}
 
