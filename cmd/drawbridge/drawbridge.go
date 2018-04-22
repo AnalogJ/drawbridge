@@ -252,6 +252,8 @@ func main() {
 						Name:  "drawbridge_id",
 						Usage: "Specify the drawbridge configuration to delete",
 					},
+
+					//TODO: add dry run support
 				},
 			},
 			{
@@ -290,6 +292,11 @@ func createFlags(appConfig config.Interface) ([]cli.Flag, error) {
 			Name:  "active_custom_templates",
 			Usage: "Activated custom_templates",
 			Value: cli.NewStringSlice(appConfig.GetStringSlice("options.active_custom_templates")...),
+		},
+		&cli.BoolFlag{
+			Name:  "dryrun",
+			Usage: "Dry Run mode. Will print files and paths to STDOUT rather than writing them to disk.",
+			Value: false,
 		},
 	}
 

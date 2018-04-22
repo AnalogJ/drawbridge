@@ -40,7 +40,7 @@ func (e *CreateAction) Start(cliAnswerData map[string]interface{}) error {
 
 	//log.Printf("answers found before questioning: %v \n", answerData)
 
-	fmt.Println("Current Answers:")
+	fmt.Println("\nCurrent Answers:")
 
 	questionKeys := utils.MapKeys(answerData)
 	for _, questionKey := range questionKeys {

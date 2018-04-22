@@ -1,25 +1,241 @@
+# Commented Drawbridge Configuration File
+#
+# The default location for this file is ~/drawbridge.yaml.
+# In some cases to improve clarity default values are specified,
+# uncommented. Other example values are commented out.
+#
+# When this file is parsed by Drawbridge, all configuration file keys are
+# lowercased automatically. As such, Configuration keys are case-insensitive,
+# and should be lowercase in this file to be consistent with usage.
+
+
+######################################################################
+# Version
+#
+# version specifies the version of this configuration file schema, not
+# the drawbridge binary. There is only 1 version available at the moment
+version: 1
+
+######################################################################
+# Options
+#
+# options contains global variables. They can usually be set via CLI as
+# well. They will be merged with question/answers, and available for use
+# in templates.
 options:
+
+# pem_dir specifies the root directory for all pem files managed by drawbrige.
+# can be set to '~/.ssh/' if you don't have many ssh keys or you don't
+# need to organize them by environment names. Will be created if missing.
+#
+#     pem_dir: '~/.ssh'
   pem_dir: '~/.ssh/drawbridge/pem'
-  config_dir: '~/.ssh/drawbridge/pem'
+
+# config_dir specifies the root directory for all sshconfig files managed by
+# drawbridge. Will be created if missing.
+  config_dir: '~/.ssh/drawbridge'
+
+# active_config_template contains the name of the config_template that will
+# be used when creating a new sshconfig file for a stack/shard/environment
+# This can only be a single value, and must match a sub-key of `config_templates`
   active_config_template: default
+
+# active_custom_templates is a list of additional custom_templates that need to be
+# created when a sshconfig is created.
+# must contain entries that match sub-keys of `custom_templates`
+# empty by default
+#
+#     active_custom_templates:
+#     - chef
+  active_custom_templates: []
+
+# ui_group_priority is a list of question keys, which are used for grouping/organizing
+# sshconfig's in the CLI. Maximum of 4 list items allowed, and each item must match
+# sub-keys of `questions`
   ui_group_priority:
   - environment
+  - shard
   - username
-  active_templates:
-  - default
+
+# ui_question_hidden is a list of question keys which will be hidden from the UI
+# when listing drawbridge profiles.
+  ui_question_hidden: []
+
+######################################################################
+# Questions
+#
+# Drawbridge uses question/answer pairs to provide data when populating
+# templates.
+#
+# Questions are dynamic and can be completely customized to your organizations
+# needs.
+#
+# Questions are made up of 3 things.
+# - key/name:     The question key is used as the variable name when populating templates
+# - description:  Description will be displayed when prompting user to enter a value and
+#                 when showing drawbrige help, eg. `drawbridge create help`
+# - type:         Part of the `schema` object, the `type` value helps Drawbridge validate
+#                 and process user provided data. must be "integer", "number", "string", "boolean" or "null"
+#
+# A Question has the following form:
+#
+# <question key>:
+#   description: <description value>
+#   schema:
+#     type: <type value>
+#
+# Optionally you can provide the following data:
+# - default_value:  Default values must match question type, and are used as the answer if
+#                   user does not override it via CLI.
+# - schema:         Schema a validation object, following JSON schema conventions. It allows
+#                   you to specify complex validation for answers, such as "enum", "maxLength", "required", "pattern", etc.
+#                   A full list of validation options is here: https://github.com/xeipuuv/gojsonschema/tree/master/json_schema_test_suite
+#                   See more usage examples here: https://cswr.github.io/JsonSchema/spec/basic_types/
 questions:
+
+# NOTE: You should completely modify the section below to match your organization's needs. It's only provided as an example
+# of Drawbridge's flexibility.
   environment:
-    description: what is the stack environment
-    default_value: stage
-    ui_group_priority: 1
+    description: What is the environment name?
     schema:
       type: string
       required: true
-      maxLength: 10
-  domain:
-    description: what is the base domain
-    default_value: example.com
-    ui_group_priority: 2
+      enum: ['test', 'stage', 'prod']
+  stack_name:
+    description: What is the stack name?
+    default_value: 'app'
     schema:
       type: string
       required: true
+      minLength: 1
+      maxLength: 6
+  shard:
+    description: What is the shard datacenter?
+    schema:
+      type: string
+      required: true
+      enum: ['us-east-1', 'us-east-2', 'eu-west-1', 'eu-west-2', 'ap-south-1']
+  shard_type:
+    description: Is this a live (green) or idle (blue) stack?
+    schema:
+      type: string
+      enum: ['idle', 'live']
+  username:
+    description: What username do you use to login to this stack?
+    schema:
+      type: string
+      required: true
+      minLength: 1
+
+######################################################################
+# Answers
+answers: []
+
+######################################################################
+# SSH Config Templates
+#
+# Once all the questions have been answered (via CLI flags, CLI prompts or using defaults) these answers are then merged
+# with the global options and used to populate the selected/active config template.
+# These config files support Go Template syntax, meaning that Arguments, Actions, Conditionals and Nested Templates are all
+# supported. See https://golang.org/pkg/text/template/ for more information.
+#
+# Drawbridge managed SSH config files are special. 2 HOST entries must be defined (in addition to any others you would like)
+# `bastion` must be your bastion/jump host
+# `bastion+*` must have a ProxyCommand that tunnels through bastion into an internal server.
+#
+# A config template has 3 fields, all of which support variable interpolation:
+#
+# - pem_filepath: PEM filepath is the location of the SSH key used to authenticate to this jump/bastion host.
+#                 It should be relative to `options.pem_dir`
+# - filepath:     filepath is the destination location of the ssh config file for this jump/bastion host.
+#                 It should be relative to `options.config_dir`
+# - content:      content is the actual content of the ssh config template. It supports Golang template interpolation as
+#                 mentioned above. All variables defined in this file must match a question key or global option.
+config_templates:
+  default:
+# pem_filepath will be joined with `options.pem_dir` before being populated. Then it'll be passed into the answers used for
+# populating filepath & content fields.
+# if you had set `options.pem_dir` to ~/.ssh, you could potentially set `pem_filepath: id_rsa` to keep things simple.
+    pem_filepath: '{{.environment}}/{{.username}}-{{.environment}}.pem'
+    filepath: '{{.environment}}-{{.stack_name}}-{.shard_type}}-{{.shard}}{{if ne .username "aws"}}-{{.username}}{{end}}'
+
+# content MUST contain `Host bastion` and `Host bastion+*` for `drawbridge connect` to work correctly.
+# notice how conditionals work {{if ne .environment "prod"}} ... {{end}}. Search Go Template syntax for more examples.
+    content: |
+      ForwardAgent yes
+      ForwardX11 no
+      HashKnownHosts yes
+      IdentitiesOnly yes
+      StrictHostKeyChecking no
+
+
+      Host bastion
+          Hostname bastion1.{{.shard_type}}.{{.shard}}.{{.stack_name}}{{if ne .environment "prod"}}{{.environment}}{{end}}example.com
+          User {{if eq .username "aws"}}cloud-user{{else}}{{.username}}{{end}}
+          IdentityFile {{.pem_filepath}}
+          LocalForward localhost:{{uniquePort .}} localhost:8080
+          UserKnownHostsFile=/dev/null
+          StrictHostKeyChecking=no
+
+      Host bastion+*
+          ProxyCommand ssh -F {{.filepath}} -W $(echo %h |cut -d+ -f2):%p bastion
+          User {{if eq .username "aws"}}cloud-user{{else}}{{.username}}{{end}}
+          IdentityFile {{.pem_filepath}}
+          LogLevel INFO
+          UserKnownHostsFile=/dev/null
+          StrictHostKeyChecking=no
+
+######################################################################
+# Custom Templates
+#
+# Like SSH Config Templates, Custom Templates support Go Template syntax. However unlike SSH Config Templates, you can
+# create any type of file here. Active custom templates will be automatically created when `drawbrige create` is executed.
+#
+
+# A custom template has 2 fields, both of which support variable interpolation:
+#
+# - filepath:   filepath is the destination location of the custom file. It MUST be an absolute path, or start with `~/`
+# - content:    content is the actual content of the custom template. It supports Golang template interpolation as
+#               mentioned above. All variables defined in this file must match a question key or global option
+#
+# Custom Templates are empty by default, but in the comment below there's an example chef knife.rb file
+custom_templates: {}
+# custom_templates:
+#  chef:
+#    filepath: '~/.chef/knife-{{.environment}}-{{.stack_name}}-{.shard_type}}-{{.shard}}{{if ne .username "aws"}}-{{.username}}{{end}}.rb'
+#    content: |
+#      # This file was automatically generated by Drawbridge
+#      # Do not modify.
+#
+#      # Knife Configuration File.
+#      #
+#
+#      ######################################################################
+#      # Local variables interpreted by Ruby
+#
+#      chef_server_hostname="chef.internal.{{.shard}}.{{.stack_name}}{{if ne .environment "prod"}}{{.environment}}{{end}}example.com"
+#      client_key=File.expand_path("~/.chef/drawbridge/pem/{{.environment}}/{{.environment}}-{{.stack_name}}-{.shard_type}}-{{.shard}}{{if ne .username "aws"}}-{{.username}}{{end}}.pem"
+#      proxy_port="{{uniquePort .}}"
+#      nodename="{{.username}}"
+#
+#      ######################################################################
+#      # Configuration settings required in order to interact with
+#      # Company Chef Servers
+#
+#      current_dir = File.dirname(__FILE__)
+#      log_level                :debug
+#      log_location             STDOUT
+#      node_name                "#{nodename}"
+#      client_key               "#{client_key}"
+#      chef_server_url          "https://#{chef_server_hostname}/organizations/example"
+#      ssl_verify_mode          :verify_none
+#      cache_type               'BasicFile'
+#      cache_options( :path => "#{ENV['HOME']}/.chef/chef_server_hostname/checksums" )
+#      cookbook_path            ["~/dev/cookbooks/"]
+#
+#      # Proxy Configuration
+#      https_proxy   "https://localhost:#{proxy_port}/"
+#      http_proxy    "http://localhost:#{proxy_port}/"
+#
+#      require 'rest-client'
+#      RestClient.proxy = "https://localhost:#{proxy_port}/"
