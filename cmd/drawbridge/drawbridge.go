@@ -47,11 +47,11 @@ func main() {
 		},
 		Before: func(c *cli.Context) error {
 
-			drawbridge := "https://github.com/AnalogJ/drawbridge"
+			drawbridge := "github.com/AnalogJ/drawbridge"
 
 			versionInfo := fmt.Sprintf("%s.%s-%s", goos, goarch, version.VERSION)
 
-			subtitle := drawbridge + utils.LeftPad2Len(versionInfo, " ", 53-len(drawbridge))
+			subtitle := drawbridge + utils.LeftPad2Len(versionInfo, " ", 65-len(drawbridge))
 
 			color.New(color.FgGreen).Fprintf(c.App.Writer, fmt.Sprintf(utils.StripIndent(
 				`
