@@ -69,7 +69,7 @@ func (e *DeleteAction) One(answerData map[string]interface{}, force bool) error 
 			return err
 		}
 
-		fmt.Println("Deleting custom template files:")
+		fmt.Println("Deleting custom template files")
 		for _, renderedCustomTemplateName := range renderedCustomTemplateNames {
 			if renderedCustomTemplate, ok := customTemplates[renderedCustomTemplateName.(string)]; ok {
 				err = renderedCustomTemplate.DeleteTemplate(answerData)

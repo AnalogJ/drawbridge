@@ -1,3 +1,4 @@
+version: 1
 options:
   pem_dir: '~/.ssh/drawbridge/pem'
   active_custom_templates:
