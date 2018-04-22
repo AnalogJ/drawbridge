@@ -33,66 +33,87 @@ func (c *configuration) Init() error {
 	c.Viper = viper.New()
 	//set defaults
 	c.SetDefault("options.config_dir", "~/.ssh/drawbridge")
-	c.SetDefault("options.pem_dir", "~/.ssh")
+	c.SetDefault("options.pem_dir", "~/.ssh/drawbridge/pem")
 	c.SetDefault("options.active_config_template", "default")
 
 	c.SetDefault("options.active_custom_templates", []string{})
-	c.SetDefault("options.ui_group_priority", []string{"environment", "username"})
+	c.SetDefault("options.ui_group_priority", []string{"environment", "stack_name", "shard", "shard_type"})
 	c.SetDefault("options.ui_question_hidden", []string{})
 
 	c.SetDefault("questions", map[string]Question{
 		"environment": {
-			Description:  "Environment name for this stack",
-			DefaultValue: "test",
+			Description:  "What is the environment name?",
 			Schema: map[string]interface{}{
 				"type":     "string",
 				"required": true,
+				"enum": []string{"test", "stage", "prod"},
+			},
+		},
+		"stack_name": {
+			Description:  "What is the stack name?",
+			DefaultValue: "app",
+			Schema: map[string]interface{}{
+				"type":     "string",
+				"required": true,
+				"minLength": 1,
+				"maxLength": 6,
+			},
+		},
+		"shard": {
+			Description:  "What is the shard datacenter?",
+			Schema: map[string]interface{}{
+				"type":     "string",
+				"required": true,
+				"enum": []string{"us-east-1", "us-east-2", "eu-west-1", "eu-west-2", "ap-south-1"},
+			},
+		},
+		"shard_type": {
+			Description:  "Is this a live (green) or idle (blue) stack?",
+			Schema: map[string]interface{}{
+				"type":     "string",
+				"required": true,
+				"enum": []string{"live","idle"},
 			},
 		},
 		"username": {
-			Description:  "Username used to log into this stack",
-			DefaultValue: "root",
+			Description:  "What username do you use to login to this stack?",
 			Schema: map[string]interface{}{
 				"type":     "string",
 				"required": true,
-			},
-		},
-		"domain": {
-			Description:  "Base domain name for all stacks",
-			DefaultValue: "example.com",
-			Schema: map[string]interface{}{
-				"type":     "string",
-				"required": true,
+				"minLength": 1,
 			},
 		},
 	})
 	c.SetDefault("answers", []map[string]interface{}{})
-	c.SetDefault("config_templates.default.pem_filepath", "{{.environment}}-{{.username}}-pem")
-	c.SetDefault("config_templates.default.filepath", "{{.environment}}-{{.username}}-config")
+	c.SetDefault("config_templates.default.pem_filepath", "{{.environment}}/{{.username}}-{{.environment}}.pem")
+	c.SetDefault("config_templates.default.filepath", `{{.environment}}-{{.stack_name}}-{.shard_type}}-{{.shard}}{{if ne .username "aws"}}-{{.username}}{{end}}`)
 	c.SetDefault("config_templates.default.content", utils.StripIndent(
 		`
-	ForwardAgent yes
-	ForwardX11 no
-	HashKnownHosts yes
-	IdentitiesOnly yes
-	StrictHostKeyChecking no
+		ForwardAgent yes
+		ForwardX11 no
+		HashKnownHosts yes
+		IdentitiesOnly yes
+		StrictHostKeyChecking no
 
-	Host bastion
-	    Hostname bastion.example.com
-	    User {{.username}}
-	    IdentityFile {{.pem_filepath}}
-	    LocalForward localhost:{{uniquePort .}} localhost:8080
-	    UserKnownHostsFile=/dev/null
-	    StrictHostKeyChecking=no
 
-	Host bastion+*
-    	ProxyCommand ssh -F {{.filepath}} -W $(echo %h |cut -d+ -f2):%p bastion
-    	User {{.username}}
-    	IdentityFile {{.pem_filepath}}
-    	LogLevel INFO
-    	UserKnownHostsFile=/dev/null
-    	StrictHostKeyChecking=no
+		Host bastion
+		  	Hostname bastion1.{{.shard_type}}.{{.shard}}.{{.stack_name}}{{if ne .environment "prod"}}{{.environment}}{{end}}example.com
+		  	User {{if eq .username "aws"}}cloud-user{{else}}{{.username}}{{end}}
+		  	IdentityFile {{.template.pem_filepath}}
+		  	LocalForward localhost:{{uniquePort .template.filepath}} localhost:8080
+		  	UserKnownHostsFile=/dev/null
+		  	StrictHostKeyChecking=no
+
+		Host bastion+*
+		  	ProxyCommand ssh -F {{.template.filepath}} -W $(echo %h |cut -d+ -f2):%p bastion
+		  	User {{if eq .username "aws"}}cloud-user{{else}}{{.username}}{{end}}
+		  	IdentityFile {{.template.pem_filepath}}
+		  	LogLevel INFO
+		  	UserKnownHostsFile=/dev/null
+		  	StrictHostKeyChecking=no
 	`))
+	c.SetDefault("custom_templates",map[string]interface{}{})
+
 
 	//if you want to load a non-standard location system config file (~/drawbridge.yml), use ReadConfig
 	c.SetConfigType("yaml")
@@ -384,7 +405,7 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 
 func (c *configuration) InternalQuestionKeys() []string {
 	//list of internal keys, can be filtered out when printing, etc.
-	return []string{"config_dir", "pem_dir", "active_config_template", "active_custom_templates", "ui_group_priority", "ui_question_hidden", "pem_filepath", "filepath"}
+	return []string{"config_dir", "pem_dir", "active_config_template", "active_custom_templates", "ui_group_priority", "ui_question_hidden", "custom", "config", "template"}
 }
 
 func (c *configuration) GetQuestion(questionKey string) (Question, error) {

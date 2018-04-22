@@ -15,12 +15,22 @@ type FileTemplate struct {
 	FilePath string `mapstructure:"filepath"`
 }
 
-func (t *FileTemplate) DeleteTemplate(answerData map[string]interface{}) error {
+func (t *FileTemplate) PopulateFilePath(answerData map[string]interface{}) (string, error){
 	templatedFilePath, err := utils.PopulateTemplate(t.FilePath, answerData)
 	if err != nil {
-		return err
+		return "", err
 	}
 	templatedFilePath, err = utils.ExpandPath(templatedFilePath)
+	if err != nil {
+		return "", err
+	}
+	return templatedFilePath, nil
+}
+
+
+func (t *FileTemplate) DeleteTemplate(answerData map[string]interface{}) error {
+
+	templatedFilePath, err := t.PopulateFilePath(answerData)
 	if err != nil {
 		return err
 	}
@@ -34,23 +44,24 @@ func (t *FileTemplate) DeleteTemplate(answerData map[string]interface{}) error {
 	}
 }
 
-func (t *FileTemplate) WriteTemplate(answerData map[string]interface{}) (map[string]string, error) {
-	returnData := map[string]string{}
+func (t *FileTemplate) WriteTemplate(answerData map[string]interface{}, dryRun bool) (map[string]interface{}, error) {
+	if t.data == nil{
+		t.data = map[string]interface{}{}
+	}
+
 	answerData, err := utils.MapDeepCopy(answerData)
 	if err != nil {
 		return nil, err
 	}
 
-	templatedFilePath, err := utils.PopulateTemplate(t.FilePath, answerData)
+	templatedFilePath, err := t.PopulateFilePath(answerData)
 	if err != nil {
 		return nil, err
 	}
-	templatedFilePath, err = utils.ExpandPath(templatedFilePath)
-	if err != nil {
-		return nil, err
-	}
-	answerData["filepath"] = templatedFilePath
-	returnData["filepath"] = templatedFilePath
+
+
+	t.data["filepath"] = templatedFilePath
+	answerData["template"] = t.data
 
 	templatedContent, err := utils.PopulateTemplate(t.Content, answerData)
 	if err != nil {
@@ -66,7 +77,7 @@ func (t *FileTemplate) WriteTemplate(answerData map[string]interface{}) (map[str
 		}
 
 		log.Printf("Writing template to %v", templatedFilePath)
-		err = utils.FileWrite(templatedFilePath, templatedContent, 0644)
+		err = utils.FileWrite(templatedFilePath, templatedContent, 0644, dryRun)
 		if err != nil {
 			return nil, err
 		}
@@ -74,5 +85,6 @@ func (t *FileTemplate) WriteTemplate(answerData map[string]interface{}) (map[str
 	} else {
 		return nil, errors.TemplateFileExistsError(fmt.Sprintf("file at %v already exists. Cannot write template file", templatedFilePath))
 	}
-	return returnData, nil
+
+	return t.data, nil
 }

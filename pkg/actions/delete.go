@@ -27,7 +27,14 @@ func (e *DeleteAction) All(answerDataList []map[string]interface{}, force bool) 
 func (e *DeleteAction) One(answerData map[string]interface{}, force bool) error {
 
 	//delete the config file by answerData
-	renderedConfigFilePath := answerData["filepath"].(string)
+	renderedConfigFilePath := answerData["config"].(map[string]interface{})["filepath"].(string)
+
+	//custom files specified in answerData
+	renderedCustomFilePaths := []interface{}{}
+	if customItems, ok := answerData["custom"]; ok && customItems != nil && len(customItems.([]interface{})) > 0 {
+		renderedCustomFilePaths = customItems.([]interface{})
+	}
+
 
 	if !force {
 
@@ -60,27 +67,15 @@ func (e *DeleteAction) One(answerData map[string]interface{}, force bool) error 
 	}
 
 	//delete any custom templates.
-	if val, ok := answerData["active_custom_templates"]; ok {
-		renderedCustomTemplateNames := val.([]interface{})
-
-		// load up all customTemplates
-		customTemplates, err := e.Config.GetCustomTemplates()
-		if err != nil {
-			return err
+	for _, customTemplateData := range renderedCustomFilePaths {
+		renderedCustomFilePath := customTemplateData.(map[string]interface{})["filepath"].(string)
+		fmt.Printf("Deleting custom file: %v\n", renderedCustomFilePath)
+		if utils.FileExists(renderedCustomFilePath) {
+			utils.FileDelete(renderedCustomFilePath)
+		} else {
+			color.Yellow(" - Skipping. Could not find config file at: %v", renderedCustomFilePath)
 		}
-
-		fmt.Println("Deleting custom template files")
-		for _, renderedCustomTemplateName := range renderedCustomTemplateNames {
-			if renderedCustomTemplate, ok := customTemplates[renderedCustomTemplateName.(string)]; ok {
-				err = renderedCustomTemplate.DeleteTemplate(answerData)
-				if err != nil {
-					color.Yellow(" - Skipping. An error occurred while deleting %v: %v", renderedCustomTemplateName, err)
-				}
-			}
-		}
-
 	}
-
 	//delete the .answers.yaml
 	fmt.Println("Deleting answers file")
 	answersFilePath := path.Join(answerData["config_dir"].(string), fmt.Sprintf(".%v.answers.yaml", path.Base(renderedConfigFilePath)))

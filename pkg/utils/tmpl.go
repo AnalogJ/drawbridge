@@ -32,14 +32,22 @@ func PopulateTemplate(tmplContent string, data map[string]interface{}) (string, 
 }
 
 // https://play.golang.org/p/k8bws03uid
-func UniquePort(data map[string]interface{}) (int, error) {
-	jsonString, err := json.Marshal(StringifyYAMLMapKeys(data))
-	if err != nil {
-		return 0, err
+func UniquePort(data interface{}) (int, error) {
+
+	var contentData []byte
+	switch in := data.(type) {
+	case string:
+		contentData = []byte(in)
+	default:
+		jsonData, err := json.Marshal(StringifyYAMLMapKeys(in))
+		if err != nil {
+			return 0, err
+		}
+		contentData = jsonData
 	}
 
 	hash := fnv.New32a()
-	hash.Write([]byte(jsonString))
+	hash.Write(contentData)
 
 	//last port - last privileged port.
 	portRange := 65535 - 1023

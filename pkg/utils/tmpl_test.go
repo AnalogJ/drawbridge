@@ -59,3 +59,14 @@ func TestUniquePort_WithNonStringValues(t *testing.T) {
 	require.NoError(t, err, "should not raise an error")
 	require.Equal(t, 38792, port, "should generate repeatible unique port from data")
 }
+
+func TestUniquePort_WithStringKey(t *testing.T) {
+	t.Parallel()
+
+	//test
+	port, err := utils.UniquePort("17")
+
+	//assert
+	require.NoError(t, err, "should not raise an error")
+	require.Equal(t, 36016, port, "should generate repeatible unique port from data")
+}
