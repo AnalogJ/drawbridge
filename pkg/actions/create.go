@@ -76,9 +76,14 @@ func (e *CreateAction) Start(cliAnswerData map[string]interface{}) error {
 		return err
 	}
 
-	err = activeConfigTemplate.WriteTemplate(answerData, e.Config.InternalQuestionKeys())
+	configTemplateData, err := activeConfigTemplate.WriteTemplate(answerData, e.Config.InternalQuestionKeys())
 	if err != nil {
 		return err
+	}
+	//make sure that we copy the config template data into the answerData object so it can be used by custom templates
+	//and is persisted in the answers.yaml file.
+	for k,v := range configTemplateData {
+		answerData[k] = v
 	}
 
 	// load up all active_custom_templates and attempt to merge answers with it.
@@ -88,7 +93,7 @@ func (e *CreateAction) Start(cliAnswerData map[string]interface{}) error {
 	}
 
 	for _, template := range activeCustomTemplates {
-		err := template.WriteTemplate(answerData)
+		_, err := template.WriteTemplate(answerData)
 		if err != nil {
 			return err
 		}
