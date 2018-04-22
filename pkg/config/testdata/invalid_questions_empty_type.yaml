@@ -1,3 +1,4 @@
+version: 1
 questions:
   environment:
     description: what is the stack environment
