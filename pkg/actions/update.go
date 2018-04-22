@@ -69,7 +69,7 @@ func (e *UpdateAction) Start() error {
 	)
 
 	if releaseInfo.TagName == e.currentBinaryVersion() {
-		//TODO: return errors.UpdateNotAvailableError("No new version found.")
+		return errors.UpdateNotAvailableError("No new version found.")
 	}
 
 	//see if theres a binary for this OS/Arch

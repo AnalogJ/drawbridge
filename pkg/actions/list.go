@@ -148,7 +148,7 @@ func (e *ListAction) recursivePrintTree(level int, parentTree treeprint.Tree, gr
 		currentTree := parentTree
 
 		//ensure the current groupKey is not empty.
-		if len(groupKey) > 0 { //TODO: figure out how to skip the last group level. && level < len(questionKeys)-2{
+		if len(groupKey) > 0 {
 
 			// handle following cases:
 			if level+1 < len(questionKeys) {

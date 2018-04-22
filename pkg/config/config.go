@@ -39,7 +39,6 @@ func (c *configuration) Init() error {
 	c.SetDefault("options.active_custom_templates", []string{})
 	c.SetDefault("options.ui_group_priority", []string{"environment", "username"})
 	c.SetDefault("options.ui_question_hidden", []string{})
-	//TODO: options.overwrite == false/
 
 	c.SetDefault("questions", map[string]Question{
 		"environment": {
@@ -164,12 +163,9 @@ func (c *configuration) ValidateConfig() error {
 	//	if !ok || len(typeContent) == 0 {
 	//		return errors.QuestionSyntaxError("`type` is required for questions")
 	//	}
-	//	//TODO: if a default value is set, check that the schema allows it.
 	//}
 	//
-	////TODO: deserialize Answers
 	//
-	//// TODO: check if templates have any variables that are not defined as questions.
 
 	return nil
 }
@@ -206,6 +202,7 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 	// TODO: look at the dependencies key for matching the questions with answers keys.
 	// TODO: look at the dependenices key for matching the options.active_templates with templates keys
 	// TODO: ensure that all config_template.filepaths are relative, they will be created in the options.config_dir
+	// TODO: ensure that all custom_templates.filepaths are absolute or start with ~/
 	// language=json
 	configFileSchema := `
 	{

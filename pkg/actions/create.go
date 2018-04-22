@@ -152,7 +152,6 @@ func (e *CreateAction) queryResponse(questionKey string, question config.Questio
 			fmt.Printf("%v\n", err)
 			continue
 		}
-		//TODO: figure out how to handle empty strings (still valid answer for some reason)
 
 		err = question.Validate(questionKey, answerTyped)
 		if err != nil {
