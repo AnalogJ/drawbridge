@@ -82,7 +82,7 @@ func (e *CreateAction) Start(cliAnswerData map[string]interface{}) error {
 	}
 	//make sure that we copy the config template data into the answerData object so it can be used by custom templates
 	//and is persisted in the answers.yaml file.
-	for k,v := range configTemplateData {
+	for k, v := range configTemplateData {
 		answerData[k] = v
 	}
 

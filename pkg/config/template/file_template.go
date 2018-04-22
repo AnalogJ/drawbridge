@@ -35,7 +35,7 @@ func (t *FileTemplate) DeleteTemplate(answerData map[string]interface{}) error {
 }
 
 func (t *FileTemplate) WriteTemplate(answerData map[string]interface{}) (map[string]string, error) {
-	returnData := map[string]string {}
+	returnData := map[string]string{}
 	answerData, err := utils.MapDeepCopy(answerData)
 	if err != nil {
 		return nil, err

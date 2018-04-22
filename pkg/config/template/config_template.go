@@ -3,8 +3,8 @@ package template
 import (
 	"drawbridge/pkg/utils"
 	"fmt"
-	"path"
 	"github.com/fatih/color"
+	"path"
 )
 
 // for configs `filepath`, must be relative to config_dir
@@ -20,7 +20,7 @@ func (t *ConfigTemplate) DeleteTemplate(answerData map[string]interface{}) error
 }
 
 func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignoreKeys []string) (map[string]string, error) {
-	returnData := map[string]string {}
+	returnData := map[string]string{}
 
 	answerData, err := utils.MapDeepCopy(answerData)
 	if err != nil {
@@ -41,7 +41,7 @@ func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignore
 	answerData["pem_filepath"] = templatedPemFilePath
 	returnData["pem_filepath"] = templatedPemFilePath
 
-	if !utils.FileExists(templatedPemFilePath){
+	if !utils.FileExists(templatedPemFilePath) {
 		color.Yellow("WARNING: PEM file missing. Place it at the following location before attempting to connect. %v", templatedPemFilePath)
 	}
 
@@ -49,11 +49,11 @@ func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignore
 	t.Content = configTemplatePrefix(answerData, ignoreKeys) + t.Content
 
 	templateReturnData, err := t.FileTemplate.WriteTemplate(answerData)
-	for k,v := range templateReturnData {
+	for k, v := range templateReturnData {
 		returnData[k] = v
 	}
 
-	if(err != nil){
+	if err != nil {
 		return nil, err
 	}
 
