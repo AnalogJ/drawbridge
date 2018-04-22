@@ -90,27 +90,27 @@ func (c *configuration) Init() error {
 	c.SetDefault("config_templates.default.content", utils.StripIndent(
 		`
 		ForwardAgent yes
-      	ForwardX11 no
-      	HashKnownHosts yes
-      	IdentitiesOnly yes
-      	StrictHostKeyChecking no
+		ForwardX11 no
+		HashKnownHosts yes
+		IdentitiesOnly yes
+		StrictHostKeyChecking no
 
 
-      	Host bastion
-          	Hostname bastion1.{{.shard_type}}.{{.shard}}.{{.stack_name}}{{if ne .environment "prod"}}{{.environment}}{{end}}example.com
-          	User {{if eq .username "aws"}}cloud-user{{else}}{{.username}}{{end}}
-          	IdentityFile {{.template.pem_filepath}}
-          	LocalForward localhost:{{uniquePort .template.filepath}} localhost:8080
-          	UserKnownHostsFile=/dev/null
-          	StrictHostKeyChecking=no
+		Host bastion
+		  	Hostname bastion1.{{.shard_type}}.{{.shard}}.{{.stack_name}}{{if ne .environment "prod"}}{{.environment}}{{end}}example.com
+		  	User {{if eq .username "aws"}}cloud-user{{else}}{{.username}}{{end}}
+		  	IdentityFile {{.template.pem_filepath}}
+		  	LocalForward localhost:{{uniquePort .template.filepath}} localhost:8080
+		  	UserKnownHostsFile=/dev/null
+		  	StrictHostKeyChecking=no
 
-      	Host bastion+*
-          	ProxyCommand ssh -F {{.template.filepath}} -W $(echo %h |cut -d+ -f2):%p bastion
-          	User {{if eq .username "aws"}}cloud-user{{else}}{{.username}}{{end}}
-          	IdentityFile {{.template.pem_filepath}}
-          	LogLevel INFO
-          	UserKnownHostsFile=/dev/null
-          	StrictHostKeyChecking=no
+		Host bastion+*
+		  	ProxyCommand ssh -F {{.template.filepath}} -W $(echo %h |cut -d+ -f2):%p bastion
+		  	User {{if eq .username "aws"}}cloud-user{{else}}{{.username}}{{end}}
+		  	IdentityFile {{.template.pem_filepath}}
+		  	LogLevel INFO
+		  	UserKnownHostsFile=/dev/null
+		  	StrictHostKeyChecking=no
 	`))
 	c.SetDefault("custom_templates",map[string]interface{}{})
 
@@ -405,7 +405,7 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 
 func (c *configuration) InternalQuestionKeys() []string {
 	//list of internal keys, can be filtered out when printing, etc.
-	return []string{"config_dir", "pem_dir", "active_config_template", "active_custom_templates", "ui_group_priority", "ui_question_hidden", "custom", "config"}
+	return []string{"config_dir", "pem_dir", "active_config_template", "active_custom_templates", "ui_group_priority", "ui_question_hidden", "custom", "config", "template"}
 }
 
 func (c *configuration) GetQuestion(questionKey string) (Question, error) {
