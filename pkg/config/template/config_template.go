@@ -4,6 +4,7 @@ import (
 	"drawbridge/pkg/utils"
 	"fmt"
 	"path"
+	"github.com/fatih/color"
 )
 
 // for configs `filepath`, must be relative to config_dir
@@ -19,7 +20,6 @@ func (t *ConfigTemplate) DeleteTemplate(answerData map[string]interface{}) error
 }
 
 func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignoreKeys []string) error {
-	//TODO: validate that we have all the required templates variables populated.
 
 	// modify/tweak the config template because its a known type.
 	//expand PemFilePath
@@ -34,7 +34,9 @@ func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignore
 	}
 	answerData["pem_filepath"] = templatedPemFilePath
 
-	//TODO write a warning if the pem file is missing.
+	if !utils.FileExists(templatedPemFilePath){
+		color.Yellow("WARNING: PEM file missing. Place it at the following location before attempting to connect. %v", templatedPemFilePath)
+	}
 
 	t.FilePath = path.Join(answerData["config_dir"].(string), t.FilePath)
 	t.Content = configTemplatePrefix(answerData, ignoreKeys) + t.Content

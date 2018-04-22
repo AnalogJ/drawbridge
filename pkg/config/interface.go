@@ -26,6 +26,6 @@ type Interface interface {
 
 	GetConfigTemplates() (map[string]template.ConfigTemplate, error)
 	GetActiveConfigTemplate() (template.ConfigTemplate, error)
-	GetExtraTemplates() (map[string]template.FileTemplate, error)
-	GetActiveExtraTemplates() ([]template.FileTemplate, error)
+	GetCustomTemplates() (map[string]template.FileTemplate, error)
+	GetActiveCustomTemplates() ([]template.FileTemplate, error)
 }

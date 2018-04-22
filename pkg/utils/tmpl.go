@@ -11,6 +11,7 @@ func PopulateTemplate(tmplContent string, data map[string]interface{}) (string, 
 	//set functions
 	fns := template.FuncMap{
 		"uniquePort": UniquePort,
+		"expandPath": ExpandPath,
 	}
 
 	// prep the template, set the option

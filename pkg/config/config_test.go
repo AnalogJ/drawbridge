@@ -18,7 +18,7 @@ func TestConfiguration_init_ShouldCorrectlyInitializeConfiguration(t *testing.T)
 	require.Equal(t, "~/.ssh/drawbridge", testConfig.GetString("options.config_dir"), "should populate config_dir with default")
 	require.Equal(t, "~/.ssh", testConfig.GetString("options.pem_dir"), "should populate pem_dir with default")
 	require.Equal(t, "default", testConfig.GetString("options.active_config_template"), "should populate active_config_template with default")
-	require.Equal(t, []string{}, testConfig.GetStringSlice("options.active_extra_templates"), "should populate active_config_template with empty list")
+	require.Equal(t, []string{}, testConfig.GetStringSlice("options.active_custom_templates"), "should populate active_config_template with empty list")
 }
 
 func TestConfiguration_ReadConfig_InvalidFilePath(t *testing.T) {
@@ -44,7 +44,7 @@ func TestConfiguration_ReadConfig_Simple(t *testing.T) {
 	//assert
 	require.NoError(t, err, "should be valid config file")
 	require.Equal(t, "~/.ssh/drawbridge", testConfig.GetString("options.config_dir"), "should populate config_dir with default")
-	require.Equal(t, []string{"default", "knife"}, testConfig.GetStringSlice("options.active_extra_templates"), "should populate active_extra_templates with overrides")
+	require.Equal(t, []string{"default", "knife"}, testConfig.GetStringSlice("options.active_custom_templates"), "should populate active_custom_templates with overrides")
 	require.Equal(t, "~/.ssh/drawbridge/pem", testConfig.GetString("options.pem_dir"), "should populate pem_dir with overrides")
 
 }

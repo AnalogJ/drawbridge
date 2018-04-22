@@ -287,9 +287,9 @@ func createFlags(appConfig config.Interface) ([]cli.Flag, error) {
 			Value: appConfig.GetString("options.active_config_template"),
 		},
 		&cli.StringSliceFlag{
-			Name:  "active_extra_templates",
-			Usage: "Activated extra_templates",
-			Value: cli.NewStringSlice(appConfig.GetStringSlice("options.active_extra_templates")...),
+			Name:  "active_custom_templates",
+			Usage: "Activated custom_templates",
+			Value: cli.NewStringSlice(appConfig.GetStringSlice("options.active_custom_templates")...),
 		},
 	}
 

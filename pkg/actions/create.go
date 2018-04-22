@@ -81,13 +81,13 @@ func (e *CreateAction) Start(cliAnswerData map[string]interface{}) error {
 		return err
 	}
 
-	// load up all active_extra_templates and attempt to merge answers with it.
-	activeExtraTemplates, err := e.Config.GetActiveExtraTemplates()
+	// load up all active_custom_templates and attempt to merge answers with it.
+	activeCustomTemplates, err := e.Config.GetActiveCustomTemplates()
 	if err != nil {
 		return err
 	}
 
-	for _, template := range activeExtraTemplates {
+	for _, template := range activeCustomTemplates {
 		err := template.WriteTemplate(answerData)
 		if err != nil {
 			return err

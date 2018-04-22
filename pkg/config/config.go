@@ -36,7 +36,7 @@ func (c *configuration) Init() error {
 	c.SetDefault("options.pem_dir", "~/.ssh")
 	c.SetDefault("options.active_config_template", "default")
 
-	c.SetDefault("options.active_extra_templates", []string{})
+	c.SetDefault("options.active_custom_templates", []string{})
 	c.SetDefault("options.ui_group_priority", []string{"environment", "username"})
 	c.SetDefault("options.ui_question_hidden", []string{})
 	//TODO: options.overwrite == false/
@@ -211,7 +211,11 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 	{
 		"type": "object",
 		"additionalProperties":false,
+		"required": ["version"],
 		"properties":{
+			"version": {
+				"type": "integer"
+			},
 			"options": {
 				"type": "object",
 				"additionalProperties":false,
@@ -225,7 +229,7 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 					"active_config_template": {
 						"type":"string"
 					},
-					"active_extra_templates": {
+					"active_custom_templates": {
 						"type":"array",
 						"uniqueItems": true,
 						"items":[{"type":"string"}]
@@ -286,7 +290,30 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 			},
 			"answers":{
 				"type": "array",
-				"additionalProperties":false
+				"additionalProperties":false,
+				"items": {
+					"oneOf": [
+						{
+							"type" : "object",
+							"additionalProperties":false,
+							"required": ["_file"],
+							"properties" : {
+                    			"_file" : {
+                        			"type" : "string",
+									"pattern": "^(/[^/]+)+$"
+                    			}
+                			}
+						},
+						{
+							"type" : "object",
+							"additionalProperties":false,
+							"patternProperties": {
+								"^[a-z0-9]*$": {
+								}
+							}
+						}
+					]
+				}
 			},
 			"variables":{
 				"type": "object",
@@ -302,7 +329,7 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 					"^[a-z0-9]*$":{
 						"type":"object",
 						"additionalProperties":false,
-						"required": ["filepath", "content"],
+						"required": ["filepath", "content", "pem_filepath"],
 						"properties": {
 							"filepath": {
 								"type": "string"
@@ -317,7 +344,7 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 					}
 				}
 			},
-			"extra_templates":{
+			"custom_templates":{
 				"type": "object",
 				"patternProperties": {
 					"^[a-z0-9]*$":{
@@ -360,7 +387,7 @@ func (c *configuration) ValidateConfigFile(configFilePath string) error {
 
 func (c *configuration) InternalQuestionKeys() []string {
 	//list of internal keys, can be filtered out when printing, etc.
-	return []string{"config_dir", "pem_dir", "active_config_template", "active_extra_templates", "ui_group_priority", "ui_question_hidden", "pem_filepath", "filepath"}
+	return []string{"config_dir", "pem_dir", "active_config_template", "active_custom_templates", "ui_group_priority", "ui_question_hidden", "pem_filepath", "filepath"}
 }
 
 func (c *configuration) GetQuestion(questionKey string) (Question, error) {
@@ -405,18 +432,18 @@ func (c *configuration) GetActiveConfigTemplate() (template.ConfigTemplate, erro
 	return activeTemplate, nil
 }
 
-func (c *configuration) GetExtraTemplates() (map[string]template.FileTemplate, error) {
+func (c *configuration) GetCustomTemplates() (map[string]template.FileTemplate, error) {
 	//deserialize Templates
 	templateMap := map[string]template.FileTemplate{}
-	err := c.UnmarshalKey("extra_templates", &templateMap)
+	err := c.UnmarshalKey("custom_templates", &templateMap)
 	return templateMap, err
 }
 
-func (c *configuration) GetActiveExtraTemplates() ([]template.FileTemplate, error) {
+func (c *configuration) GetActiveCustomTemplates() ([]template.FileTemplate, error) {
 	//deserialize Templates
-	activeTemplateNames := c.GetStringSlice("options.active_extra_templates")
+	activeTemplateNames := c.GetStringSlice("options.active_custom_templates")
 
-	allTemplates, err := c.GetExtraTemplates()
+	allTemplates, err := c.GetCustomTemplates()
 	if err != nil {
 		return nil, err
 	}

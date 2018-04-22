@@ -59,22 +59,22 @@ func (e *DeleteAction) One(answerData map[string]interface{}, force bool) error 
 		color.Yellow(" - Skipping. Could not find config file at: %v", renderedConfigFilePath)
 	}
 
-	//delete any extra templates.
-	if val, ok := answerData["active_extra_templates"]; ok {
-		renderedExtraTemplateNames := val.([]string)
+	//delete any custom templates.
+	if val, ok := answerData["active_custom_templates"]; ok {
+		renderedCustomTemplateNames := val.([]interface{})
 
-		// load up all extraTemplates
-		extraTemplates, err := e.Config.GetExtraTemplates()
+		// load up all customTemplates
+		customTemplates, err := e.Config.GetCustomTemplates()
 		if err != nil {
 			return err
 		}
 
-		fmt.Println("Deleting extra template files")
-		for _, renderedExtraTemplateName := range renderedExtraTemplateNames {
-			if renderedExtraTemplate, ok := extraTemplates[renderedExtraTemplateName]; ok {
-				err = renderedExtraTemplate.DeleteTemplate(answerData)
+		fmt.Println("Deleting custom template files:")
+		for _, renderedCustomTemplateName := range renderedCustomTemplateNames {
+			if renderedCustomTemplate, ok := customTemplates[renderedCustomTemplateName.(string)]; ok {
+				err = renderedCustomTemplate.DeleteTemplate(answerData)
 				if err != nil {
-					color.Yellow(" - Skipping. An error occurred while deleting %v: %v", renderedExtraTemplateName, err)
+					color.Yellow(" - Skipping. An error occurred while deleting %v: %v", renderedCustomTemplateName, err)
 				}
 			}
 		}
