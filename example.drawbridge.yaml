@@ -172,15 +172,15 @@ config_templates:
       Host bastion
           Hostname bastion1.{{.shard_type}}.{{.shard}}.{{.stack_name}}{{if ne .environment "prod"}}{{.environment}}{{end}}example.com
           User {{if eq .username "aws"}}cloud-user{{else}}{{.username}}{{end}}
-          IdentityFile {{.pem_filepath}}
-          LocalForward localhost:{{uniquePort .}} localhost:8080
+          IdentityFile {{.template.pem_filepath}}
+          LocalForward localhost:{{uniquePort .template.filepath}} localhost:8080
           UserKnownHostsFile=/dev/null
           StrictHostKeyChecking=no
 
       Host bastion+*
-          ProxyCommand ssh -F {{.filepath}} -W $(echo %h |cut -d+ -f2):%p bastion
+          ProxyCommand ssh -F {{.template.filepath}} -W $(echo %h |cut -d+ -f2):%p bastion
           User {{if eq .username "aws"}}cloud-user{{else}}{{.username}}{{end}}
-          IdentityFile {{.pem_filepath}}
+          IdentityFile {{.template.pem_filepath}}
           LogLevel INFO
           UserKnownHostsFile=/dev/null
           StrictHostKeyChecking=no
@@ -215,7 +215,7 @@ custom_templates: {}
 #
 #      chef_server_hostname="chef.internal.{{.shard}}.{{.stack_name}}{{if ne .environment "prod"}}{{.environment}}{{end}}example.com"
 #      client_key=File.expand_path("~/.chef/drawbridge/pem/{{.environment}}/{{.environment}}-{{.stack_name}}-{.shard_type}}-{{.shard}}{{if ne .username "aws"}}-{{.username}}{{end}}.pem"
-#      proxy_port="{{uniquePort .}}"
+#      proxy_port="{{uniquePort .config.filepath}}"
 #      nodename="{{.username}}"
 #
 #      ######################################################################

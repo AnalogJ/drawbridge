@@ -78,13 +78,13 @@ func main() {
 					//TODO: check if the user decides to create one from scratch.
 
 					//pass in CLI answer data.
-					cliAnswers, err := createFlagAnswers(config, c.FlagNames(), c)
+					cliAnswers, err := createFlagHandler(config, c.FlagNames(), c)
 					if err != nil {
 						return err
 					}
 
 					createAction := actions.CreateAction{Config: config}
-					return createAction.Start(cliAnswers)
+					return createAction.Start(cliAnswers, c.Bool("dryrun"))
 				},
 
 				Flags: createFlags,
@@ -345,11 +345,29 @@ func createFlags(appConfig config.Interface) ([]cli.Flag, error) {
 	return flags, nil
 }
 
-func createFlagAnswers(appConfig config.Interface, cliFlags []string, c *cli.Context) (map[string]interface{}, error) {
+func createFlagHandler(appConfig config.Interface, cliFlags []string, c *cli.Context) (map[string]interface{}, error) {
 
 	cliAnswers := map[string]interface{}{}
 
-	for _, questionKey := range cliFlags {
+	for _, flagName := range cliFlags {
+		//handle options
+		options := map[string]interface{}{}
+		appConfig.UnmarshalKey("options", &options)
+		if _, ok := options[flagName]; ok {
+			//this flag is actually an option. Lets set it.
+			appConfig.Set(fmt.Sprintf("options.%v", flagName), c.String(flagName))
+			continue
+		}
+
+		//skip dryrun
+		if flagName == "dryrun"{
+			continue
+		}
+
+
+
+		questionKey := flagName
+
 		question, err := appConfig.GetQuestion(questionKey)
 		if err != nil {
 			return nil, err

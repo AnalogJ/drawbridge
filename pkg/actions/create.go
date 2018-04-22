@@ -16,7 +16,7 @@ type CreateAction struct {
 	Config config.Interface
 }
 
-func (e *CreateAction) Start(cliAnswerData map[string]interface{}) error {
+func (e *CreateAction) Start(cliAnswerData map[string]interface{}, dryRun bool) error {
 
 	// prepare answer data with config.options
 	answerData := map[string]interface{}{}
@@ -53,7 +53,7 @@ func (e *CreateAction) Start(cliAnswerData map[string]interface{}) error {
 			color.GreenString(fmt.Sprintf("%v", answerData[questionKey])))
 	}
 
-	// ensuer that that all questions are answered, query user if missing anything.
+	// ensure that that all questions are answered, query user if missing anything.
 	answerData, err = e.Query(questions, answerData)
 	if err != nil {
 		return err
@@ -76,15 +76,14 @@ func (e *CreateAction) Start(cliAnswerData map[string]interface{}) error {
 		return err
 	}
 
-	configTemplateData, err := activeConfigTemplate.WriteTemplate(answerData, e.Config.InternalQuestionKeys())
+	configTemplateData, err := activeConfigTemplate.WriteTemplate(answerData, e.Config.InternalQuestionKeys(), dryRun)
 	if err != nil {
 		return err
 	}
+
 	//make sure that we copy the config template data into the answerData object so it can be used by custom templates
-	//and is persisted in the answers.yaml file.
-	for k, v := range configTemplateData {
-		answerData[k] = v
-	}
+	//and is persisted in the answers.yaml file. Set it as key `config`
+	answerData["config"] = configTemplateData
 
 	// load up all active_custom_templates and attempt to merge answers with it.
 	activeCustomTemplates, err := e.Config.GetActiveCustomTemplates()
@@ -92,16 +91,21 @@ func (e *CreateAction) Start(cliAnswerData map[string]interface{}) error {
 		return err
 	}
 
+	answerData["custom"] = []interface{}{}
 	for _, template := range activeCustomTemplates {
-		_, err := template.WriteTemplate(answerData)
+		customTemplateData, err := template.WriteTemplate(answerData, dryRun)
 		if err != nil {
 			return err
 		}
+		answerData["custom"] = append(answerData["custom"].([]interface{}), customTemplateData)
 	}
 
 	// write the answers.yaml file
-	answersFilePath := path.Join(e.Config.GetString("options.config_dir"), fmt.Sprintf(".%v.answers.yaml", path.Base(activeConfigTemplate.FilePath)))
-	answersFilePath, err = utils.PopulateTemplate(answersFilePath, answerData)
+	return e.WriteAnswersFile(path.Base(activeConfigTemplate.FilePath), answerData, dryRun)
+}
+func (e *CreateAction) WriteAnswersFile(baseName string, answerData map[string]interface{}, dryRun bool) error {
+	answersFilePath := path.Join(e.Config.GetString("options.config_dir"), fmt.Sprintf(".%v.answers.yaml", baseName))
+	answersFilePath, err := utils.PopulateTemplate(answersFilePath, answerData)
 	if err != nil {
 		return err
 	}
@@ -110,11 +114,10 @@ func (e *CreateAction) Start(cliAnswerData map[string]interface{}) error {
 	if err != nil {
 		return err
 	}
-	err = utils.FileWrite(answersFilePath, string(answersFileContent), 0600)
+	err = utils.FileWrite(answersFilePath, string(answersFileContent), 0640, dryRun)
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 

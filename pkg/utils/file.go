@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"github.com/fatih/color"
 )
 
 func ExpandPath(filePath string) (string, error) {
@@ -22,14 +23,23 @@ func ExpandPath(filePath string) (string, error) {
 	return filePath, nil
 }
 
-func FileWrite(filePath string, content string, perm os.FileMode) error {
+func FileWrite(filePath string, content string, perm os.FileMode, dryRun bool) error {
 	filePath, err := ExpandPath(filePath)
 	if err != nil {
 		return err
 	}
 
-	d1 := []byte(content)
-	err = ioutil.WriteFile(filePath, d1, perm)
+	if dryRun {
+		fmt.Printf("%v %v %v:\n",
+			color.GreenString("[DRYRUN]"),
+			"Would have written content to",
+			color.GreenString(filePath),
+		)
+		color.Green(content)
+	} else {
+		d1 := []byte(content)
+		err = ioutil.WriteFile(filePath, d1, perm)
+	}
 	return err
 }
 

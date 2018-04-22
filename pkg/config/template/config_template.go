@@ -19,8 +19,11 @@ func (t *ConfigTemplate) DeleteTemplate(answerData map[string]interface{}) error
 	return t.FileTemplate.DeleteTemplate(answerData)
 }
 
-func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignoreKeys []string) (map[string]string, error) {
-	returnData := map[string]string{}
+func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignoreKeys []string, dryRun bool) (map[string]interface{}, error) {
+	//intialize template data.
+	if t.data == nil{
+		t.data = map[string]interface{}{}
+	}
 
 	answerData, err := utils.MapDeepCopy(answerData)
 	if err != nil {
@@ -38,8 +41,9 @@ func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignore
 	if err != nil {
 		return nil, err
 	}
-	answerData["pem_filepath"] = templatedPemFilePath
-	returnData["pem_filepath"] = templatedPemFilePath
+
+	t.data["pem_filepath"] = templatedPemFilePath
+	answerData["template"] = t.data
 
 	if !utils.FileExists(templatedPemFilePath) {
 		color.Yellow("WARNING: PEM file missing. Place it at the following location before attempting to connect. %v", templatedPemFilePath)
@@ -48,16 +52,12 @@ func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignore
 	t.FilePath = path.Join(answerData["config_dir"].(string), t.FilePath)
 	t.Content = configTemplatePrefix(answerData, ignoreKeys) + t.Content
 
-	templateReturnData, err := t.FileTemplate.WriteTemplate(answerData)
-	for k, v := range templateReturnData {
-		returnData[k] = v
-	}
-
+	_, err = t.FileTemplate.WriteTemplate(answerData, dryRun)
 	if err != nil {
 		return nil, err
 	}
 
-	return returnData, nil
+	return t.data, nil
 
 }
 
