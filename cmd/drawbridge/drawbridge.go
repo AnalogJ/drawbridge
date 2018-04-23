@@ -264,6 +264,22 @@ func main() {
 				},
 			},
 			{
+				Name:  "proxy",
+				Usage: "Build/Rebuild a Proxy auto-config (PAC) file to access websites through Drawbridge tunnels",
+				Action: func(c *cli.Context) error {
+					fmt.Fprintln(c.App.Writer, c.Command.Usage)
+
+					listAction := actions.ListAction{Config: config}
+					answerDataList, err := listAction.RenderedAnswersList()
+					if err != nil {
+						return err
+					}
+
+					proxyAction := actions.ProxyAction{Config: config}
+					return proxyAction.Start(answerDataList, false )
+				},
+			},
+			{
 				Name:  "update",
 				Usage: "Update drawbridge to the latest version",
 				Action: func(c *cli.Context) error {

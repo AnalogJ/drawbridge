@@ -24,6 +24,7 @@ type Interface interface {
 	//GetQuestionsSchema() (map[string]interface{}, error)
 	//GetQuestionSchema(question Question) (map[string]interface{}, error)
 
+	GetPacTemplate() (template.PacTemplate, error)
 	GetConfigTemplates() (map[string]template.ConfigTemplate, error)
 	GetActiveConfigTemplate() (template.ConfigTemplate, error)
 	GetCustomTemplates() (map[string]template.FileTemplate, error)

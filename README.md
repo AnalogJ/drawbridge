@@ -50,6 +50,7 @@ Drawbridge aims to solve this problem in a flexible and scalable way.
 	- eg. Chef knife.rb configs, Pac/Proxy files, etc.
 - Cleanup utility is built-in
 - `drawbridge update` lets you update the binary inplace.
+- Pretty colors. The CLI is all colorized to make it easy to skim for errors/warnings
 
 # Usage
 

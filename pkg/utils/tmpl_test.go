@@ -27,6 +27,21 @@ func TestPopulateTemplate_MissingDataShouldReturnErr(t *testing.T) {
 	require.Error(t, err, "should throw an error if missing template data")
 }
 
+func TestPopulateTemplate_SliceData(t *testing.T) {
+	t.Parallel()
+
+	//test
+	actual, err := utils.PopulateTemplate("{{range .}}test {{.example1}},{{end}}", []map[string]interface{}{
+		{"example1": "17"},
+		{"example1": "18"},
+	})
+
+	//assert
+	require.NoError(t, err, "should not throw an error")
+	require.Equal(t, "test 17,test 18,", actual, "should populate a template correctly")
+}
+
+
 func TestPopulateTemplate_UniquePort(t *testing.T) {
 	t.Parallel()
 
