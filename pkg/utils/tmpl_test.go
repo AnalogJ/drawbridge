@@ -41,7 +41,6 @@ func TestPopulateTemplate_SliceData(t *testing.T) {
 	require.Equal(t, "test 17,test 18,", actual, "should populate a template correctly")
 }
 
-
 func TestPopulateTemplate_UniquePort(t *testing.T) {
 	t.Parallel()
 

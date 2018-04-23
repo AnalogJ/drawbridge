@@ -8,7 +8,6 @@ type ProxyAction struct {
 
 func (e *ProxyAction) Start(answerDataList []map[string]interface{}, dryRun bool) error {
 
-
 	// write the pac template
 	pacTemplate, err := e.Config.GetPacTemplate()
 	if err != nil {
@@ -19,7 +18,6 @@ func (e *ProxyAction) Start(answerDataList []map[string]interface{}, dryRun bool
 	if err != nil {
 		return err
 	}
-
 
 	return nil
 }

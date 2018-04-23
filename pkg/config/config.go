@@ -137,8 +137,7 @@ func (c *configuration) Init() error {
 		}
 	`))
 
-
-		//if you want to load a non-standard location system config file (~/drawbridge.yml), use ReadConfig
+	//if you want to load a non-standard location system config file (~/drawbridge.yml), use ReadConfig
 	c.SetConfigType("yaml")
 	//c.SetConfigName("drawbridge")
 	//c.AddConfigPath("$HOME/")

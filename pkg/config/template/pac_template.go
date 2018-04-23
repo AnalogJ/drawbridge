@@ -2,23 +2,20 @@ package template
 
 import (
 	"drawbridge/pkg/utils"
+	"github.com/fatih/color"
+	"log"
 	"os"
 	"path/filepath"
-	"log"
-	"github.com/fatih/color"
 )
 
 type PacTemplate struct {
 	FileTemplate `mapstructure:",squash"`
 }
 
-
 func (t *PacTemplate) WriteTemplate(answerDataList []map[string]interface{}, dryRun bool) (map[string]interface{}, error) {
 	if t.data == nil {
 		t.data = map[string]interface{}{}
 	}
-
-
 
 	pacFilePath, err := utils.ExpandPath(t.FilePath)
 	if err != nil {

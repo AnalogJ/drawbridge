@@ -117,7 +117,7 @@ func main() {
 					if c.IsSet("drawbridge_id") {
 						answerIndex = c.Int("drawbridge_id")
 					} else {
-						text := utils.StdinQuery(fmt.Sprintf("Enter number of drawbridge config you would like to connect to (%v-%v):", 1, len(listAction.OrderedAnswers) ))
+						text := utils.StdinQuery(fmt.Sprintf("Enter number of drawbridge config you would like to connect to (%v-%v):", 1, len(listAction.OrderedAnswers)))
 						i, err := strconv.Atoi(text)
 						if err != nil {
 							return err
@@ -169,7 +169,6 @@ func main() {
 					if c.IsSet("drawbridge_id") {
 						answerIndex = c.Int("drawbridge_id")
 					} else {
-
 
 						text := utils.StdinQuery(fmt.Sprintf("Enter number of drawbridge config you would like to download from (%v-%v):", 1, len(listAction.OrderedAnswers)))
 						i, err := strconv.Atoi(text)
@@ -276,7 +275,7 @@ func main() {
 					}
 
 					proxyAction := actions.ProxyAction{Config: config}
-					return proxyAction.Start(answerDataList, false )
+					return proxyAction.Start(answerDataList, false)
 				},
 			},
 			{
