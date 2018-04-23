@@ -108,12 +108,16 @@ func main() {
 					listAction := actions.ListAction{Config: config}
 					listAction.Start()
 
+					if len(listAction.OrderedAnswers) == 0 {
+						return nil
+					}
+
 					var answerIndex int
 
 					if c.IsSet("drawbridge_id") {
 						answerIndex = c.Int("drawbridge_id")
 					} else {
-						text := utils.StdinQuery("Enter number of drawbridge config you would like to connect to:")
+						text := utils.StdinQuery(fmt.Sprintf("Enter number of drawbridge config you would like to connect to (%v-%v):", 1, len(listAction.OrderedAnswers) ))
 						i, err := strconv.Atoi(text)
 						if err != nil {
 							return err
@@ -165,7 +169,9 @@ func main() {
 					if c.IsSet("drawbridge_id") {
 						answerIndex = c.Int("drawbridge_id")
 					} else {
-						text := utils.StdinQuery("Enter number of drawbridge config you would like to download from:")
+
+
+						text := utils.StdinQuery(fmt.Sprintf("Enter number of drawbridge config you would like to download from (%v-%v):", 1, len(listAction.OrderedAnswers)))
 						i, err := strconv.Atoi(text)
 						if err != nil {
 							return err
@@ -213,7 +219,8 @@ func main() {
 						if c.IsSet("drawbridge_id") {
 							answerIndex = c.Int("drawbridge_id")
 						} else {
-							text := utils.StdinQuery("Enter number of drawbridge config you would like to delete:")
+
+							text := utils.StdinQuery(fmt.Sprintf("Enter number of drawbridge config you would like to delete (%v-%v):", 1, len(listAction.OrderedAnswers)))
 							i, err := strconv.Atoi(text)
 							if err != nil {
 								return err

@@ -154,8 +154,7 @@ Rendered Drawbridge Configs:
             ├── [9]  shard_type: idle, username: aws
             └── [10]  shard_type: live, username: aws
 
-Enter number of drawbridge config you would like to connect to:
-
+Enter number of drawbridge config you would like to connect to (1-10):
 ```
 
 `drawbridge connect` will connect you to the bastion/jump host using a specified Drawbridge config file. It'll also add
@@ -168,6 +167,7 @@ If you want to connect directly to a internal server, you can do so by specifyin
 ## Delete
 
 `drawbridge delete`
+`drawbridge delete --all --force`
 
 
 ## Update
