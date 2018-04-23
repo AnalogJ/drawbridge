@@ -34,6 +34,7 @@ Drawbridge aims to solve this problem in a flexible and scalable way.
 
 # Features
 
+- Single binary (available for macOS and linux), only depends on `ssh`, `ssh-agent` and `scp`
 - Uses customizable templates to ensure that Drawbridge can be used by any organization, in any configuraton
 - Helps organize your SSH config files and PEM files
 - Generates SSH Config files for your servers spread across multiple environments and stacks.
@@ -194,7 +195,7 @@ Finished
 You can use the `--force` flag to disable the confirm prompt. The `--all` flag can be used to delete all Drawbridge managed
 configs in one command.
 
-You can use the following command to completely wipe out all Drawbridge files and start over. 
+You can use the following command to completely wipe out all Drawbridge files and start over.
 
 `drawbridge delete --all --force`
 
