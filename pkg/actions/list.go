@@ -165,7 +165,14 @@ func (e *ListAction) recursivePrintTree(level int, parentTree treeprint.Tree, gr
 
 			answerList := child.Data().([]interface{})
 			sort.Slice(answerList, func(i, j int) bool {
-				return answerList[i].(map[string]interface{})[groupKey].(string) > answerList[j].(map[string]interface{})[groupKey].(string)
+				iItem := answerList[i].(map[string]interface{})
+				jItem := answerList[j].(map[string]interface{})
+
+				if iItem[groupKey] != nil && jItem[groupKey] != nil {
+					return iItem[groupKey].(string) > jItem[groupKey].(string)
+				} else {
+					return false
+				}
 			})
 
 			for _, answer := range answerList {
