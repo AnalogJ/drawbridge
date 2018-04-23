@@ -166,7 +166,36 @@ If you want to connect directly to a internal server, you can do so by specifyin
 
 ## Delete
 
-`drawbridge delete`
+```
+$ drawbridge delete
+...
+        └── [us-east-2]  shard
+            ├── [9]  shard_type: idle, username: aws
+            └── [10]  shard_type: live, username: aws
+
+Enter number of drawbridge config you would like to delete:
+10
+Are you sure you would like to delete this config and associated templates? (PEM files will not be deleted)
+
+environment: test
+shard: us-east-2
+shard_type: live
+stack_name: app
+username: aws
+
+Please confirm [true/false]:
+true
+Deleting config file: /Users/jason/.ssh/drawbridge/test-app-live-us-east-2
+Deleting answers file
+Finished
+
+```
+
+You can use the `--force` flag to disable the confirm prompt. The `--all` flag can be used to delete all Drawbridge managed
+configs in one command.
+
+You can use the following command to completely wipe out all Drawbridge files and start over. 
+
 `drawbridge delete --all --force`
 
 
