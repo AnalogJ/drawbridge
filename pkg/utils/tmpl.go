@@ -7,7 +7,7 @@ import (
 	"text/template"
 )
 
-func PopulateTemplate(tmplContent string, data map[string]interface{}) (string, error) {
+func PopulateTemplate(tmplContent string, data interface{}) (string, error) {
 	//set functions
 	fns := template.FuncMap{
 		"uniquePort": UniquePort,
