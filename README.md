@@ -1,6 +1,6 @@
 <p align="center">
-  <a href="https://github.com/AnalogJ/capsulecd">
-  <img width="300" alt="portfolio_view" src="https://cdn.rawgit.com/AnalogJ/drawbridge/master/logo.svg">
+  <a href="https://github.com/AnalogJ/drawbridge">
+  <img width="300" alt="drawbridge_view" src="https://raw.githubusercontent.com/AnalogJ/drawbridge/master/logo.svg">
   </a>
 </p>
 
@@ -76,6 +76,11 @@ Bastion/Jumphost tunneling made easy
 	- config filename template
 	- ssh key filepath template
 
+
+# License
+
+- MIT
+- [Logo: Castle by Jemis mali from the Noun Project](https://thenounproject.com/search/?q=castle&i=1063814)
 
 # References
 
