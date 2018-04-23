@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/AnalogJ/drawbridge">
-  <img width="300" alt="drawbridge_view" src="https://raw.githubusercontent.com/AnalogJ/drawbridge/master/logo.svg">
+  <img width="300" alt="drawbridge_view" src="https://rawgit.com/AnalogJ/drawbridge/master/logo.svg">
   </a>
 </p>
 
