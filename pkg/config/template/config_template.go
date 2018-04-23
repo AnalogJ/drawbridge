@@ -21,7 +21,7 @@ func (t *ConfigTemplate) DeleteTemplate(answerData map[string]interface{}) error
 
 func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignoreKeys []string, dryRun bool) (map[string]interface{}, error) {
 	//intialize template data.
-	if t.data == nil{
+	if t.data == nil {
 		t.data = map[string]interface{}{}
 	}
 

@@ -2,12 +2,12 @@ package utils
 
 import (
 	"fmt"
+	"github.com/fatih/color"
 	"github.com/mitchellh/go-homedir"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"github.com/fatih/color"
 )
 
 func ExpandPath(filePath string) (string, error) {

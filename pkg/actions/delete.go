@@ -35,7 +35,6 @@ func (e *DeleteAction) One(answerData map[string]interface{}, force bool) error 
 		renderedCustomFilePaths = customItems.([]interface{})
 	}
 
-
 	if !force {
 
 		questionStr := []string{"Are you sure you would like to delete this config and associated templates? (PEM files will not be deleted)\n"}

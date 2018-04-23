@@ -15,7 +15,7 @@ type FileTemplate struct {
 	FilePath string `mapstructure:"filepath"`
 }
 
-func (t *FileTemplate) PopulateFilePath(answerData map[string]interface{}) (string, error){
+func (t *FileTemplate) PopulateFilePath(answerData map[string]interface{}) (string, error) {
 	templatedFilePath, err := utils.PopulateTemplate(t.FilePath, answerData)
 	if err != nil {
 		return "", err
@@ -26,7 +26,6 @@ func (t *FileTemplate) PopulateFilePath(answerData map[string]interface{}) (stri
 	}
 	return templatedFilePath, nil
 }
-
 
 func (t *FileTemplate) DeleteTemplate(answerData map[string]interface{}) error {
 
@@ -45,7 +44,7 @@ func (t *FileTemplate) DeleteTemplate(answerData map[string]interface{}) error {
 }
 
 func (t *FileTemplate) WriteTemplate(answerData map[string]interface{}, dryRun bool) (map[string]interface{}, error) {
-	if t.data == nil{
+	if t.data == nil {
 		t.data = map[string]interface{}{}
 	}
 
@@ -58,7 +57,6 @@ func (t *FileTemplate) WriteTemplate(answerData map[string]interface{}, dryRun b
 	if err != nil {
 		return nil, err
 	}
-
 
 	t.data["filepath"] = templatedFilePath
 	answerData["template"] = t.data

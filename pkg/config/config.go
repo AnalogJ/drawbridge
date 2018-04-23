@@ -42,44 +42,44 @@ func (c *configuration) Init() error {
 
 	c.SetDefault("questions", map[string]Question{
 		"environment": {
-			Description:  "What is the environment name?",
+			Description: "What is the environment name?",
 			Schema: map[string]interface{}{
 				"type":     "string",
 				"required": true,
-				"enum": []string{"test", "stage", "prod"},
+				"enum":     []string{"test", "stage", "prod"},
 			},
 		},
 		"stack_name": {
 			Description:  "What is the stack name?",
 			DefaultValue: "app",
 			Schema: map[string]interface{}{
-				"type":     "string",
-				"required": true,
+				"type":      "string",
+				"required":  true,
 				"minLength": 1,
 				"maxLength": 6,
 			},
 		},
 		"shard": {
-			Description:  "What is the shard datacenter?",
+			Description: "What is the shard datacenter?",
 			Schema: map[string]interface{}{
 				"type":     "string",
 				"required": true,
-				"enum": []string{"us-east-1", "us-east-2", "eu-west-1", "eu-west-2", "ap-south-1"},
+				"enum":     []string{"us-east-1", "us-east-2", "eu-west-1", "eu-west-2", "ap-south-1"},
 			},
 		},
 		"shard_type": {
-			Description:  "Is this a live (green) or idle (blue) stack?",
+			Description: "Is this a live (green) or idle (blue) stack?",
 			Schema: map[string]interface{}{
 				"type":     "string",
 				"required": true,
-				"enum": []string{"live","idle"},
+				"enum":     []string{"live", "idle"},
 			},
 		},
 		"username": {
-			Description:  "What username do you use to login to this stack?",
+			Description: "What username do you use to login to this stack?",
 			Schema: map[string]interface{}{
-				"type":     "string",
-				"required": true,
+				"type":      "string",
+				"required":  true,
 				"minLength": 1,
 			},
 		},
@@ -112,8 +112,7 @@ func (c *configuration) Init() error {
 		  	UserKnownHostsFile=/dev/null
 		  	StrictHostKeyChecking=no
 	`))
-	c.SetDefault("custom_templates",map[string]interface{}{})
-
+	c.SetDefault("custom_templates", map[string]interface{}{})
 
 	//if you want to load a non-standard location system config file (~/drawbridge.yml), use ReadConfig
 	c.SetConfigType("yaml")

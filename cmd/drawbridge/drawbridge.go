@@ -360,11 +360,9 @@ func createFlagHandler(appConfig config.Interface, cliFlags []string, c *cli.Con
 		}
 
 		//skip dryrun
-		if flagName == "dryrun"{
+		if flagName == "dryrun" {
 			continue
 		}
-
-
 
 		questionKey := flagName
 
