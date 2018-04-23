@@ -92,6 +92,12 @@ GLOBAL OPTIONS:
 
 ## Create
 
+Using the `questions` & `config_template` defined in the configuration file (`~/drawbridge.yaml`) Drawbridge will attempt to
+generate a managed ssh config file. Drawbrige will prompt the user for any questions which it is unable to determine an
+answer (no default value and no flag value specified).
+
+Questions & Templates can be customized completely to match your organization.
+
 ```
 $ drawbridge create --environment prod --shard us-west-2
 
@@ -107,12 +113,6 @@ WARNING: PEM file missing. Place it at the following location before attempting 
 Writing template to /Users/jason/.ssh/drawbridge/prod-app-idle-us-west-2
 
 ```
-
-Using the `questions` & `config_template` defined in the configuration file (`~/drawbridge.yaml`) Drawbridge will attempt to
-generate a managed ssh config file. Drawbrige will prompt the user for any questions which it is unable to determine an
-answer (no default value and no flag value specified).
-
-Questions & Templates can be customized completely to match your organization.
 
 You can also enable `DRYRUN` mode to see exactly what files Drawbrige would generate, without actually writing any files.
 
