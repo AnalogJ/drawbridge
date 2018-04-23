@@ -86,7 +86,7 @@ func (c *configuration) Init() error {
 	})
 	c.SetDefault("answers", []map[string]interface{}{})
 	c.SetDefault("config_templates.default.pem_filepath", "{{.environment}}/{{.username}}-{{.environment}}.pem")
-	c.SetDefault("config_templates.default.filepath", `{{.environment}}-{{.stack_name}}-{.shard_type}}-{{.shard}}{{if ne .username "aws"}}-{{.username}}{{end}}`)
+	c.SetDefault("config_templates.default.filepath", `{{.environment}}-{{.stack_name}}-{{.shard_type}}-{{.shard}}{{if ne .username "aws"}}-{{.username}}{{end}}`)
 	c.SetDefault("config_templates.default.content", utils.StripIndent(
 		`
 		ForwardAgent yes

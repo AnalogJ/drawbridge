@@ -27,9 +27,9 @@ This means that all traffic can be audited, and that a single server can be shut
 
 
 However as this architecture is scaled up and deployed across multiple environments (testing, staging, production), it can
-be complicated to maintain a single `~/.ssh/config` file that allows you to tunnel into your various jump host proctected internal networks.
+be complicated to maintain a single `~/.ssh/config` file that allows you to tunnel into your various jump host protected internal networks.
 
-Drawbridge aims to solve this problem in a flexible and scalible way.
+Drawbridge aims to solve this problem in a flexible and scalable way.
 
 
 # Features
@@ -89,9 +89,42 @@ GLOBAL OPTIONS:
 
 # Actions
 
-# Connect
+## Connect
+```
+$ drawbridge connect
+Rendered Drawbridge Configs:
+├── [prod]  environment
+│   └── [app]  stack_name
+│       ├── [us-east-1]  shard
+│       │   ├── [1]  shard_type: idle, username: aws
+│       │   └── [2]  shard_type: live, username: aws
+│       └── [us-east-2]  shard
+│           ├── [3]  shard_type: idle, username: aws
+│           └── [4]  shard_type: live, username: aws
+├── [stage]  environment
+│   └── [app]  stack_name
+│       └── [us-east-2]  shard
+│           ├── [5]  shard_type: idle, username: aws
+│           └── [6]  shard_type: live, username: aws
+└── [test]  environment
+    └── [app]  stack_name
+        ├── [us-east-1]  shard
+        │   ├── [7]  shard_type: idle, username: aws
+        │   └── [8]  shard_type: live, username: aws
+        └── [us-east-2]  shard
+            ├── [9]  shard_type: idle, username: aws
+            └── [10]  shard_type: live, username: aws
 
-## List
+Enter number of drawbridge config you would like to connect to:
+
+```
+
+`drawbridge connect` will connect you to the bastion/jump host using a specified Drawbridge config file. It'll also add
+the associated PEM key to your `ssh-agent`.
+
+If you want to connect directly to a internal server, you can do so by specifying the hostname/short name using the `--dest` flag
+
+`drawbridge connect --dest db-1`
 
 
 ## Create
@@ -113,11 +146,19 @@ WARNING: PEM file missing. Place it at the following location before attempting 
 2018/04/22 21:05:11 Writing template to /Users/jason/.ssh/drawbridge/test-app-{.shard_type}}-us-east-1
 ```
 
-# Delete
+## Delete
 
-# Update
+## Update
 
-# Download
+```
+$ drawbridge update
+
+Current: v1.0.7 [2018-04-22]. Available: v1.0.7 [2018-04-23]
+Release notes are available here: https://github.com/AnalogJ/drawbridge/releases/tag/v1.0.7
+
+```
+
+## Download
 
 
 

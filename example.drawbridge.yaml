@@ -157,7 +157,7 @@ config_templates:
 # populating filepath & content fields.
 # if you had set `options.pem_dir` to ~/.ssh, you could potentially set `pem_filepath: id_rsa` to keep things simple.
     pem_filepath: '{{.environment}}/{{.username}}-{{.environment}}.pem'
-    filepath: '{{.environment}}-{{.stack_name}}-{.shard_type}}-{{.shard}}{{if ne .username "aws"}}-{{.username}}{{end}}'
+    filepath: '{{.environment}}-{{.stack_name}}-{{.shard_type}}-{{.shard}}{{if ne .username "aws"}}-{{.username}}{{end}}'
 
 # content MUST contain `Host bastion` and `Host bastion+*` for `drawbridge connect` to work correctly.
 # notice how conditionals work {{if ne .environment "prod"}} ... {{end}}. Search Go Template syntax for more examples.
