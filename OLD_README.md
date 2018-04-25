@@ -37,4 +37,3 @@
 	- config template
 	- config filename template
 	- ssh key filepath template
-
