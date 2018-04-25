@@ -9,8 +9,6 @@ func SliceIncludes(slice []string, item string) bool {
 	return false
 }
 
-
-
 //func indexOf(answers []interface{}, item interface{}) (int) {
 //	for k, v := range answers {
 //		if v == item {

@@ -1,12 +1,12 @@
 package template_test
 
 import (
+	"drawbridge/pkg/config/template"
+	"drawbridge/pkg/utils"
+	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"path"
-	"drawbridge/pkg/utils"
-	"github.com/stretchr/testify/require"
-	"drawbridge/pkg/config/template"
 	"testing"
 )
 
@@ -32,15 +32,14 @@ func TestConfigTemplate_DeleteTemplate(t *testing.T) {
 
 	//test
 	err = fileTemplate.DeleteTemplate(map[string]interface{}{
-		"example": "1",
+		"example":    "1",
 		"config_dir": parentPath,
 	})
 
 	//assert
-	require.NoError(t, err,"should not raise an error deleting filepath template")
+	require.NoError(t, err, "should not raise an error deleting filepath template")
 	require.False(t, utils.FileExists(testFilePath), "test file should not be exist")
 }
-
 
 func TestConfigTemplate_WriteTemplate(t *testing.T) {
 	t.Parallel()
@@ -63,17 +62,16 @@ func TestConfigTemplate_WriteTemplate(t *testing.T) {
 
 	//test
 	actual, err := fileTemplate.WriteTemplate(map[string]interface{}{
-		"example": "1",
+		"example":    "1",
 		"config_dir": parentPath,
-		"pem_dir": parentPath,
-	},[]string{}, false)
+		"pem_dir":    parentPath,
+	}, []string{}, false)
 
 	//assert
-	require.NoError(t, err,"should not raise an error deleting filepath template")
+	require.NoError(t, err, "should not raise an error deleting filepath template")
 	require.FileExists(t, actual["filepath"].(string), "test file should written ")
 	require.Equal(t, testFilePath, actual["filepath"].(string), "test file path be set correctly")
 }
-
 
 //
 //func TestFileTemplate_WriteTemplate(t *testing.T) {

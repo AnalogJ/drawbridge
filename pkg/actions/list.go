@@ -233,4 +233,3 @@ func (e *ListAction) coloredString(level int, data string) string {
 		return data
 	}
 }
-

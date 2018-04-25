@@ -22,7 +22,7 @@ func StdinQueryBoolean(question string) bool {
 	text := StdinQuery(question)
 	text = strings.ToLower(text)
 
-	if text == "true" || text == "yes" || text == "y"{
+	if text == "true" || text == "yes" || text == "y" {
 		return true
 	} else if text == "false" || text == "no" || text == "n" {
 		return false

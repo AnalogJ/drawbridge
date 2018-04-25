@@ -1,9 +1,9 @@
 package utils_test
 
 import (
-	"testing"
 	"drawbridge/pkg/utils"
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 func TestSliceIncludes(t *testing.T) {
@@ -13,7 +13,7 @@ func TestSliceIncludes(t *testing.T) {
 	actual := utils.SliceIncludes([]string{"example", "example2", "example3"}, "example")
 
 	//assert
-	require.True(t, actual,"should find item in slice")
+	require.True(t, actual, "should find item in slice")
 }
 
 func TestSliceIncludes_WithInvalid(t *testing.T) {
@@ -23,5 +23,5 @@ func TestSliceIncludes_WithInvalid(t *testing.T) {
 	actual := utils.SliceIncludes([]string{"example", "example2", "example3"}, "nothere")
 
 	//assert
-	require.False(t, actual,"should not find item in slice")
+	require.False(t, actual, "should not find item in slice")
 }

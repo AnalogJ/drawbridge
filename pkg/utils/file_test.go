@@ -1,12 +1,12 @@
 package utils_test
 
 import (
-	"testing"
 	"drawbridge/pkg/utils"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"path"
+	"testing"
 )
 
 //func TestExpandPath(t *testing.T) {
@@ -32,7 +32,7 @@ func TestFileWrite(t *testing.T) {
 	err = utils.FileWrite(testFilePath, "test content", 0666, false)
 
 	//assert
-	require.NoError(t, err,"should not raise an error when writing file")
+	require.NoError(t, err, "should not raise an error when writing file")
 	require.FileExists(t, testFilePath, "test file should exist")
 }
 
@@ -48,10 +48,9 @@ func TestFileWrite_DryRun(t *testing.T) {
 	err = utils.FileWrite(testFilePath, "test content", 0666, true)
 
 	//assert
-	require.NoError(t, err,"should not raise an error when writing file")
+	require.NoError(t, err, "should not raise an error when writing file")
 	require.False(t, utils.FileExists(testFilePath), "test file should not be written in dry run mode")
 }
-
 
 func TestFileExists(t *testing.T) {
 	t.Parallel()
@@ -73,7 +72,6 @@ func TestFileExists_Invalid(t *testing.T) {
 	require.False(t, actual, "should detect that invalid file does not exist")
 }
 
-
 func TestFileDelete(t *testing.T) {
 	t.Parallel()
 
@@ -87,6 +85,6 @@ func TestFileDelete(t *testing.T) {
 	err = utils.FileDelete(testFilePath)
 
 	//assert
-	require.NoError(t, err,"should not raise an error when deleting file")
+	require.NoError(t, err, "should not raise an error when deleting file")
 	require.False(t, utils.FileExists(testFilePath), "test file should not exist after deletion")
 }

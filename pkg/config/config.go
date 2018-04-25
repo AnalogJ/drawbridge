@@ -435,7 +435,6 @@ func (c *configuration) InternalQuestionKeys() []string {
 	return []string{"config_dir", "pem_dir", "active_config_template", "active_custom_templates", "ui_group_priority", "ui_question_hidden", "custom", "config", "template"}
 }
 
-
 func (c *configuration) GetProvidedAnswerList() ([]map[string]interface{}, error) {
 	//deserialize
 	answerList := []map[string]interface{}{}

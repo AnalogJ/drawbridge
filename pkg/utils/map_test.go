@@ -1,9 +1,9 @@
 package utils_test
 
 import (
-	"testing"
-	"github.com/stretchr/testify/require"
 	"drawbridge/pkg/utils"
+	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 func TestMapKeys(t *testing.T) {
@@ -16,12 +16,11 @@ func TestMapKeys(t *testing.T) {
 	require.Equal(t, []string{"example"}, actual, "should correctly retrieve keys from a map")
 }
 
-
 func TestMapKeys_Multiple(t *testing.T) {
 	t.Parallel()
 
 	//test
-	actual := utils.MapKeys(map[string]interface{}{"example": "17", "example2":"18"})
+	actual := utils.MapKeys(map[string]interface{}{"example": "17", "example2": "18"})
 
 	//assert
 	require.Equal(t, []string{"example", "example2"}, actual, "should correctly retrieve keys from a map")

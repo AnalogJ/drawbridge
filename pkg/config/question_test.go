@@ -77,7 +77,6 @@ func TestQuestion_Required(t *testing.T) {
 	require.True(t, actual, "should correctly determine that `environment` is required")
 }
 
-
 func TestQuestion_GetType(t *testing.T) {
 
 	//setup
@@ -92,4 +91,3 @@ func TestQuestion_GetType(t *testing.T) {
 	require.NoError(t, err, "should not have an error")
 	require.Equal(t, "string", actual, "should correctly determine that `environment` is a string")
 }
-

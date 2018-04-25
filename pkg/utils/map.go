@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"sort"
 	"encoding/json"
+	"sort"
 )
 
 func MapKeys(m map[string]interface{}) []string {

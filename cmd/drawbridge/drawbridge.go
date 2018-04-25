@@ -29,13 +29,12 @@ func main() {
 	}
 
 	//we're going to load the config file manually, since we need to validate it.
-	err = config.ReadConfig("~/drawbridge.yaml")              // Find and read the config file
+	err = config.ReadConfig("~/drawbridge.yaml")          // Find and read the config file
 	if _, ok := err.(errors.ConfigFileMissingError); ok { // Handle errors reading the config file
 		//ignore "could not find config file"
 	} else if err != nil {
 		os.Exit(1)
 	}
-
 
 	createFlags, err := createFlags(config)
 	if err != nil {
@@ -86,7 +85,6 @@ func main() {
 
 					//TODO: check if the user decides to create one from scratch.
 
-
 					listAction := actions.ListAction{Config: config}
 
 					providedAnswerList, err := config.GetProvidedAnswerList()
@@ -95,11 +93,10 @@ func main() {
 					}
 
 					defaultValues := map[string]interface{}{}
-					if len(providedAnswerList) > 0 && utils.StdinQueryBoolean(fmt.Sprintf("Would you like to create a Drawbridge config using preconfigured answers? (%v available). [yes/no]", len(providedAnswerList))){
+					if len(providedAnswerList) > 0 && utils.StdinQueryBoolean(fmt.Sprintf("Would you like to create a Drawbridge config using preconfigured answers? (%v available). [yes/no]", len(providedAnswerList))) {
 
 						groupedAnswerList := listAction.GroupAnswerList(providedAnswerList, config.GetStringSlice("options.ui_group_priority"))
 						listAction.PrintTree(groupedAnswerList)
-
 
 						var answerIndex int
 
@@ -115,8 +112,6 @@ func main() {
 						}
 						defaultValues = listAction.OrderedAnswers[answerIndex].(map[string]interface{})
 					}
-
-
 
 					//pass in CLI answer data.
 					cliAnswers, err := createFlagHandler(config, defaultValues, c.FlagNames(), c)
@@ -408,7 +403,7 @@ func createFlags(appConfig config.Interface) ([]cli.Flag, error) {
 	return flags, nil
 }
 
-func createFlagHandler(appConfig config.Interface, defaultValues map[string]interface{},  cliFlags []string, c *cli.Context) (map[string]interface{}, error) {
+func createFlagHandler(appConfig config.Interface, defaultValues map[string]interface{}, cliFlags []string, c *cli.Context) (map[string]interface{}, error) {
 
 	cliAnswers := defaultValues
 
