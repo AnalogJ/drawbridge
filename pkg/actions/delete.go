@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/fatih/color"
 	"path"
-	"strconv"
 	"strings"
 )
 
@@ -45,13 +44,9 @@ func (e *DeleteAction) One(answerData map[string]interface{}, force bool) error 
 			}
 			questionStr = append(questionStr, fmt.Sprintf("%v: %v", k, v))
 		}
-		questionStr = append(questionStr, "\nPlease confirm [true/false]:")
+		questionStr = append(questionStr, "\nPlease confirm [yes/no]:")
 
-		resp := utils.StdinQuery(strings.Join(questionStr, "\n"))
-		val, err := strconv.ParseBool(resp)
-		if err != nil {
-			return err
-		}
+		val := utils.StdinQueryBoolean(strings.Join(questionStr, "\n"))
 		if !val {
 			color.Red("Cancelled delete operation.")
 			return nil

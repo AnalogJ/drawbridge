@@ -13,7 +13,6 @@ import (
 	"net/http"
 	"os"
 	"runtime"
-	"strconv"
 	"time"
 )
 
@@ -86,11 +85,8 @@ func (e *UpdateAction) Start() error {
 	}
 
 	//TODO: ask user if we should update.
-	stdinResp := utils.StdinQuery(fmt.Sprintf("Are you sure you would like to update drawbridge to %v?\nPlease confirm [true/false]:", releaseInfo.TagName))
-	val, err := strconv.ParseBool(stdinResp)
-	if err != nil {
-		return err
-	}
+	val := utils.StdinQueryBoolean(fmt.Sprintf("Are you sure you would like to update drawbridge to %v?\nPlease confirm [yes/no]:", releaseInfo.TagName))
+
 	if !val {
 		color.Red("Cancelled delete operation.")
 		return nil

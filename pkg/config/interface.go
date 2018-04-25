@@ -18,6 +18,7 @@ type Interface interface {
 	GetStringSlice(key string) []string
 	UnmarshalKey(key string, rawVal interface{}) error
 
+	GetProvidedAnswerList() ([]map[string]interface{}, error)
 	InternalQuestionKeys() []string
 	GetQuestion(questionKey string) (Question, error)
 	GetQuestions() (map[string]Question, error)

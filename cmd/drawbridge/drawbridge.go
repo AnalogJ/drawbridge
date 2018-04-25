@@ -86,8 +86,40 @@ func main() {
 
 					//TODO: check if the user decides to create one from scratch.
 
+
+					listAction := actions.ListAction{Config: config}
+
+					providedAnswerList, err := config.GetProvidedAnswerList()
+					if err != nil {
+						color.Yellow("WARNING: An error occurred while parsing provided answer list: %v", err)
+					}
+
+					defaultValues := map[string]interface{}{}
+					if len(providedAnswerList) > 0 && utils.StdinQueryBoolean(fmt.Sprintf("Would you like to create a Drawbridge config using preconfigured answers? (%v available). [yes/no]", len(providedAnswerList))){
+
+						groupedAnswerList := listAction.GroupAnswerList(providedAnswerList, config.GetStringSlice("options.ui_group_priority"))
+						listAction.PrintTree(groupedAnswerList)
+
+
+						var answerIndex int
+
+						text := utils.StdinQuery(fmt.Sprintf("Enter number of drawbridge config you would like to connect to (%v-%v):", 1, len(providedAnswerList)))
+						i, err := strconv.Atoi(text)
+						if err != nil {
+							return err
+						}
+						answerIndex = i - 1
+						maxAnswerIndex := len(providedAnswerList)
+						if answerIndex >= maxAnswerIndex {
+							return errors.AnswerValidationError(fmt.Sprintf("Invalid selection. Please enter a number from 1-%v", maxAnswerIndex))
+						}
+						defaultValues = listAction.OrderedAnswers[answerIndex].(map[string]interface{})
+					}
+
+
+
 					//pass in CLI answer data.
-					cliAnswers, err := createFlagHandler(config, c.FlagNames(), c)
+					cliAnswers, err := createFlagHandler(config, defaultValues, c.FlagNames(), c)
 					if err != nil {
 						return err
 					}
@@ -376,9 +408,9 @@ func createFlags(appConfig config.Interface) ([]cli.Flag, error) {
 	return flags, nil
 }
 
-func createFlagHandler(appConfig config.Interface, cliFlags []string, c *cli.Context) (map[string]interface{}, error) {
+func createFlagHandler(appConfig config.Interface, defaultValues map[string]interface{},  cliFlags []string, c *cli.Context) (map[string]interface{}, error) {
 
-	cliAnswers := map[string]interface{}{}
+	cliAnswers := defaultValues
 
 	for _, flagName := range cliFlags {
 		//handle options

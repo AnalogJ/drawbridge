@@ -16,3 +16,18 @@ func StdinQuery(question string) string {
 	text = strings.TrimSpace(text)
 	return text
 }
+
+func StdinQueryBoolean(question string) bool {
+
+	text := StdinQuery(question)
+	text = strings.ToLower(text)
+
+	if text == "true" || text == "yes" || text == "y"{
+		return true
+	} else if text == "false" || text == "no" || text == "n" {
+		return false
+	} else {
+		color.Yellow("WARNING: invalid response only true/yes/y/false/no/n allowed not `%v`.\nAssuming `no`", text)
+		return false
+	}
+}
