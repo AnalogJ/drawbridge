@@ -44,7 +44,7 @@ func (e *CreateAction) Start(cliAnswerData map[string]interface{}, dryRun bool) 
 
 	questionKeys := utils.MapKeys(answerData)
 	for _, questionKey := range questionKeys {
-		if utils.StringInSlice(e.Config.InternalQuestionKeys(), questionKey) {
+		if utils.SliceIncludes(e.Config.InternalQuestionKeys(), questionKey) {
 			continue
 		}
 

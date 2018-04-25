@@ -28,6 +28,15 @@ func main() {
 		os.Exit(1)
 	}
 
+	//we're going to load the config file manually, since we need to validate it.
+	err = config.ReadConfig("~/drawbridge.yaml")              // Find and read the config file
+	if _, ok := err.(errors.ConfigFileMissingError); ok { // Handle errors reading the config file
+		//ignore "could not find config file"
+	} else if err != nil {
+		os.Exit(1)
+	}
+
+
 	createFlags, err := createFlags(config)
 	if err != nil {
 		fmt.Printf("FATAL: %+v\n", err)

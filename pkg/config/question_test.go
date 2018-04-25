@@ -61,3 +61,35 @@ func TestQuestion_Validate_LengthRuleBroken(t *testing.T) {
 	//assert
 	require.Error(t, err, "should fail when length rule is broken")
 }
+
+func TestQuestion_Required(t *testing.T) {
+
+	//setup
+	testConfig, _ := config.Create()
+
+	//test
+	err := testConfig.ReadConfig(path.Join("testdata", "valid_questions.yaml"))
+	question, err := testConfig.GetQuestion("environment")
+	actual := question.Required()
+
+	//assert
+	require.NoError(t, err, "should not have an error")
+	require.True(t, actual, "should correctly determine that `environment` is required")
+}
+
+
+func TestQuestion_GetType(t *testing.T) {
+
+	//setup
+	testConfig, _ := config.Create()
+
+	//test
+	err := testConfig.ReadConfig(path.Join("testdata", "valid_questions.yaml"))
+	question, err := testConfig.GetQuestion("environment")
+	actual := question.GetType()
+
+	//assert
+	require.NoError(t, err, "should not have an error")
+	require.Equal(t, "string", actual, "should correctly determine that `environment` is a string")
+}
+

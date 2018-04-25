@@ -87,5 +87,3 @@ func (q *Question) Validate(questionKey string, answerValue interface{}) error {
 	}
 	return nil
 }
-
-//TODO: we should specify a schema for the Question files.

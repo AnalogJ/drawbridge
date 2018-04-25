@@ -203,12 +203,12 @@ func (e *ListAction) answerString(highlightGroupKey string, answer map[string]in
 	for _, k := range keys {
 		v := answer[k]
 
-		if utils.StringInSlice(uiHiddenKeys, k) || utils.StringInSlice(uiGroupPriority, k) {
+		if utils.SliceIncludes(uiHiddenKeys, k) || utils.SliceIncludes(uiGroupPriority, k) {
 			continue
 		}
 
 		//skip drawbridge properties
-		if utils.StringInSlice(internalKeys, k) {
+		if utils.SliceIncludes(internalKeys, k) {
 			continue
 		}
 
@@ -297,7 +297,7 @@ func (e *ListAction) coloredString(level int, data string) string {
 //
 //	answerStr := fmt.Sprintf("\t%v\t", color.YellowString(strconv.Itoa(id)))
 //	for k, v := range answer {
-//		if utils.StringInSlice(uiHiddenKeys, k) || utils.StringInSlice(uiGroupPriority, k) {
+//		if utils.SliceIncludes(uiHiddenKeys, k) || utils.SliceIncludes(uiGroupPriority, k) {
 //			continue
 //		}
 //		answerStr += fmt.Sprintf("%v: %v\n\t\t", k, v)

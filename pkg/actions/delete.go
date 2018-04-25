@@ -40,7 +40,7 @@ func (e *DeleteAction) One(answerData map[string]interface{}, force bool) error 
 		questionStr := []string{"Are you sure you would like to delete this config and associated templates? (PEM files will not be deleted)\n"}
 
 		for k, v := range answerData {
-			if utils.StringInSlice(e.Config.InternalQuestionKeys(), k) {
+			if utils.SliceIncludes(e.Config.InternalQuestionKeys(), k) {
 				continue
 			}
 			questionStr = append(questionStr, fmt.Sprintf("%v: %v", k, v))

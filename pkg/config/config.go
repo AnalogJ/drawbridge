@@ -142,14 +142,6 @@ func (c *configuration) Init() error {
 	//c.SetConfigName("drawbridge")
 	//c.AddConfigPath("$HOME/")
 
-	//we're going to load the config file manually, since we need to validate it.
-	err := c.ReadConfig("~/drawbridge.yaml")              // Find and read the config file
-	if _, ok := err.(errors.ConfigFileMissingError); ok { // Handle errors reading the config file
-		//ignore "could not find config file"
-	} else if err != nil {
-		return err
-	}
-
 	//CLI options will be added via the `Set()` function
 
 	return c.ValidateConfig()

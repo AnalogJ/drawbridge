@@ -1,6 +1,18 @@
 package utils
 
-import "encoding/json"
+import (
+	"sort"
+	"encoding/json"
+)
+
+func MapKeys(m map[string]interface{}) []string {
+	var keys []string
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return keys
+}
 
 func MapDeepCopy(m map[string]interface{}) (map[string]interface{}, error) {
 	jsonString, err := json.Marshal(m)
