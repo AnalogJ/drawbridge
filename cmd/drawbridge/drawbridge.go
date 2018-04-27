@@ -8,13 +8,13 @@ import (
 	"drawbridge/pkg/actions"
 	"drawbridge/pkg/config"
 	"drawbridge/pkg/errors"
+	"drawbridge/pkg/project"
 	"drawbridge/pkg/utils"
 	"drawbridge/pkg/version"
 	"github.com/fatih/color"
 	"gopkg.in/urfave/cli.v2"
 	"log"
 	"strings"
-	"drawbridge/pkg/project"
 )
 
 var goos string
@@ -42,7 +42,6 @@ func main() {
 		os.Exit(1)
 	}
 
-
 	cli.CommandHelpTemplate = `NAME:
    {{.HelpName}} - {{.Usage}}
 USAGE:
@@ -56,14 +55,13 @@ OPTIONS:
    {{end}}{{end}}
 `
 
-
 	app := &cli.App{
 		Name:     "drawbridge",
 		Usage:    "Bastion/Jumphost tunneling made easy",
 		Version:  version.VERSION,
 		Compiled: time.Now(),
 		Authors: []*cli.Author{
-			&cli.Author{
+			{
 				Name:  "Jason Kulatunga",
 				Email: "jason@thesparktree.com",
 			},
@@ -73,12 +71,11 @@ OPTIONS:
 			drawbridge := "github.com/AnalogJ/drawbridge"
 
 			var versionInfo string
-			if len(goos) >0 && len(goarch) > 0 {
+			if len(goos) > 0 && len(goarch) > 0 {
 				versionInfo = fmt.Sprintf("%s.%s-%s", goos, goarch, version.VERSION)
 			} else {
 				versionInfo = fmt.Sprintf("dev-%s", version.VERSION)
 			}
-
 
 			subtitle := drawbridge + utils.LeftPad2Len(versionInfo, " ", 65-len(drawbridge))
 
@@ -104,7 +101,7 @@ OPTIONS:
 					fmt.Fprintln(c.App.Writer, c.Command.Usage)
 
 					projectList, err := project.CreateProjectListFromProvidedAnswers(config)
-					if err != nil{
+					if err != nil {
 						return err
 					}
 
@@ -130,25 +127,25 @@ OPTIONS:
 				Flags: createFlags,
 			},
 			{
-				Name:  "list",
-				Usage: "List all drawbridge managed ssh configs",
-				ArgsUsage:   "[config_number]",
+				Name:      "list",
+				Usage:     "List all drawbridge managed ssh configs",
+				ArgsUsage: "[config_number]",
 				Action: func(c *cli.Context) error {
 					fmt.Fprintln(c.App.Writer, c.Command.Usage)
 
 					projectList, err := project.CreateProjectListFromConfigDir(config)
-					if err != nil{
+					if err != nil {
 						return err
 					}
 
 					var answerData map[string]interface{}
-					if c.NArg() >0 {
+					if c.NArg() > 0 {
 
 						index, err := utils.StringToInt(c.Args().Get(0))
 						if err != nil {
 							return err
 						}
-						answerData, err = projectList.GetIndex(index-1)
+						answerData, err = projectList.GetIndex(index - 1)
 						if err != nil {
 							return err
 						}
@@ -161,7 +158,7 @@ OPTIONS:
 					}
 
 					fmt.Print("\nAnswer Data:\n")
-					for k,v := range answerData {
+					for k, v := range answerData {
 						fmt.Printf("\t%v: %v\n", color.YellowString(k), v)
 					}
 
@@ -170,25 +167,25 @@ OPTIONS:
 				Flags: nil,
 			},
 			{
-				Name:  "connect",
-				Usage: "Connect to a drawbridge managed ssh config",
-				ArgsUsage:   "[config_number] [dest_server_hostname]",
+				Name:      "connect",
+				Usage:     "Connect to a drawbridge managed ssh config",
+				ArgsUsage: "[config_number] [dest_server_hostname]",
 				Action: func(c *cli.Context) error {
 					fmt.Fprintln(c.App.Writer, c.Command.Usage)
 
 					projectList, err := project.CreateProjectListFromConfigDir(config)
-					if err != nil{
+					if err != nil {
 						return err
 					}
 
 					var answerData map[string]interface{}
-					if c.NArg() >0 {
+					if c.NArg() > 0 {
 
 						index, err := utils.StringToInt(c.Args().Get(0))
 						if err != nil {
 							return err
 						}
-						answerData, err = projectList.GetIndex(index-1)
+						answerData, err = projectList.GetIndex(index - 1)
 						if err != nil {
 							return err
 						}
@@ -200,9 +197,8 @@ OPTIONS:
 						}
 					}
 
-
 					var destServer string
-					if c.IsSet("dest"){
+					if c.IsSet("dest") {
 						destServer = c.String("dest")
 					} else if c.NArg() >= 2 {
 						destServer = c.Args().Get(1)
@@ -259,18 +255,16 @@ OPTIONS:
 
 					strLocalPath = args[1]
 
-
-
 					// select answer data.
 					projectList, err := project.CreateProjectListFromConfigDir(config)
-					if err != nil{
+					if err != nil {
 						return err
 					}
 
 					var answerData map[string]interface{}
 					if index > 0 {
 
-						answerData, err = projectList.GetIndex(index-1)
+						answerData, err = projectList.GetIndex(index - 1)
 						if err != nil {
 							return err
 						}
@@ -287,32 +281,32 @@ OPTIONS:
 				},
 			},
 			{
-				Name:  "delete",
-				Usage: "Delete drawbridge managed ssh config(s)",
+				Name:      "delete",
+				Usage:     "Delete drawbridge managed ssh config(s)",
 				ArgsUsage: "[config_number]",
 				Action: func(c *cli.Context) error {
 					fmt.Fprintln(c.App.Writer, c.Command.Usage)
 
 					projectList, err := project.CreateProjectListFromConfigDir(config)
-					if err != nil{
+					if err != nil {
 						return err
 					}
 
 					var answerData map[string]interface{}
 
-					if c.Bool("all"){
+					if c.Bool("all") {
 						//check if the user wants to delete all configs
 						deleteAction := actions.DeleteAction{Config: config}
 						return deleteAction.All(projectList.GetAll(), c.Bool("force"))
 
-					} else if c.NArg() >0 {
+					} else if c.NArg() > 0 {
 						//check if the user specified a config number in the args.
 
 						index, err := utils.StringToInt(c.Args().Get(0))
 						if err != nil {
 							return err
 						}
-						answerData, err = projectList.GetIndex(index-1)
+						answerData, err = projectList.GetIndex(index - 1)
 						if err != nil {
 							return err
 						}
@@ -324,7 +318,6 @@ OPTIONS:
 							return err
 						}
 					}
-
 
 					//delete one config file.
 
@@ -364,7 +357,6 @@ OPTIONS:
 						return err
 					}
 					answerDataList := projectList.GetAll()
-
 
 					proxyAction := actions.ProxyAction{Config: config}
 					return proxyAction.Start(answerDataList, false)
