@@ -6,7 +6,21 @@ import (
 	"github.com/fatih/color"
 	"os"
 	"strings"
+	"golang.org/x/crypto/ssh/terminal"
+	"syscall"
 )
+
+func StdinQueryPassword(question string) (string, error) {
+
+	fmt.Println(color.BlueString(question))
+	bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
+	if err != nil {
+		return "", err
+	}
+
+	text := strings.TrimSpace(string(bytePassword))
+	return text, nil
+}
 
 func StdinQuery(question string) string {
 

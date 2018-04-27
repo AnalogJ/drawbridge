@@ -14,6 +14,8 @@ import:
 - package: github.com/Jeffail/gabs
   version: ^1.0.0
 - package: golang.org/x/crypto
+  subpackages:
+  - ssh/terminal
 - package: github.com/xlab/treeprint
 - package: github.com/inconshreveable/go-update
 - package: github.com/imdario/mergo

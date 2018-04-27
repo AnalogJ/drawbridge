@@ -100,13 +100,18 @@ func (e *ConnectAction) SshAgentAddPemKey(pemFilepath string) error {
 
 	//https://github.com/golang/crypto/blob/master/ssh/keys.go
 
-	fmt.Printf("Adding `%v` PEM key to ssh-agent\n", block.Type)
+	fmt.Printf("Adding PEM key (%v) to ssh-agent\n", pemFilepath)
 
 	var privateKeyData interface{}
 	if x509.IsEncryptedPEMBlock(block) {
 		//inform the user that the key is encrypted.
-		passphrase := utils.StdinQuery(fmt.Sprintf("The key at %v is encrypted and requires a passphrase. Please enter it below:", pemFilepath))
-		privateKeyData, err = ssh.ParsePrivateKeyWithPassphrase(keyData, []byte(passphrase))
+
+		passphrase, err := utils.StdinQueryPassword(fmt.Sprintf("The key at %v is encrypted and requires a passphrase. Please enter it below:", pemFilepath))
+		if err != nil {
+			return err
+		}
+
+		privateKeyData, err = ssh.ParseRawPrivateKeyWithPassphrase(keyData, []byte(passphrase))
 	} else {
 		privateKeyData, err = ssh.ParseRawPrivateKey(keyData)
 	}
