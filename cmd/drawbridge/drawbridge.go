@@ -8,12 +8,12 @@ import (
 	"drawbridge/pkg/actions"
 	"drawbridge/pkg/config"
 	"drawbridge/pkg/errors"
+	"drawbridge/pkg/project"
 	"drawbridge/pkg/utils"
 	"drawbridge/pkg/version"
 	"github.com/fatih/color"
 	"gopkg.in/urfave/cli.v2"
 	"log"
-	"strconv"
 	"strings"
 )
 
@@ -42,13 +42,26 @@ func main() {
 		os.Exit(1)
 	}
 
+	cli.CommandHelpTemplate = `NAME:
+   {{.HelpName}} - {{.Usage}}
+USAGE:
+   {{if .UsageText}}{{.UsageText}}{{else}}{{.HelpName}} {{if .ArgsUsage}}{{.ArgsUsage}}{{else}}[arguments...]{{end}}{{end}}{{if .Category}}
+CATEGORY:
+   {{.Category}}{{end}}{{if .Description}}
+DESCRIPTION:
+   {{.Description}}{{end}}{{if .VisibleFlags}}
+OPTIONS:
+   {{range .VisibleFlags}}{{.}}
+   {{end}}{{end}}
+`
+
 	app := &cli.App{
 		Name:     "drawbridge",
 		Usage:    "Bastion/Jumphost tunneling made easy",
 		Version:  version.VERSION,
 		Compiled: time.Now(),
 		Authors: []*cli.Author{
-			&cli.Author{
+			{
 				Name:  "Jason Kulatunga",
 				Email: "jason@thesparktree.com",
 			},
@@ -57,7 +70,12 @@ func main() {
 
 			drawbridge := "github.com/AnalogJ/drawbridge"
 
-			versionInfo := fmt.Sprintf("%s.%s-%s", goos, goarch, version.VERSION)
+			var versionInfo string
+			if len(goos) > 0 && len(goarch) > 0 {
+				versionInfo = fmt.Sprintf("%s.%s-%s", goos, goarch, version.VERSION)
+			} else {
+				versionInfo = fmt.Sprintf("dev-%s", version.VERSION)
+			}
 
 			subtitle := drawbridge + utils.LeftPad2Len(versionInfo, " ", 65-len(drawbridge))
 
@@ -81,40 +99,23 @@ func main() {
 				//UsageText:   "doo - does the dooing",
 				Action: func(c *cli.Context) error {
 					fmt.Fprintln(c.App.Writer, c.Command.Usage)
-					//TODO: list the existing configurations from answers, ask user to specify an exiting config, or create a new one.
 
-					//TODO: check if the user decides to create one from scratch.
-
-					listAction := actions.ListAction{Config: config}
-
-					providedAnswerList, err := config.GetProvidedAnswerList()
+					projectList, err := project.CreateProjectListFromProvidedAnswers(config)
 					if err != nil {
-						color.Yellow("WARNING: An error occurred while parsing provided answer list: %v", err)
+						return err
 					}
 
-					defaultValues := map[string]interface{}{}
-					if len(providedAnswerList) > 0 && utils.StdinQueryBoolean(fmt.Sprintf("Would you like to create a Drawbridge config using preconfigured answers? (%v available). [yes/no]", len(providedAnswerList))) {
+					answerData := map[string]interface{}{}
+					if projectList.Length() > 0 && utils.StdinQueryBoolean(fmt.Sprintf("Would you like to create a Drawbridge config using preconfigured answers? (%v available). [yes/no]", projectList.Length())) {
 
-						groupedAnswerList := listAction.GroupAnswerList(providedAnswerList, config.GetStringSlice("options.ui_group_priority"))
-						listAction.PrintTree(groupedAnswerList)
-
-						var answerIndex int
-
-						text := utils.StdinQuery(fmt.Sprintf("Enter number of drawbridge config you would like to connect to (%v-%v):", 1, len(providedAnswerList)))
-						i, err := strconv.Atoi(text)
+						answerData, err = projectList.Prompt("Enter number to base your configuration from")
 						if err != nil {
 							return err
 						}
-						answerIndex = i - 1
-						maxAnswerIndex := len(providedAnswerList)
-						if answerIndex >= maxAnswerIndex {
-							return errors.AnswerValidationError(fmt.Sprintf("Invalid selection. Please enter a number from 1-%v", maxAnswerIndex))
-						}
-						defaultValues = listAction.OrderedAnswers[answerIndex].(map[string]interface{})
 					}
 
-					//pass in CLI answer data.
-					cliAnswers, err := createFlagHandler(config, defaultValues, c.FlagNames(), c)
+					//extend current answerData with CLI provided options.
+					cliAnswers, err := createFlagHandler(config, answerData, c.FlagNames(), c)
 					if err != nil {
 						return err
 					}
@@ -126,54 +127,90 @@ func main() {
 				Flags: createFlags,
 			},
 			{
-				Name:  "list",
-				Usage: "List all drawbridge managed ssh configs",
+				Name:      "list",
+				Usage:     "List all drawbridge managed ssh configs",
+				ArgsUsage: "[config_number]",
 				Action: func(c *cli.Context) error {
 					fmt.Fprintln(c.App.Writer, c.Command.Usage)
 
-					listAction := actions.ListAction{Config: config}
-					return listAction.Start()
-				},
-			},
-			{
-				Name:  "connect",
-				Usage: "Connect to a drawbridge managed ssh config",
-				Action: func(c *cli.Context) error {
-					fmt.Fprintln(c.App.Writer, c.Command.Usage)
-
-					listAction := actions.ListAction{Config: config}
-					listAction.Start()
-
-					if len(listAction.OrderedAnswers) == 0 {
-						return nil
+					projectList, err := project.CreateProjectListFromConfigDir(config)
+					if err != nil {
+						return err
 					}
 
-					var answerIndex int
+					var answerData map[string]interface{}
+					if c.NArg() > 0 {
 
-					if c.IsSet("drawbridge_id") {
-						answerIndex = c.Int("drawbridge_id")
-					} else {
-						text := utils.StdinQuery(fmt.Sprintf("Enter number of drawbridge config you would like to connect to (%v-%v):", 1, len(listAction.OrderedAnswers)))
-						i, err := strconv.Atoi(text)
+						index, err := utils.StringToInt(c.Args().Get(0))
 						if err != nil {
 							return err
 						}
-						answerIndex = i - 1
-						maxAnswerIndex := len(listAction.OrderedAnswers)
-						if answerIndex >= maxAnswerIndex {
-							return errors.AnswerValidationError(fmt.Sprintf("Invalid selection. Please enter a number from 1-%v", maxAnswerIndex))
+						answerData, err = projectList.GetIndex(index - 1)
+						if err != nil {
+							return err
+						}
+
+					} else {
+						answerData, err = projectList.Prompt("Enter drawbridge config number to retrieve full info")
+						if err != nil {
+							return err
 						}
 					}
 
+					fmt.Print("\nAnswer Data:\n")
+					for k, v := range answerData {
+						fmt.Printf("\t%v: %v\n", color.YellowString(k), v)
+					}
+
+					return nil
+				},
+				Flags: nil,
+			},
+			{
+				Name:      "connect",
+				Usage:     "Connect to a drawbridge managed ssh config",
+				ArgsUsage: "[config_number] [dest_server_hostname]",
+				Action: func(c *cli.Context) error {
+					fmt.Fprintln(c.App.Writer, c.Command.Usage)
+
+					projectList, err := project.CreateProjectListFromConfigDir(config)
+					if err != nil {
+						return err
+					}
+
+					var answerData map[string]interface{}
+					if c.NArg() > 0 {
+
+						index, err := utils.StringToInt(c.Args().Get(0))
+						if err != nil {
+							return err
+						}
+						answerData, err = projectList.GetIndex(index - 1)
+						if err != nil {
+							return err
+						}
+
+					} else {
+						answerData, err = projectList.Prompt("Enter drawbridge config number to connect to")
+						if err != nil {
+							return err
+						}
+					}
+
+					var destServer string
+					if c.IsSet("dest") {
+						destServer = c.String("dest")
+					} else if c.NArg() >= 2 {
+						destServer = c.Args().Get(1)
+					} else {
+						destServer = ""
+					}
+
 					connectAction := actions.ConnectAction{Config: config}
-					return connectAction.Start(listAction.OrderedAnswers[answerIndex].(map[string]interface{}), c.String("dest"))
+					return connectAction.Start(answerData, destServer)
 				},
 
 				Flags: []cli.Flag{
-					&cli.IntFlag{
-						Name:  "drawbridge_id",
-						Usage: "Specify the drawbridge configuration to use",
-					},
 					&cli.StringFlag{
 						Name:  "dest",
 						Usage: "Specify the `hostname` of the destination/internal server you would like to connect to.",
@@ -184,100 +221,115 @@ func main() {
 				Name:      "download",
 				Aliases:   []string{"scp"},
 				Usage:     "Download a file from an internal server using drawbridge managed ssh config, syntax is similar to scp command. ",
-				ArgsUsage: "destination_hostname:remote_filepath local_filepath",
+				ArgsUsage: "[config_number] destination_hostname:remote_filepath local_filepath",
 				Action: func(c *cli.Context) error {
 					fmt.Fprintln(c.App.Writer, c.Command.Usage)
 
-					if c.NArg() != 2 {
-						return cli.Exit(fmt.Sprintf("Invalid, 2 arguments required: %s", c.Args()), 1)
+					// PARSE ARGS
+					if c.NArg() < 2 || c.NArg() > 3 {
+						return errors.InvalidArgumentsError(fmt.Sprintf("2 or 3 arguments required. %v provided", c.Args().Len()))
 					}
 
-					remoteParts := strings.Split(c.Args().First(), ":")
+					index := 0
+					strRemoteHostname := ""
+					strRemotePath := ""
+					strLocalPath := ""
+
+					args := c.Args().Slice()
+
+					if c.NArg() == 3 {
+						index, err = utils.StringToInt(c.Args().First())
+						if err != nil {
+							return errors.InvalidArgumentsError("Invalid `config_id`, please specify a number")
+						}
+						args = c.Args().Tail()
+					}
+
+					remoteParts := strings.Split(args[0], ":")
 					if len(remoteParts) != 2 {
-						return cli.Exit(fmt.Sprintf("Invalid, please specify destination hostname and remote path: %s", remoteParts), 1)
+						return errors.InvalidArgumentsError(fmt.Sprintf("Invalid `destination_hostname:remote path` format: %s", remoteParts))
+					} else {
+						strRemoteHostname = remoteParts[0]
+						strRemotePath = remoteParts[1]
 					}
 
-					listAction := actions.ListAction{Config: config}
-					listAction.Start()
+					strLocalPath = args[1]
 
-					var answerIndex int
+					// select answer data.
+					projectList, err := project.CreateProjectListFromConfigDir(config)
+					if err != nil {
+						return err
+					}
 
-					if c.IsSet("drawbridge_id") {
-						answerIndex = c.Int("drawbridge_id")
-					} else {
+					var answerData map[string]interface{}
+					if index > 0 {
 
-						text := utils.StdinQuery(fmt.Sprintf("Enter number of drawbridge config you would like to download from (%v-%v):", 1, len(listAction.OrderedAnswers)))
-						i, err := strconv.Atoi(text)
+						answerData, err = projectList.GetIndex(index - 1)
 						if err != nil {
 							return err
 						}
-						answerIndex = i - 1
-						maxAnswerIndex := len(listAction.OrderedAnswers)
-						if answerIndex >= maxAnswerIndex {
-							return errors.AnswerValidationError(fmt.Sprintf("Invalid selection. Please enter a number from 1-%v", maxAnswerIndex))
+
+					} else {
+						answerData, err = projectList.Prompt("Enter number of drawbridge config you would like to download from")
+						if err != nil {
+							return err
 						}
 					}
 
 					downloadAction := actions.DownloadAction{Config: config}
-
-					return downloadAction.Start(listAction.OrderedAnswers[answerIndex].(map[string]interface{}), remoteParts[0], remoteParts[1], c.Args().Get(1))
-				},
-
-				Flags: []cli.Flag{
-					&cli.IntFlag{
-						Name:  "drawbridge_id",
-						Usage: "Specify the drawbridge configuration to use",
-					},
+					return downloadAction.Start(answerData, strRemoteHostname, strRemotePath, strLocalPath)
 				},
 			},
 			{
-				Name:  "delete",
-				Usage: "Delete drawbridge managed ssh config(s)",
+				Name:      "delete",
+				Usage:     "Delete drawbridge managed ssh config(s)",
+				ArgsUsage: "[config_number]",
 				Action: func(c *cli.Context) error {
 					fmt.Fprintln(c.App.Writer, c.Command.Usage)
 
-					listAction := actions.ListAction{Config: config}
+					projectList, err := project.CreateProjectListFromConfigDir(config)
+					if err != nil {
+						return err
+					}
+
+					var answerData map[string]interface{}
 
 					if c.Bool("all") {
+						//check if the user wants to delete all configs
 						deleteAction := actions.DeleteAction{Config: config}
-						answersList, err := listAction.RenderedAnswersList()
+						return deleteAction.All(projectList.GetAll(), c.Bool("force"))
+
+					} else if c.NArg() > 0 {
+						//check if the user specified a config number in the args.
+
+						index, err := utils.StringToInt(c.Args().Get(0))
 						if err != nil {
-							return nil
-						}
-						return deleteAction.All(answersList, c.Bool("force"))
-					} else {
-						listAction := actions.ListAction{Config: config}
-						listAction.Start()
-
-						var answerIndex int
-
-						if c.IsSet("drawbridge_id") {
-							answerIndex = c.Int("drawbridge_id")
-						} else {
-
-							text := utils.StdinQuery(fmt.Sprintf("Enter number of drawbridge config you would like to delete (%v-%v):", 1, len(listAction.OrderedAnswers)))
-							i, err := strconv.Atoi(text)
-							if err != nil {
-								return err
-							}
-							answerIndex = i - 1
-
-							maxAnswerIndex := len(listAction.OrderedAnswers)
-							if answerIndex >= maxAnswerIndex {
-								return errors.AnswerValidationError(fmt.Sprintf("Invalid selection. Please enter a number from 1-%v", maxAnswerIndex))
-							}
-						}
-
-						deleteAction := actions.DeleteAction{Config: config}
-						err := deleteAction.One(listAction.OrderedAnswers[answerIndex].(map[string]interface{}), c.Bool("force"))
-
-						if err != nil {
-							//print an error message here:
 							return err
-						} else {
-							color.Green("Finished")
-							return nil
 						}
+						answerData, err = projectList.GetIndex(index - 1)
+						if err != nil {
+							return err
+						}
+
+					} else {
+						// prompt the user to determine which configs to delete.
+						answerData, err = projectList.Prompt("Enter drawbridge config number to delete")
+						if err != nil {
+							return err
+						}
+					}
+
+					//delete one config file.
+
+					deleteAction := actions.DeleteAction{Config: config}
+					err = deleteAction.One(answerData, c.Bool("force"))
+
+					if err != nil {
+						//print an error message here:
+						return err
+					} else {
+						color.Green("Finished")
+						return nil
 					}
 				},
 
@@ -290,10 +342,6 @@ func main() {
 						Name:  "all",
 						Usage: "Delete all configuration files. ",
 					},
-					&cli.IntFlag{
-						Name:  "drawbridge_id",
-						Usage: "Specify the drawbridge configuration to delete",
-					},
 
 					//TODO: add dry run support
 				},
@@ -304,11 +352,11 @@ func main() {
 				Action: func(c *cli.Context) error {
 					fmt.Fprintln(c.App.Writer, c.Command.Usage)
 
-					listAction := actions.ListAction{Config: config}
-					answerDataList, err := listAction.RenderedAnswersList()
+					projectList, err := project.CreateProjectListFromConfigDir(config)
 					if err != nil {
 						return err
 					}
+					answerDataList := projectList.GetAll()
 
 					proxyAction := actions.ProxyAction{Config: config}
 					return proxyAction.Start(answerDataList, false)

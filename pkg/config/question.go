@@ -24,7 +24,7 @@ func (q *Question) Required() bool {
 func (q *Question) Validate(questionKey string, answerValue interface{}) error {
 	questionSchema := map[string]interface{}{
 		"properties": map[string]map[string]interface{}{
-			questionKey: map[string]interface{}{},
+			questionKey: {},
 		},
 		"required": []string{},
 	}

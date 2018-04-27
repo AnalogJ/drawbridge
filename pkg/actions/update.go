@@ -84,7 +84,6 @@ func (e *UpdateAction) Start() error {
 		return errors.UpdateBinaryOsArchMissingError(fmt.Sprintf("Cannot find a drawbridge binary for OS/Arch: %v", requiredOsArch))
 	}
 
-	//TODO: ask user if we should update.
 	val := utils.StdinQueryBoolean(fmt.Sprintf("Are you sure you would like to update drawbridge to %v?\nPlease confirm [yes/no]:", releaseInfo.TagName))
 
 	if !val {

@@ -72,3 +72,21 @@ type UpdateBinaryOsArchMissingError string
 func (str UpdateBinaryOsArchMissingError) Error() string {
 	return fmt.Sprintf("UpdateBinaryOsArchMissingError: %q", string(str))
 }
+
+type ProjectListEmptyError string
+
+func (str ProjectListEmptyError) Error() string {
+	return fmt.Sprintf("ProjectListEmptyError: %q", string(str))
+}
+
+type ProjectListIndexInvalidError string
+
+func (str ProjectListIndexInvalidError) Error() string {
+	return fmt.Sprintf("ProjectListIndexInvalidError: %q", string(str))
+}
+
+type InvalidArgumentsError string
+
+func (str InvalidArgumentsError) Error() string {
+	return fmt.Sprintf("InvalidArgumentsError: %q", string(str))
+}
