@@ -58,6 +58,7 @@ Drawbridge aims to solve this problem in a flexible and scalable way.
 2. Rename the downloaded binary to `drawbridge`
 3. Move the renamed binary into your path, eg. `/usr/bin/local`
 4. Run `drawbridge help` from a terminal to confirm it was installed correctly
+5. Add a configuration file to `~/drawbridge.yaml`. See [Configuration](#configuration) section.
 
 # Usage
 
@@ -169,9 +170,9 @@ Enter number of drawbridge config you would like to connect to (1-10):
 `drawbridge connect` will connect you to the bastion/jump host using a specified Drawbridge config file. It'll also add
 the associated PEM key to your `ssh-agent`.
 
-If you want to connect directly to a internal server, you can do so by specifying the hostname/short name using the `--dest` flag
+If you want to connect directly to a internal server, you can do so by selecting a config id and specifying the hostname/short name
 
-`drawbridge connect --dest db-1`
+`drawbridge connect 1 database-1`
 
 ## Delete
 
@@ -213,13 +214,40 @@ You can use the following command to completely wipe out all Drawbridge files an
 ```
 $ drawbridge update
 
-Current: v1.0.7 [2018-04-22]. Available: v1.0.7 [2018-04-23]
-Release notes are available here: https://github.com/AnalogJ/drawbridge/releases/tag/v1.0.7
+Update drawbridge to the latest version
+Current: v1.0.9 [2018-04-26]. Available: v1.0.10 [2018-04-27]
+Release notes are available here: https://github.com/AnalogJ/drawbridge/releases/tag/v1.0.10
+Are you sure you would like to update drawbridge to v1.0.10?
+Please confirm [yes/no]:
 
 ```
 
 ## Download
 
+```
+$ drawbridge scp 1 database-1:/tmp/test-file.txt ~/test-file.text
+
+Download a file from an internal server using drawbridge managed ssh config, syntax is similar to scp command. 
+Adding PEM key to ssh-agent
+Begin downloading file through bastion
+test-file.text                                                      100% 4099     4.4KB/s   00:00    
+
+```
+
+Downloading files through the bastion is simple and easy. 
+
+## Proxy
+
+```
+$ drawbridge proxy
+Build/Rebuild a Proxy auto-config (PAC) file to access websites through Drawbridge tunnels
+Pac file already exists, updating.
+2018/04/27 15:31:55 Writing template to ~/drawbridge.pac
+```
+
+PAC files, when used with a compatible browser, allow you to access internal dashboards and websites as you would any publicly accessible site. 
+ 
+As you create Drawbride configurations, just run `drawbridge proxy` to update the PAC file, written to `~/drawbridge.pac` by default. 
 
 
 # Configuration

@@ -87,10 +87,11 @@ func (e *UpdateAction) Start() error {
 	val := utils.StdinQueryBoolean(fmt.Sprintf("Are you sure you would like to update drawbridge to %v?\nPlease confirm [yes/no]:", releaseInfo.TagName))
 
 	if !val {
-		color.Red("Cancelled delete operation.")
+		color.Red("Cancelled update operation.")
 		return nil
 	}
 
+	color.Yellow("Updating Drawbridge binary. Please wait...")
 	releaseBinaryReq, err := http.Get(assetUrl)
 	if err != nil {
 		return err
@@ -102,6 +103,8 @@ func (e *UpdateAction) Start() error {
 		// error handling
 		return err
 	}
+
+	color.Green("Successfully updated Drawbridge")
 
 	return nil
 }
