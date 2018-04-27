@@ -52,6 +52,13 @@ Drawbridge aims to solve this problem in a flexible and scalable way.
 - `drawbridge update` lets you update the binary inplace.
 - Pretty colors. The CLI is all colorized to make it easy to skim for errors/warnings
 
+# Getting Started
+
+1. Download the latest release binary from the [Releases](https://github.com/AnalogJ/drawbridge/releases) page for your OS. (Mac, Windows & Linux available)
+2. Rename the downloaded binary to `drawbridge`
+3. Move the renamed binary into your path, eg. `/usr/bin/local`
+4. Run `drawbridge help` from a terminal to confirm it was installed correctly
+
 # Usage
 
 ```
