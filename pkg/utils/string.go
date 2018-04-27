@@ -1,6 +1,17 @@
 package utils
 
-import "strings"
+import (
+	"strings"
+	"strconv"
+)
+
+func StringToInt(input string) (int, error) {
+	i, err := strconv.Atoi(input)
+	if err != nil {
+		return 0, err
+	}
+	return i, nil
+}
 
 func SnakeCaseToCamelCase(inputUnderScoreStr string) (camelCase string) {
 	//snake_case to camelCase

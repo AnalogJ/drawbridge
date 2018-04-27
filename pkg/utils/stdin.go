@@ -31,3 +31,10 @@ func StdinQueryBoolean(question string) bool {
 		return false
 	}
 }
+
+
+func StdinQueryInt(question string) (int, error) {
+
+	text := StdinQuery(question)
+	return StringToInt(text)
+}
