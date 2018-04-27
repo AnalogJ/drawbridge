@@ -1,28 +1,26 @@
 package project
 
 import (
-	"github.com/Jeffail/gabs"
-	"fmt"
+	"drawbridge/pkg/errors"
 	"drawbridge/pkg/utils"
-	"strings"
+	"fmt"
+	"github.com/Jeffail/gabs"
 	"github.com/fatih/color"
 	"github.com/xlab/treeprint"
 	"sort"
 	"strconv"
-	"drawbridge/pkg/errors"
+	"strings"
 )
 
 type ProjectList struct {
-
 	projects []projectData
 
 	groupByKeys []string
-	hiddenKeys []string
+	hiddenKeys  []string
 
-	groupedAnswers *gabs.Container
+	groupedAnswers     *gabs.Container
 	groupedAnswersList []map[string]interface{}
-	groupedTree treeprint.Tree
-
+	groupedTree        treeprint.Tree
 }
 
 // PUBLIC functions
@@ -31,7 +29,7 @@ func (p *ProjectList) Length() int {
 	return len(p.projects)
 }
 
-func (p *ProjectList) GetAll() []map[string]interface{}{
+func (p *ProjectList) GetAll() []map[string]interface{} {
 	if p.Length() == 0 {
 		return []map[string]interface{}{}
 	}
@@ -43,9 +41,8 @@ func (p *ProjectList) GetAll() []map[string]interface{}{
 	return p.groupedAnswersList
 }
 
-
-func (p *ProjectList) GetIndex(index_0based int) (map[string]interface{}, error){
-	if p.Length() == 0{
+func (p *ProjectList) GetIndex(index_0based int) (map[string]interface{}, error) {
+	if p.Length() == 0 {
 		return nil, errors.ProjectListEmptyError("No answers found, please call `drawbridge create` first")
 	}
 
@@ -60,8 +57,7 @@ func (p *ProjectList) GetIndex(index_0based int) (map[string]interface{}, error)
 	}
 }
 
-
-func (p *ProjectList) Prompt(message string) (map[string]interface{}, error){
+func (p *ProjectList) Prompt(message string) (map[string]interface{}, error) {
 	if p.Length() == 0 {
 		return nil, errors.ProjectListEmptyError("No answers found, please call `drawbridge create` first")
 	}
@@ -75,13 +71,13 @@ func (p *ProjectList) Prompt(message string) (map[string]interface{}, error){
 	for true {
 
 		//prompt the user to enter a valid choice
-		index_1based, err := utils.StdinQueryInt(fmt.Sprintf("%v (%v-%v):",message, 1, p.Length()))
+		index_1based, err := utils.StdinQueryInt(fmt.Sprintf("%v (%v-%v):", message, 1, p.Length()))
 		if err != nil {
 			color.HiRed("ERROR: %v", err)
 			continue
 		}
 
-		if !(index_1based > 0 && index_1based <= p.Length()){
+		if !(index_1based > 0 && index_1based <= p.Length()) {
 			color.HiRed("Invalid selection. Must be between %v-%v", 1, p.Length())
 			continue
 		}
@@ -99,12 +95,11 @@ func (p *ProjectList) PrintTree(startMessage string) {
 
 // Private functions
 
-func (p *ProjectList) initGroups(){
+func (p *ProjectList) initGroups() {
 	//intialize storage
 	p.groupedAnswers = gabs.New()
 	p.groupedAnswersList = []map[string]interface{}{}
 	p.groupedTree = treeprint.New()
-
 
 	//group the project answers
 	p.groupProjectAnswers()
@@ -138,7 +133,7 @@ func (p *ProjectList) groupProjectAnswers() {
 	} else {
 
 		answersList := []map[string]interface{}{}
-		for _, project := range p.projects{
+		for _, project := range p.projects {
 			answersList = append(answersList, project.Answers)
 		}
 

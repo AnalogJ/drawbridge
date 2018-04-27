@@ -4,9 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/fatih/color"
+	"golang.org/x/crypto/ssh/terminal"
 	"os"
 	"strings"
-	"golang.org/x/crypto/ssh/terminal"
 	"syscall"
 )
 
@@ -45,7 +45,6 @@ func StdinQueryBoolean(question string) bool {
 		return false
 	}
 }
-
 
 func StdinQueryInt(question string) (int, error) {
 

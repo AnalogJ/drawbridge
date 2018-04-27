@@ -1,29 +1,27 @@
 package project
 
 import (
+	"bytes"
 	"drawbridge/pkg/config"
 	"drawbridge/pkg/utils"
-	"path/filepath"
-	"os"
-	"log"
-	"bytes"
 	"gopkg.in/yaml.v2"
+	"log"
+	"os"
+	"path/filepath"
 )
 
 // this will populate the ProjectList with answers loaded from the filesystem
 func CreateProjectListFromConfigDir(configData config.Interface) (ProjectList, error) {
 
 	projectList := ProjectList{
-		projects: []projectData{},
+		projects:    []projectData{},
 		groupByKeys: configData.GetStringSlice("options.ui_group_priority"),
-
 	}
 	projectList.hiddenKeys = append(projectList.hiddenKeys, configData.GetStringSlice("options.ui_question_hidden")...)
 	projectList.hiddenKeys = append(projectList.hiddenKeys, configData.InternalQuestionKeys()...)
 
-
 	answerFiles, err := answerFilesInConfigDir(configData.GetString("options.config_dir"))
-	if err != nil{
+	if err != nil {
 		return projectList, err
 	}
 
@@ -41,22 +39,21 @@ func CreateProjectListFromConfigDir(configData config.Interface) (ProjectList, e
 	return projectList, nil
 }
 
-
 //this will populate the ProjectList with answers emedded in the config file (~/drawbridge.yaml)
-func CreateProjectListFromProvidedAnswers(configData config.Interface)(ProjectList, error){
+func CreateProjectListFromProvidedAnswers(configData config.Interface) (ProjectList, error) {
 	projectList := ProjectList{
-		projects: []projectData{},
+		projects:    []projectData{},
 		groupByKeys: configData.GetStringSlice("options.ui_group_priority"),
 	}
 	projectList.hiddenKeys = append(projectList.hiddenKeys, configData.GetStringSlice("options.ui_question_hidden")...)
 	projectList.hiddenKeys = append(projectList.hiddenKeys, configData.InternalQuestionKeys()...)
 
 	providedAnswerDataList, err := configData.GetProvidedAnswerList()
-	if err != nil{
+	if err != nil {
 		return projectList, err
 	}
 
-	for _, answerData := range  providedAnswerDataList {
+	for _, answerData := range providedAnswerDataList {
 		providedProjectData := projectData{
 			Answers: answerData,
 		}
@@ -67,12 +64,9 @@ func CreateProjectListFromProvidedAnswers(configData config.Interface)(ProjectLi
 
 }
 
-
-func CreateProjectFromConfigDirAnswerFile(configFilePath string)(projectData, error){
+func CreateProjectFromConfigDirAnswerFile(configFilePath string) (projectData, error) {
 	return parseAnswerFile(configFilePath)
 }
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // Helpers
@@ -87,7 +81,6 @@ func answerFilesInConfigDir(configDir string) ([]string, error) {
 }
 
 func parseAnswerFile(answerFilePath string) (projectData, error) {
-
 
 	//read file
 	answerFileData, err := os.Open(answerFilePath)
@@ -112,13 +105,13 @@ func parseAnswerFile(answerFilePath string) (projectData, error) {
 		answerData[k] = utils.StringifyYAMLMapKeys(v)
 	}
 
-		//TODO: warn the user if the answer data would no longer render the same answers.yaml file.
+	//TODO: warn the user if the answer data would no longer render the same answers.yaml file.
 
 	return projectData{
-		Answers: answerData,
+		Answers:        answerData,
 		AnswerFilePath: answerFilePath,
 		ConfigFilePath: answerData["config"].(map[string]interface{})["filepath"].(string),
-		PemFilePath: answerData["config"].(map[string]interface{})["pem_filepath"].(string),
+		PemFilePath:    answerData["config"].(map[string]interface{})["pem_filepath"].(string),
 	}, nil
 
 }

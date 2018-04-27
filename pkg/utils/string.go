@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"strings"
 	"strconv"
+	"strings"
 )
 
 func StringToInt(input string) (int, error) {
