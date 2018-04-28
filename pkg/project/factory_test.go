@@ -62,7 +62,13 @@ func TestCreateProjectListFromProvidedAnswers(t *testing.T) {
 	require.Equal(t, 5, projList.Length(), "should correctly load provided answers")
 	require.Equal(t, 5, len(actualSortedList), "should correcty populate sorted list after grouping")
 	require.Equal(t, actualSortedList[0], actualFirstAnswer, "total list lenth provided should match list length after grouping")
-	require.Equal(t, map[string]interface{}{}, actualFirstAnswer, "sort order should always be consistent")
+	require.Equal(t, map[string]interface {}{
+		"environment":"test",
+		"stack_name":"test2",
+		"shard":"us-east-1",
+		"shard_type":"live",
+		"username":"aws",
+	}, actualFirstAnswer, "sort order should always be consistent")
 
 }
 
@@ -91,5 +97,22 @@ func TestCreateProjectListFromConfigDir(t *testing.T) {
 	require.Equal(t, 9, projList.Length(), "should correctly load provided answers")
 	require.Equal(t, 9, len(actualSortedList), "should correcty populate sorted list after grouping")
 	require.Equal(t, actualSortedList[0], actualFirstAnswer, "total list lenth provided should match list length after grouping")
-	require.Equal(t, map[string]interface{}{}, actualFirstAnswer, "sort order should always be consistent")
+	require.Equal(t, map[string]interface {}{
+		"ui_question_hidden":[]interface {}{},
+		"active_config_template":"default",
+		"active_custom_templates":[]interface {}{},
+		"config":map[string]interface {}{
+			"filepath":"/Users/jason/.ssh/drawbridge/prod-app-idle-us-east-1",
+			"pem_filepath":"/Users/jason/.ssh/drawbridge/pem/prod/aws-prod.pem",
+		},
+		"environment":"prod",
+		"pem_dir":"~/.ssh/drawbridge/pem",
+		"shard_type":"idle",
+		"stack_name":"app",
+		"username":"aws",
+		"config_dir":"~/.ssh/drawbridge",
+		"custom":[]interface {}{},
+		"shard":"us-east-1",
+		"ui_group_priority":[]interface {}{"environment", "stack_name", "shard", "shard_type"},
+	}, actualFirstAnswer, "sort order should always be consistent")
 }
