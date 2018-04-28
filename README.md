@@ -56,9 +56,10 @@ Drawbridge aims to solve this problem in a flexible and scalable way.
 
 1. Download the latest release binary from the [Releases](https://github.com/AnalogJ/drawbridge/releases) page for your OS. (Mac, Windows & Linux available)
 2. Rename the downloaded binary to `drawbridge`
-3. Move the renamed binary into your path, eg. `/usr/bin/local`
-4. Run `drawbridge help` from a terminal to confirm it was installed correctly
-5. Add a configuration file to `~/drawbridge.yaml`. See [Configuration](#configuration) section.
+3. Run `chmod +x drawbridge`
+4. Move the renamed binary into your path, eg. `/usr/bin/local`
+5. Run `drawbridge help` from a terminal to confirm it was installed correctly
+6. Add a configuration file to `~/drawbridge.yaml`. See [Configuration](#configuration) section.
 
 # Usage
 
