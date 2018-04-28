@@ -98,12 +98,14 @@ func TestConfigTemplate_WriteTemplate_ShouldGenerateValidPrefix(t *testing.T) {
 		"config_dir": parentPath,
 		"pem_dir":    parentPath,
 	}, []string{"example"}, false)
+	require.NoError(t, err, "should not raise an error when writing file")
+	actualContent, err := ioutil.ReadFile(testFilePath)
+	require.NoError(t, err, "should not raise an error when reading file")
 
 	//assert
-	require.NoError(t, err, "should not raise an error deleting filepath template")
 	require.FileExists(t, actual["filepath"].(string), "test file should written ")
 	require.Equal(t, testFilePath, actual["filepath"].(string), "test file path be set correctly")
-	require.Equal(t, "", string(ioutil.ReadFile(testFilePath)), "test file content should match")
+	require.Equal(t, "", string(actualContent), "test file content should match")
 }
 
 //
