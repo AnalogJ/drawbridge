@@ -19,6 +19,7 @@ vendor
 glide.lock
 /drawbridge-darwin-amd64
 /drawbridge-linux-amd64
+/drawbridge-windows-amd64.exe
 /drawbridge
 
 example.yaml
