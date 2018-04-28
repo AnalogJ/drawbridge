@@ -73,6 +73,39 @@ func TestConfigTemplate_WriteTemplate(t *testing.T) {
 	require.Equal(t, testFilePath, actual["filepath"].(string), "test file path be set correctly")
 }
 
+func TestConfigTemplate_WriteTemplate_ShouldGenerateValidPrefix(t *testing.T) {
+	t.Parallel()
+
+	//setup
+	parentPath, err := ioutil.TempDir("", "")
+	defer os.RemoveAll(parentPath)
+
+	testFilePath := path.Join(parentPath, "1.text")
+
+	fileTemplate := template.ConfigTemplate{
+		PemFilePath: "{{.example}}.pem",
+		FileTemplate: template.FileTemplate{
+			FilePath: "{{.example}}.text",
+			Template: template.Template{
+				Content: "config content",
+			},
+		},
+	}
+
+	//test
+	actual, err := fileTemplate.WriteTemplate(map[string]interface{}{
+		"example":    "1",
+		"config_dir": parentPath,
+		"pem_dir":    parentPath,
+	}, []string{"example"}, false)
+
+	//assert
+	require.NoError(t, err, "should not raise an error deleting filepath template")
+	require.FileExists(t, actual["filepath"].(string), "test file should written ")
+	require.Equal(t, testFilePath, actual["filepath"].(string), "test file path be set correctly")
+	require.Equal(t, "", string(ioutil.ReadFile(testFilePath)), "test file content should match")
+}
+
 //
 //func TestFileTemplate_WriteTemplate(t *testing.T) {
 //	t.Parallel()
