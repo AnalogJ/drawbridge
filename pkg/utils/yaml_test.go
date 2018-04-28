@@ -19,7 +19,7 @@ func TestStringifyYAMLMapKeys(t *testing.T) {
 
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(testData)
-	parsedMap := map[string]interface{}{}
+	parsedMap := map[interface{}]interface{}{}
 	err = yaml.Unmarshal(buf.Bytes(), &parsedMap)
 	require.NoError(t, err, "should not throw an error")
 
