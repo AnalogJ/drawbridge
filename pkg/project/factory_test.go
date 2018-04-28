@@ -19,7 +19,7 @@ func TestCreateProjectFromConfigDirAnswerFile(t *testing.T) {
 	//assert
 	require.Equal(t, map[string]interface{}{
 		"active_config_template": "default",
-		"active_custom_templates": []string{},
+		"active_custom_templates": []interface{},
 		"config": map[string]interface{}{
 			"filepath": "/Users/jason/.ssh/drawbridge/test-app-idle-us-east-1",
 			"pem_filepath": "/Users/jason/.ssh/drawbridge/pem/test/aws-test.pem",
