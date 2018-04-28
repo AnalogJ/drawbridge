@@ -69,7 +69,7 @@ $ drawbridge help
 (  _ \(  _ \  /__\  ( \/\/ )(  _ \(  _ \(_  _)(  _ \  / __)( ___)
  )(_) ))   / /(__)\  )    (  ) _ < )   / _)(_  )(_) )( (_-. )__)
 (____/(_)\_)(__)(__)(__/\__)(____/(_)\_)(____)(____/  \___/(____)
-github.com/AnalogJ/drawbridge                  darwin-amd64-1.0.7
+github.com/AnalogJ/drawbridge                 darwin.amd64-1.0.10
 
 NAME:
    drawbridge - Bastion/Jumphost tunneling made easy
@@ -78,7 +78,7 @@ USAGE:
    drawbridge [global options] command [command options] [arguments...]
 
 VERSION:
-   1.0.7
+   1.0.10
 
 AUTHOR:
    Jason Kulatunga <jason@thesparktree.com>
@@ -89,6 +89,7 @@ COMMANDS:
      connect        Connect to a drawbridge managed ssh config
      download, scp  Download a file from an internal server using drawbridge managed ssh config, syntax is similar to scp command.
      delete         Delete drawbridge managed ssh config(s)
+     proxy          Build/Rebuild a Proxy auto-config (PAC) file to access websites through Drawbridge tunnels
      update         Update drawbridge to the latest version
      help, h        Shows a list of commands or help for one command
 
