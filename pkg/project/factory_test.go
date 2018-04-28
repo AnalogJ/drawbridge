@@ -45,11 +45,10 @@ func TestCreateProjectListFromProvidedAnswers(t *testing.T) {
 
 	//setup
 	testConfig, _ := config.Create()
-
-	//test
 	err := testConfig.ReadConfig(path.Join("testdata", "valid_configfile_with_answers.yaml"))
 	require.NoError(t, err, "should allow overriding default config template.")
 
+	//test
 	projList, err := project.CreateProjectListFromProvidedAnswers(testConfig)
 	require.NoError(t, err, "should correctly load project list")
 
@@ -60,7 +59,37 @@ func TestCreateProjectListFromProvidedAnswers(t *testing.T) {
 
 	//assert
 	require.NoError(t, err, "should correctly get answers from config.")
-	require.Equal(t, 5, projList.Length())
-	require.Equal(t, 5, len(actualSortedList))
-	require.Equal(t, actualSortedList[0], actualFirstAnswer)
+	require.Equal(t, 5, projList.Length(), "should correctly load provided answers")
+	require.Equal(t, 5, len(actualSortedList), "should correcty populate sorted list after grouping")
+	require.Equal(t, actualSortedList[0], actualFirstAnswer, "total list lenth provided should match list length after grouping")
+	require.Equal(t, map[string]interface{}{}, actualFirstAnswer, "sort order should always be consistent")
+
+}
+
+
+func TestCreateProjectListFromConfigDir(t *testing.T) {
+	t.Parallel()
+
+	//setup
+	testConfig, _ := config.Create()
+	err := testConfig.ReadConfig(path.Join("testdata", "valid_configfile_with_answers.yaml"))
+	require.NoError(t, err, "should allow overriding default config template.")
+	testConfig.Set("options.config_dir", path.Join("testdata", "config_dir"))
+
+
+	//test
+	projList, err := project.CreateProjectListFromConfigDir(testConfig)
+	require.NoError(t, err, "should correctly load project list")
+
+	actualSortedList := projList.GetAll()
+	actualFirstAnswer, err := projList.GetIndex(0)
+	require.NoError(t, err, "should correctly get item at index")
+
+
+	//assert
+	require.NoError(t, err, "should correctly get answers from config directory")
+	require.Equal(t, 9, projList.Length(), "should correctly load provided answers")
+	require.Equal(t, 9, len(actualSortedList), "should correcty populate sorted list after grouping")
+	require.Equal(t, actualSortedList[0], actualFirstAnswer, "total list lenth provided should match list length after grouping")
+	require.Equal(t, map[string]interface{}{}, actualFirstAnswer, "sort order should always be consistent")
 }
