@@ -68,7 +68,10 @@ func configTemplatePrefix(answerData map[string]interface{}, ignoreKeys []string
 		# Do not modify.
 		#
 		# Answers:`)
-	for key, value := range answerData {
+
+	keys := utils.MapKeys(answerData)
+	for _, key := range keys {
+		value := answerData[key]
 		if utils.SliceIncludes(ignoreKeys, key) {
 			continue
 		}
