@@ -51,11 +51,16 @@ func TestCreateProjectListFromProvidedAnswers(t *testing.T) {
 	require.NoError(t, err, "should allow overriding default config template.")
 
 	projList, err := project.CreateProjectListFromProvidedAnswers(testConfig)
+	require.NoError(t, err, "should correctly load project list")
+
 	actualSortedList := projList.GetAll()
+	actualFirstAnswer, err := projList.GetIndex(0)
+	require.NoError(t, err, "should correctly get item at index")
+
 
 	//assert
 	require.NoError(t, err, "should correctly get answers from config.")
 	require.Equal(t, 5, projList.Length())
 	require.Equal(t, 5, len(actualSortedList))
-	require.Equal(t, actualSortedList[0], projList.GetIndex(0))
+	require.Equal(t, actualSortedList[0], actualFirstAnswer)
 }
