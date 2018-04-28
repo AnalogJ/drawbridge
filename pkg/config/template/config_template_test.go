@@ -113,7 +113,7 @@ func TestConfigTemplate_WriteTemplate_ShouldGenerateValidPrefix(t *testing.T) {
 	# config_dir = /tmp/177391735
 	# pem_dir = /tmp/177391735
 	# template = map[pem_filepath:/tmp/177391735/1.pem]
-	config content`), string(actualContent), "test file content should match")
+	config content`), string(actualContent), "test file prefix & content should match, and skip example key")
 }
 
 //
