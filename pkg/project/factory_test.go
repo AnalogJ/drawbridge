@@ -25,14 +25,14 @@ func TestCreateProjectFromConfigDirAnswerFile(t *testing.T) {
 			"pem_filepath": "/Users/jason/.ssh/drawbridge/pem/test/aws-test.pem",
 		},
 		"config_dir": "~/.ssh/drawbridge",
-		"custom": []string{},
+		"custom": []interface{}{},
 		"environment": "test",
 		"pem_dir": "~/.ssh/drawbridge/pem",
 		"shard": "us-east-1",
 		"shard_type": "idle",
 		"stack_name": "app",
-		"ui_group_priority": []string{"environment","stack_name","shard","shard_type"},
-		"ui_question_hidden": []string{},
+		"ui_group_priority": []interface{}{"environment","stack_name","shard","shard_type"},
+		"ui_question_hidden": []interface{}{},
 		"username":"aws",
 	}, proj.Answers, "should parse populate")
 	require.Equal(t, answerFile, proj.AnswerFilePath, "correctly set the answerfile path")
