@@ -5,7 +5,23 @@ import (
 	"encoding/json"
 	"hash/fnv"
 	"text/template"
+	"capsulecd/pkg/utils"
+	"path/filepath"
 )
+
+
+func PopulatePathTemplate(pathTmplContent string, data interface{}) (string, error){
+	tmplFilepath, err := PopulateTemplate(pathTmplContent, data)
+	if err != nil {
+		return "", nil
+	}
+	tmplFilepath, err = ExpandPath(tmplFilepath)
+	if err != nil {
+		return "", nil
+	}
+	return tmplFilepath, nil
+}
+
 
 func PopulateTemplate(tmplContent string, data interface{}) (string, error) {
 	//set functions
