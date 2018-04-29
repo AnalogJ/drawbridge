@@ -51,6 +51,10 @@ func TestDeleteAction_One(t *testing.T) {
 		"shard": "us-east-1",
 		"shard_type": "idle",
 		"username": "aws",
+		"config": map[string]interface{}{
+			"filepath": path.Join(drawbridgePath, "prod-app-idle-us-east-1"),
+		},
+		"config_dir": drawbridgePath,
 	}, true)
 
 
