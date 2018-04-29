@@ -15,7 +15,7 @@ func TestConnectAction_SshAgentAddPemKey(t *testing.T) {
 	connectAction := actions.ConnectAction{}
 
 	//test
-	err := connectAction.SshAgentAddPemKey(path.Join("testdata", "test_rsa.pem"))
+	err := connectAction.SshAgentAddPemKey(path.Join("testdata", "connect/test_rsa.pem"))
 
 
 	//assert

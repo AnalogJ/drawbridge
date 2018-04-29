@@ -1,0 +1,19 @@
+active_config_template: default
+active_custom_templates: []
+config:
+  filepath: ~/prod-app-idle-us-east-1
+  pem_filepath: ~/test_rsa.pem
+config_dir: ~/
+custom: []
+environment: prod
+pem_dir: ~/
+shard: us-east-1
+shard_type: idle
+stack_name: app
+ui_group_priority:
+- environment
+- stack_name
+- shard
+- shard_type
+ui_question_hidden: []
+username: aws
