@@ -4,7 +4,6 @@ import (
 	"testing"
 	"github.com/stretchr/testify/require"
 	"drawbridge/pkg/actions"
-	"path"
 	"drawbridge/pkg/config"
 	"io/ioutil"
 	"os"
