@@ -35,7 +35,7 @@ func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignore
 	t.PemFilePath = path.Join(answerData["pem_dir"].(string), t.PemFilePath)
 	templatedPemFilePath, err := utils.PopulatePathTemplate(t.PemFilePath, answerData)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	t.data["pem_filepath"] = templatedPemFilePath
