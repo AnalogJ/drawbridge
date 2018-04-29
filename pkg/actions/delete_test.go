@@ -7,6 +7,8 @@ import (
 	"os"
 	"drawbridge/pkg/actions"
 	"drawbridge/pkg/config"
+	"path"
+	"drawbridge/pkg/utils"
 )
 
 func patchEnv(key, value string) func() {
@@ -30,8 +32,8 @@ func TestDeleteAction_One(t *testing.T) {
 	parentPath, err := ioutil.TempDir("", "")
 	defer os.RemoveAll(parentPath)
 	defer patchEnv("HOME", parentPath)()
-	cerr := utils.CopyDir(path.Join("testdata", "delete"), parentPath)
-
+	err = utils.CopyDir(path.Join("testdata", "delete"), parentPath)
+	require.NoError(t, err, "should not raise an error when deleting answer file")
 
 	configData.Set("options.config_dir", parentPath)
 	configData.Set("config_templates.default.pem_filepath", "test_rsa.pem")
