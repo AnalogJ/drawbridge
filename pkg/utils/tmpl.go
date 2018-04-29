@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"hash/fnv"
 	"text/template"
-	"capsulecd/pkg/utils"
-	"path/filepath"
 )
 
 
