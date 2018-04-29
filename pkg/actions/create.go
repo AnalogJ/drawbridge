@@ -104,10 +104,9 @@ func (e *CreateAction) Start(cliAnswerData map[string]interface{}, dryRun bool) 
 	return e.WriteAnswersFile(path.Base(activeConfigTemplate.FilePath), answerData, dryRun)
 }
 func (e *CreateAction) WriteAnswersFile(baseName string, answerData map[string]interface{}, dryRun bool) error {
-	answersFilePath := path.Join(e.Config.GetString("options.config_dir"), fmt.Sprintf(".%v.answers.yaml", baseName))
-	answersFilePath, err := utils.PopulateTemplate(answersFilePath, answerData)
+	answersFilePath, err := utils.PopulatePathTemplate(path.Join(e.Config.GetString("options.config_dir"), fmt.Sprintf(".%v.answers.yaml", baseName)), answerData)
 	if err != nil {
-		return err
+		return nil
 	}
 
 	answersFileContent, err := yaml.Marshal(answerData)

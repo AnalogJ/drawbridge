@@ -33,13 +33,9 @@ func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignore
 	// modify/tweak the config template because its a known type.
 	//expand PemFilePath
 	t.PemFilePath = path.Join(answerData["pem_dir"].(string), t.PemFilePath)
-	templatedPemFilePath, err := utils.PopulateTemplate(t.PemFilePath, answerData)
+	templatedPemFilePath, err := utils.PopulatePathTemplate(t.PemFilePath, answerData)
 	if err != nil {
-		return nil, err
-	}
-	templatedPemFilePath, err = utils.ExpandPath(templatedPemFilePath)
-	if err != nil {
-		return nil, err
+		return nil
 	}
 
 	t.data["pem_filepath"] = templatedPemFilePath

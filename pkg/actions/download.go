@@ -22,23 +22,17 @@ func (e *DownloadAction) Start(answerData map[string]interface{}, destHostname s
 	if err != nil {
 		return nil
 	}
-	tmplConfigFilepath, err := utils.PopulateTemplate(tmplData.FilePath, answerData)
-	if err != nil {
-		return nil
-	}
-	tmplConfigFilepath, err = utils.ExpandPath(filepath.Join(e.Config.GetString("options.config_dir"), tmplConfigFilepath))
+
+	tmplConfigFilepath, err := utils.PopulatePathTemplate(filepath.Join(e.Config.GetString("options.config_dir"), tmplData.FilePath), answerData)
 	if err != nil {
 		return nil
 	}
 
-	tmplPemFilepath, err := utils.PopulateTemplate(tmplData.PemFilePath, answerData)
+	tmplPemFilepath, err := utils.PopulatePathTemplate(filepath.Join(e.Config.GetString("options.pem_dir"), tmplData.PemFilePath), answerData)
 	if err != nil {
 		return nil
 	}
-	tmplPemFilepath, err = utils.ExpandPath(filepath.Join(e.Config.GetString("options.pem_dir"), tmplPemFilepath))
-	if err != nil {
-		return nil
-	}
+
 
 	//TODO: Print the lines we're running.
 

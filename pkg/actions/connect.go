@@ -29,20 +29,13 @@ func (e *ConnectAction) Start(answerData map[string]interface{}, destHostname st
 	if err != nil {
 		return nil
 	}
-	tmplConfigFilepath, err := utils.PopulateTemplate(tmplData.FilePath, answerData)
-	if err != nil {
-		return nil
-	}
-	tmplConfigFilepath, err = utils.ExpandPath(filepath.Join(e.Config.GetString("options.config_dir"), tmplConfigFilepath))
+
+	tmplConfigFilepath, err := utils.PopulatePathTemplate(filepath.Join(e.Config.GetString("options.config_dir"), tmplData.FilePath), answerData)
 	if err != nil {
 		return nil
 	}
 
-	tmplPemFilepath, err := utils.PopulateTemplate(tmplData.PemFilePath, answerData)
-	if err != nil {
-		return nil
-	}
-	tmplPemFilepath, err = utils.ExpandPath(filepath.Join(e.Config.GetString("options.pem_dir"), tmplPemFilepath))
+	tmplPemFilepath, err := utils.PopulatePathTemplate(filepath.Join(e.Config.GetString("options.pem_dir"), tmplData.PemFilePath), answerData)
 	if err != nil {
 		return nil
 	}
