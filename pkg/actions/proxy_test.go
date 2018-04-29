@@ -46,7 +46,7 @@ func TestProxyAction_Start(t *testing.T) {
 			},
 			"config_dir": drawbridgePath,
 		},
-	}, true)
+	}, false)
 
 
 	//assert
