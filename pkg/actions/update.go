@@ -100,20 +100,20 @@ func (e *UpdateAction) Start() error {
 func (e *UpdateAction) GetLatestReleaseInfo() (GithubReleaseInfo, error) {
 	latestReleaseReq, err := http.Get("https://api.github.com/repos/AnalogJ/drawbridge/releases/latest")
 	if err != nil {
-		return nil, err
+		return GithubReleaseInfo{}, err
 	}
 	defer latestReleaseReq.Body.Close()
 
 	respBodyJson, err := ioutil.ReadAll(latestReleaseReq.Body)
 	if err != nil {
-		return nil, err
+		return GithubReleaseInfo{}, err
 	}
 
 	//parse json
 	releaseInfo := GithubReleaseInfo{}
 	err = json.Unmarshal(respBodyJson, &releaseInfo)
 	if err != nil {
-		return nil, err
+		return GithubReleaseInfo{}, err
 	}
 	return releaseInfo, nil
 }
