@@ -7,8 +7,9 @@ import (
 	"os"
 	"drawbridge/pkg/actions"
 	"drawbridge/pkg/config"
-	"path"
 	"drawbridge/pkg/utils"
+	"path/filepath"
+	"path"
 )
 
 func patchEnv(key, value string) func() {
@@ -54,6 +55,6 @@ func TestDeleteAction_One(t *testing.T) {
 
 	//assert
 	require.NoError(t, err, "should not raise an error when deleting answer file")
-	require.False(t, utils.FileExists(path.join(parentPath, "prod-app-idle-us-east-1")), "test file should not be exist")
+	require.False(t, utils.FileExists(filepath.Join(parentPath, "prod-app-idle-us-east-1")), "test file should not be exist")
 
 }
