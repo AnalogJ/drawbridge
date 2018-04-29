@@ -33,12 +33,13 @@ func TestDeleteAction_One(t *testing.T) {
 	parentPath, err := ioutil.TempDir("", "")
 	defer os.RemoveAll(parentPath)
 	defer patchEnv("HOME", parentPath)()
-	err = utils.CopyDir(path.Join("testdata", "delete"), parentPath)
+	drawbridgePath := path.Join(parentPath, "drawbridge")
+	err = utils.CopyDir(path.Join("testdata", "delete"), drawbridgePath)
 	require.NoError(t, err, "should not raise an error when deleting answer file")
 
-	configData.Set("options.config_dir", parentPath)
+	configData.Set("options.config_dir", drawbridgePath)
 	configData.Set("config_templates.default.pem_filepath", "test_rsa.pem")
-	configData.Set("options.pem_dir", parentPath)
+	configData.Set("options.pem_dir", drawbridgePath)
 	deleteAction := actions.DeleteAction{
 		Config: configData,
 	}
@@ -55,6 +56,6 @@ func TestDeleteAction_One(t *testing.T) {
 
 	//assert
 	require.NoError(t, err, "should not raise an error when deleting answer file")
-	require.False(t, utils.FileExists(filepath.Join(parentPath, "prod-app-idle-us-east-1")), "test file should not be exist")
+	require.False(t, utils.FileExists(filepath.Join(drawbridgePath, "prod-app-idle-us-east-1")), "test file should not be exist")
 
 }
