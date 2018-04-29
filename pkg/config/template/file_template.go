@@ -54,7 +54,7 @@ func (t *FileTemplate) WriteTemplate(answerData map[string]interface{}, dryRun b
 
 	templatedFilePath, err := utils.PopulatePathTemplate(t.FilePath, answerData)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	t.data["filepath"] = templatedFilePath
