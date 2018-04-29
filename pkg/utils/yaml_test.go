@@ -33,5 +33,6 @@ func TestStringifyYAMLMapKeys(t *testing.T) {
 		"test_nested": map[string]interface{}{
 			"test_level_1": "hellp",
 		},
+		"test_array": []interface{}{"hello","world"},
 	}, stringifiedMap, "should correctly stringify map")
 }

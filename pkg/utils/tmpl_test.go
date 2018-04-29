@@ -17,6 +17,16 @@ func TestPopulateTemplate(t *testing.T) {
 	require.Equal(t, "test 17", actual, "should populate a template correctly")
 }
 
+func TestPopulateTemplate_InvalidTemplate(t *testing.T) {
+	t.Parallel()
+
+	//test
+	actual, err := utils.PopulateTemplate("test {{.example", map[string]interface{}{"example": "17"})
+
+	//assert
+	require.Error(t, err, "should throw an error")
+}
+
 func TestPopulateTemplate_MissingDataShouldReturnErr(t *testing.T) {
 	t.Parallel()
 
