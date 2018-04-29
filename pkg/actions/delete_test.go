@@ -86,15 +86,17 @@ func TestDeleteAction_All(t *testing.T) {
 
 	//test
 	err = deleteAction.All([]map[string]interface{}{
-		"environment": "prod",
-		"stack_name": "app",
-		"shard": "us-east-1",
-		"shard_type": "idle",
-		"username": "aws",
-		"config": map[string]interface{}{
-			"filepath": path.Join(drawbridgePath, "prod-app-idle-us-east-1"),
+		{
+			"environment": "prod",
+			"stack_name": "app",
+			"shard": "us-east-1",
+			"shard_type": "idle",
+			"username": "aws",
+			"config": map[string]interface{}{
+				"filepath": path.Join(drawbridgePath, "prod-app-idle-us-east-1"),
+			},
+			"config_dir": drawbridgePath,
 		},
-		"config_dir": drawbridgePath,
 	}, true)
 
 
