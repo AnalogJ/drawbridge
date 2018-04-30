@@ -29,6 +29,8 @@ func TestProxyAction_Start(t *testing.T) {
 	configData.Set("options.config_dir", drawbridgePath)
 	configData.Set("config_templates.default.pem_filepath", "test_rsa.pem")
 	configData.Set("options.pem_dir", drawbridgePath)
+	configData.Set("pac_template.filepath", path.Join(parentPath, "drawbridge.pac"))
+
 	proxyAction := actions.ProxyAction{
 		Config: configData,
 	}
