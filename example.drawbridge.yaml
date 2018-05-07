@@ -214,7 +214,7 @@ custom_templates: {}
 #      # Local variables interpreted by Ruby
 #
 #      chef_server_hostname="chef.internal.{{.shard}}.{{.stack_name}}{{if ne .environment "prod"}}{{.environment}}{{end}}example.com"
-#      client_key=File.expand_path("~/.chef/drawbridge/pem/{{.environment}}/{{.environment}}-{{.stack_name}}-{.shard_type}}-{{.shard}}{{if ne .username "aws"}}-{{.username}}{{end}}.pem"
+#      client_key=File.expand_path("~/.chef/drawbridge/pem/{{.environment}}/{{.environment}}-{{.stack_name}}-{.shard_type}}-{{.shard}}{{if ne .username "aws"}}-{{.username}}{{end}}.pem")
 #      proxy_port="{{uniquePort .config.filepath}}"
 #      nodename="{{.username}}"
 #
