@@ -117,6 +117,7 @@ questions:
       enum: ['us-east-1', 'us-east-2', 'eu-west-1', 'eu-west-2', 'ap-south-1']
   shard_type:
     description: Is this a live (green) or idle (blue) stack?
+    default_value: 'live'
     schema:
       type: string
       enum: ['idle', 'live']
