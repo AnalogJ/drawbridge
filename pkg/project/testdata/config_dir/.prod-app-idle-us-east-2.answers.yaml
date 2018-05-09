@@ -1,0 +1,19 @@
+active_config_template: default
+active_custom_templates: []
+config:
+  filepath: /Users/jason/.ssh/drawbridge/prod-app-idle-us-east-2
+  pem_filepath: /Users/jason/.ssh/drawbridge/pem/prod/aws-prod.pem
+config_dir: ~/.ssh/drawbridge
+custom: []
+environment: prod
+pem_dir: ~/.ssh/drawbridge/pem
+shard: us-east-2
+shard_type: idle
+stack_name: app
+ui_group_priority:
+- environment
+- stack_name
+- shard
+- shard_type
+ui_question_hidden: []
+username: aws

@@ -5,8 +5,7 @@ engine_cmd_compile:
   - 'chmod +x drawbridge-darwin-amd64'
   - 'GOOS=linux GOARCH=amd64 go build -ldflags "-X main.goos=linux -X main.goarch=amd64" -o drawbridge-linux-amd64 -tags "static" $(go list ./cmd/...)'
   - 'chmod +x drawbridge-linux-amd64'
-  - 'GOOS=windows GOARCH=amd64 go build -ldflags "-X main.goos=windows -X main.goarch=amd64" -o drawbridge-windows-amd64 -tags "static" $(go list ./cmd/...)'
-  - 'chmod +x drawbridge-windows-amd64'
+  - 'GOOS=windows GOARCH=amd64 go build -ldflags "-X main.goos=windows -X main.goarch=amd64" -o drawbridge-windows-amd64.exe -tags "static" $(go list ./cmd/...)'
 
 engine_cmd_test: 'go test -v -tags "static" $(glide novendor)'
 engine_cmd_lint: 'gometalinter.v1 --vendor --config=gometalinter.json ./...'
@@ -16,5 +15,5 @@ scm_release_assets:
     artifact_name: drawbridge-linux-amd64
   - local_path: drawbridge-darwin-amd64
     artifact_name: drawbridge-darwin-amd64
-  - local_path: drawbridge-windows-amd64
-    artifact_name: drawbridge-windows-amd64
+  - local_path: drawbridge-windows-amd64.exe
+    artifact_name: drawbridge-windows-amd64.exe

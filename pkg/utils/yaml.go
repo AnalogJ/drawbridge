@@ -16,6 +16,12 @@ func StringifyYAMLMapKeys(in interface{}) interface{} {
 			res[i] = StringifyYAMLMapKeys(v)
 		}
 		return res
+	case map[string]interface{}:
+		res := make(map[string]interface{})
+		for k, v := range in {
+			res[k] = StringifyYAMLMapKeys(v)
+		}
+		return res
 	case map[interface{}]interface{}:
 		res := make(map[string]interface{})
 		for k, v := range in {

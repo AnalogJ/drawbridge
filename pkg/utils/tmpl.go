@@ -7,6 +7,20 @@ import (
 	"text/template"
 )
 
+
+func PopulatePathTemplate(pathTmplContent string, data interface{}) (string, error){
+	tmplFilepath, err := PopulateTemplate(pathTmplContent, data)
+	if err != nil {
+		return "", nil
+	}
+	tmplFilepath, err = ExpandPath(tmplFilepath)
+	if err != nil {
+		return "", nil
+	}
+	return tmplFilepath, nil
+}
+
+
 func PopulateTemplate(tmplContent string, data interface{}) (string, error) {
 	//set functions
 	fns := template.FuncMap{

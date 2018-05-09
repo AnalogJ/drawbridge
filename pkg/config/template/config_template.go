@@ -33,11 +33,7 @@ func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignore
 	// modify/tweak the config template because its a known type.
 	//expand PemFilePath
 	t.PemFilePath = path.Join(answerData["pem_dir"].(string), t.PemFilePath)
-	templatedPemFilePath, err := utils.PopulateTemplate(t.PemFilePath, answerData)
-	if err != nil {
-		return nil, err
-	}
-	templatedPemFilePath, err = utils.ExpandPath(templatedPemFilePath)
+	templatedPemFilePath, err := utils.PopulatePathTemplate(t.PemFilePath, answerData)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +64,10 @@ func configTemplatePrefix(answerData map[string]interface{}, ignoreKeys []string
 		# Do not modify.
 		#
 		# Answers:`)
-	for key, value := range answerData {
+
+	keys := utils.MapKeys(answerData)
+	for _, key := range keys {
+		value := answerData[key]
 		if utils.SliceIncludes(ignoreKeys, key) {
 			continue
 		}

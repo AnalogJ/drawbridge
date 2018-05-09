@@ -26,6 +26,38 @@ func TestSnakeCaseToCamelCase(t *testing.T) {
 	}
 }
 
+func TestStringToInt(t *testing.T) {
+	t.Parallel()
+
+	//test
+	convInt, err := utils.StringToInt("1")
+
+	//assert
+	require.NoError(t, err)
+	require.Equal(t, 1,convInt, "should correctly parse string")
+}
+
+func TestStringToInt_InvalidString(t *testing.T) {
+	t.Parallel()
+
+	//test
+	_, err := utils.StringToInt("abc")
+
+	//assert
+	require.Error(t, err)
+}
+
+func TestStringToInt_EmptyString(t *testing.T) {
+	t.Parallel()
+
+	//test
+	_, err := utils.StringToInt("")
+
+	//assert
+	require.Error(t, err)
+}
+
+
 func TestStripIndent(t *testing.T) {
 	t.Parallel()
 

@@ -1,0 +1,8 @@
+---
+version: 1
+answers:
+- {environment: test, stack_name: tested, shard: us-east-1, shard_type: live, username: aws}
+- {environment: test, stack_name: tested, shard: us-east-1, shard_type: idle, username: aws}
+- {environment: test, stack_name: tested, shard: us-east-2, shard_type: live, username: aws}
+- {environment: test, stack_name: tested, shard: us-east-2, shard_type: idle, username: aws}
+- {environment: test, stack_name: test2, shard: us-east-1, shard_type: live, username: aws}

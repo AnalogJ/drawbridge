@@ -15,23 +15,22 @@ type FileTemplate struct {
 	FilePath string `mapstructure:"filepath"`
 }
 
-func (t *FileTemplate) PopulateFilePath(answerData map[string]interface{}) (string, error) {
-	templatedFilePath, err := utils.PopulateTemplate(t.FilePath, answerData)
-	if err != nil {
-		return "", err
-	}
-	templatedFilePath, err = utils.ExpandPath(templatedFilePath)
-	if err != nil {
-		return "", err
-	}
-	return templatedFilePath, nil
-}
+//func (t *FileTemplate) PopulateFilePath(answerData map[string]interface{}) (string, error) {
+//	templatedFilePath, err := utils.PopulateTemplate(t.FilePath, answerData)
+//	if err != nil {
+//		return "", err
+//	}
+//	templatedFilePath, err = utils.ExpandPath(templatedFilePath)
+//	if err != nil {
+//		return "", err
+//	}
+//	return templatedFilePath, nil
+//}
 
 func (t *FileTemplate) DeleteTemplate(answerData map[string]interface{}) error {
-
-	templatedFilePath, err := t.PopulateFilePath(answerData)
+	templatedFilePath, err := utils.PopulatePathTemplate(t.FilePath, answerData)
 	if err != nil {
-		return err
+		return nil
 	}
 
 	if !utils.FileExists(templatedFilePath) {
@@ -53,7 +52,7 @@ func (t *FileTemplate) WriteTemplate(answerData map[string]interface{}, dryRun b
 		return nil, err
 	}
 
-	templatedFilePath, err := t.PopulateFilePath(answerData)
+	templatedFilePath, err := utils.PopulatePathTemplate(t.FilePath, answerData)
 	if err != nil {
 		return nil, err
 	}

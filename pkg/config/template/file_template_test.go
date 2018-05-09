@@ -10,48 +10,6 @@ import (
 	"testing"
 )
 
-func TestFileTemplate_PopulateFilePath(t *testing.T) {
-	t.Parallel()
-
-	//setup
-	fileTemplate := template.FileTemplate{
-		FilePath: "/{{.example}}/{{.example2}}.text",
-		Template: template.Template{
-			Content: "",
-		},
-	}
-
-	//test
-	actual, err := fileTemplate.PopulateFilePath(map[string]interface{}{
-		"example":  "1",
-		"example2": "2",
-	})
-
-	//assert
-	require.NoError(t, err, "should not raise an error when populating filepath template")
-	require.Equal(t, "/1/2.text", actual, "should correctly populate template")
-}
-
-func TestFileTemplate_PopulateFilePath_WithMissingData(t *testing.T) {
-	t.Parallel()
-
-	//setup
-	fileTemplate := template.FileTemplate{
-		FilePath: "/{{.example}}/{{.example2}}.text",
-		Template: template.Template{
-			Content: "",
-		},
-	}
-
-	//test
-	_, err := fileTemplate.PopulateFilePath(map[string]interface{}{
-		"example": "1",
-	})
-
-	//assert
-	require.Error(t, err, "should raise an error when populating filepath template")
-}
-
 func TestFileTemplate_DeleteTemplate(t *testing.T) {
 	t.Parallel()
 

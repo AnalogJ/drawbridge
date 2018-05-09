@@ -4,7 +4,59 @@ import (
 	"drawbridge/pkg/utils"
 	"github.com/stretchr/testify/require"
 	"testing"
+	"path"
+	"os"
+	"io/ioutil"
 )
+
+func patchEnv(key, value string) func() {
+	bck := os.Getenv(key)
+	deferFunc := func() {
+		os.Setenv(key, bck)
+	}
+
+	os.Setenv(key, value)
+	return deferFunc
+}
+
+
+func TestPopulatePathTemplate(t *testing.T) {
+	t.Parallel()
+
+	//test
+	actual, err := utils.PopulatePathTemplate("/tmp/{{.example}}", map[string]interface{}{"example": "17"})
+
+	//assert
+	require.NoError(t, err, "should not throw an error")
+	require.Equal(t, "/tmp/17", actual, "should populate a template correctly")
+}
+
+func TestPopulatePathTemplate_JoinedPath(t *testing.T) {
+	t.Parallel()
+
+	//test
+	actual, err := utils.PopulatePathTemplate(path.Join("/tmp","{{.example}}"), map[string]interface{}{"example": "17"})
+
+	//assert
+	require.NoError(t, err, "should not throw an error")
+	require.Equal(t, "/tmp/17", actual, "should populate a template correctly")
+}
+
+func TestPopulatePathTemplate_RelativePath(t *testing.T) {
+	t.Parallel()
+
+	//setup
+	parentPath, err := ioutil.TempDir("", "")
+	defer os.RemoveAll(parentPath)
+	defer patchEnv("HOME", parentPath)()
+
+	//test
+	actual, err := utils.PopulatePathTemplate(path.Join("~/","{{.example}}"), map[string]interface{}{"example": "17"})
+
+	//assert
+	require.NoError(t, err, "should not throw an error")
+	require.Equal(t, path.Join(parentPath, "17"), actual, "should populate a template correctly")
+}
 
 func TestPopulateTemplate(t *testing.T) {
 	t.Parallel()
@@ -15,6 +67,16 @@ func TestPopulateTemplate(t *testing.T) {
 	//assert
 	require.NoError(t, err, "should not throw an error")
 	require.Equal(t, "test 17", actual, "should populate a template correctly")
+}
+
+func TestPopulateTemplate_InvalidTemplate(t *testing.T) {
+	t.Parallel()
+
+	//test
+	_, err := utils.PopulateTemplate("test {{.example", map[string]interface{}{"example": "17"})
+
+	//assert
+	require.Error(t, err, "should throw an error")
 }
 
 func TestPopulateTemplate_MissingDataShouldReturnErr(t *testing.T) {

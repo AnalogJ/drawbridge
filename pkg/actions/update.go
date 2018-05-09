@@ -35,20 +35,8 @@ type GithubReleaseInfo struct {
 // https://github.com/inconshreveable/go-update
 //
 func (e *UpdateAction) Start() error {
-	latestReleaseReq, err := http.Get("https://api.github.com/repos/AnalogJ/drawbridge/releases/latest")
-	if err != nil {
-		return err
-	}
-	defer latestReleaseReq.Body.Close()
 
-	respBodyJson, err := ioutil.ReadAll(latestReleaseReq.Body)
-	if err != nil {
-		return err
-	}
-
-	//parse json
-	releaseInfo := GithubReleaseInfo{}
-	err = json.Unmarshal(respBodyJson, &releaseInfo)
+	releaseInfo, err := e.GetLatestReleaseInfo()
 	if err != nil {
 		return err
 	}
@@ -107,6 +95,27 @@ func (e *UpdateAction) Start() error {
 	color.Green("Successfully updated Drawbridge")
 
 	return nil
+}
+
+func (e *UpdateAction) GetLatestReleaseInfo() (GithubReleaseInfo, error) {
+	latestReleaseReq, err := http.Get("https://api.github.com/repos/AnalogJ/drawbridge/releases/latest")
+	if err != nil {
+		return GithubReleaseInfo{}, err
+	}
+	defer latestReleaseReq.Body.Close()
+
+	respBodyJson, err := ioutil.ReadAll(latestReleaseReq.Body)
+	if err != nil {
+		return GithubReleaseInfo{}, err
+	}
+
+	//parse json
+	releaseInfo := GithubReleaseInfo{}
+	err = json.Unmarshal(respBodyJson, &releaseInfo)
+	if err != nil {
+		return GithubReleaseInfo{}, err
+	}
+	return releaseInfo, nil
 }
 
 func (e *UpdateAction) currentBinaryTimestamp() (time.Time, error) {
