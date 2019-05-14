@@ -3,10 +3,10 @@ package utils_test
 import (
 	"drawbridge/pkg/utils"
 	"github.com/stretchr/testify/require"
-	"testing"
-	"path"
-	"os"
 	"io/ioutil"
+	"os"
+	"path"
+	"testing"
 )
 
 func patchEnv(key, value string) func() {
@@ -18,7 +18,6 @@ func patchEnv(key, value string) func() {
 	os.Setenv(key, value)
 	return deferFunc
 }
-
 
 func TestPopulatePathTemplate(t *testing.T) {
 	t.Parallel()
@@ -35,7 +34,7 @@ func TestPopulatePathTemplate_JoinedPath(t *testing.T) {
 	t.Parallel()
 
 	//test
-	actual, err := utils.PopulatePathTemplate(path.Join("/tmp","{{.example}}"), map[string]interface{}{"example": "17"})
+	actual, err := utils.PopulatePathTemplate(path.Join("/tmp", "{{.example}}"), map[string]interface{}{"example": "17"})
 
 	//assert
 	require.NoError(t, err, "should not throw an error")
@@ -51,7 +50,7 @@ func TestPopulatePathTemplate_RelativePath(t *testing.T) {
 	defer patchEnv("HOME", parentPath)()
 
 	//test
-	actual, err := utils.PopulatePathTemplate(path.Join("~/","{{.example}}"), map[string]interface{}{"example": "17"})
+	actual, err := utils.PopulatePathTemplate(path.Join("~/", "{{.example}}"), map[string]interface{}{"example": "17"})
 
 	//assert
 	require.NoError(t, err, "should not throw an error")
@@ -145,4 +144,15 @@ func TestUniquePort_WithStringKey(t *testing.T) {
 	//assert
 	require.NoError(t, err, "should not raise an error")
 	require.Equal(t, 36016, port, "should generate repeatible unique port from data")
+}
+
+func TestPopulateTemplate_StringsHasPrefix(t *testing.T) {
+	t.Parallel()
+
+	//test
+	str, err := utils.PopulateTemplate(`test {{if stringsHasPrefix .example1 "this-is"}}{{stringsTrimPrefix .example1 "this-is-a-test-"}}{{end}}`, map[string]interface{}{"example1": "this-is-a-test-string"})
+
+	//assert
+	require.NoError(t, err, "should throw an error if missing template data")
+	require.Equal(t, "test string", str, "should correctly test for prefix, and trim prefix")
 }
