@@ -88,8 +88,7 @@ func (p *ProjectList) Prompt(message string) (map[string]interface{}, error) {
 }
 
 func (p *ProjectList) PrintTree(startMessage string) {
-	treeprint.EdgeTypeStart = "Rendered Drawbridge Configs:"
-
+	p.groupedTree.SetValue("Rendered Drawbridge Configs:")
 	fmt.Println(p.groupedTree.String())
 }
 
