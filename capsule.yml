@@ -9,6 +9,7 @@ engine_cmd_compile:
 
 engine_cmd_test: 'go test -v -tags "static" $(go list ./... | grep -v /vendor/)'
 engine_cmd_lint: 'gometalinter.v1 --vendor --config=gometalinter.json ./...'
+engine_golang_package_path: 'drawbridge'
 scm_enable_branch_cleanup: true
 scm_release_assets:
   - local_path: drawbridge-linux-amd64
