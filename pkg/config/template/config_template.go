@@ -1,8 +1,8 @@
 package template
 
 import (
-	"drawbridge/pkg/utils"
 	"fmt"
+	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/fatih/color"
 	"path"
 )

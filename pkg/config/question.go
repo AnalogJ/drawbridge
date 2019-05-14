@@ -1,8 +1,8 @@
 package config
 
 import (
-	"drawbridge/pkg/errors"
 	"fmt"
+	"github.com/analogj/drawbridge/pkg/errors"
 	"github.com/xeipuuv/gojsonschema"
 )
 

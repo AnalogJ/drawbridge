@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"hash/fnv"
+	"strings"
 	"text/template"
 )
 
-
-func PopulatePathTemplate(pathTmplContent string, data interface{}) (string, error){
+func PopulatePathTemplate(pathTmplContent string, data interface{}) (string, error) {
 	tmplFilepath, err := PopulateTemplate(pathTmplContent, data)
 	if err != nil {
 		return "", nil
@@ -20,12 +20,39 @@ func PopulatePathTemplate(pathTmplContent string, data interface{}) (string, err
 	return tmplFilepath, nil
 }
 
-
 func PopulateTemplate(tmplContent string, data interface{}) (string, error) {
 	//set functions
 	fns := template.FuncMap{
-		"uniquePort": UniquePort,
-		"expandPath": ExpandPath,
+		"uniquePort":          UniquePort,
+		"expandPath":          ExpandPath,
+		"stringsCompare":      strings.Compare,
+		"stringsContains":     strings.Contains,
+		"stringsContainsAny":  strings.ContainsAny,
+		"stringsCount":        strings.Count,
+		"stringsEqualFold":    strings.EqualFold,
+		"stringsHasPrefix":    strings.HasPrefix,
+		"stringsHasSuffix":    strings.HasSuffix,
+		"stringsIndex":        strings.Index,
+		"stringsIndexAny":     strings.IndexAny,
+		"stringsJoin":         strings.Join,
+		"stringsLastIndex":    strings.LastIndex,
+		"stringsLastIndexAny": strings.LastIndexAny,
+		"stringsRepeat":       strings.Repeat,
+		"stringsReplace":      strings.Replace,
+		"stringsSplit":        strings.Split,
+		"stringsSplitAfter":   strings.SplitAfter,
+		"stringsSplitAfterN":  strings.SplitAfterN,
+		"stringsSplitN":       strings.SplitN,
+		"stringsTitle":        strings.Title,
+		"stringsToLower":      strings.ToLower,
+		"stringsToTitle":      strings.ToTitle,
+		"stringsToUpper":      strings.ToUpper,
+		"stringsTrim":         strings.Trim,
+		"stringsTrimLeft":     strings.TrimLeft,
+		"stringsTrimPrefix":   strings.TrimPrefix,
+		"stringsTrimRight":    strings.TrimRight,
+		"stringsTrimSpace":    strings.TrimSpace,
+		"stringsTrimSuffix":   strings.TrimSuffix,
 	}
 
 	// prep the template, set the option

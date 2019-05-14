@@ -1,12 +1,12 @@
 package actions_test
 
 import (
-	"testing"
+	"github.com/analogj/drawbridge/pkg/actions"
+	"github.com/analogj/drawbridge/pkg/config"
 	"github.com/stretchr/testify/require"
-	"drawbridge/pkg/actions"
-	"drawbridge/pkg/config"
 	"io/ioutil"
 	"os"
+	"testing"
 )
 
 func TestCreateAction_WriteAnswersFile(t *testing.T) {
@@ -28,7 +28,6 @@ func TestCreateAction_WriteAnswersFile(t *testing.T) {
 	err = createAction.WriteAnswersFile("base_name", map[string]interface{}{
 		"test": "test_data",
 	}, false)
-
 
 	//assert
 	require.NoError(t, err, "should not raise an error when adding writing answer file")

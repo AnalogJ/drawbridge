@@ -1,9 +1,9 @@
 package template
 
 import (
-	"drawbridge/pkg/errors"
-	"drawbridge/pkg/utils"
 	"fmt"
+	"github.com/analogj/drawbridge/pkg/errors"
+	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/fatih/color"
 	"log"
 	"os"

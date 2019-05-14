@@ -2,11 +2,11 @@ package actions
 
 import (
 	"crypto/x509"
-	"drawbridge/pkg/config"
-	"drawbridge/pkg/errors"
-	"drawbridge/pkg/utils"
 	"encoding/pem"
 	"fmt"
+	"github.com/analogj/drawbridge/pkg/config"
+	"github.com/analogj/drawbridge/pkg/errors"
+	"github.com/analogj/drawbridge/pkg/utils"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
 	"io/ioutil"

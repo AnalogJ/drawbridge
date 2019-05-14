@@ -1,15 +1,15 @@
 package actions_test
 
 import (
-	"path"
+	"github.com/analogj/drawbridge/pkg/actions"
+	"github.com/analogj/drawbridge/pkg/config"
+	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/stretchr/testify/require"
-	"drawbridge/pkg/actions"
-	"path/filepath"
-	"testing"
 	"io/ioutil"
 	"os"
-	"drawbridge/pkg/config"
-	"drawbridge/pkg/utils"
+	"path"
+	"path/filepath"
+	"testing"
 )
 
 func TestProxyAction_Start(t *testing.T) {
@@ -39,17 +39,16 @@ func TestProxyAction_Start(t *testing.T) {
 	err = proxyAction.Start([]map[string]interface{}{
 		{
 			"environment": "prod",
-			"stack_name": "app",
-			"shard": "us-east-1",
-			"shard_type": "idle",
-			"username": "aws",
+			"stack_name":  "app",
+			"shard":       "us-east-1",
+			"shard_type":  "idle",
+			"username":    "aws",
 			"config": map[string]interface{}{
 				"filepath": path.Join(drawbridgePath, "prod-app-idle-us-east-1"),
 			},
 			"config_dir": drawbridgePath,
 		},
 	}, false)
-
 
 	//assert
 	require.NoError(t, err, "should not raise an error when generating pac file")

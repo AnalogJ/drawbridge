@@ -1,7 +1,7 @@
 package errors_test
 
 import (
-	"drawbridge/pkg/errors"
+	"github.com/analogj/drawbridge/pkg/errors"
 	"github.com/stretchr/testify/require"
 	"testing"
 )

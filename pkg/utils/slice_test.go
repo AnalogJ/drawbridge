@@ -1,7 +1,7 @@
 package utils_test
 
 import (
-	"drawbridge/pkg/utils"
+	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/stretchr/testify/require"
 	"testing"
 )

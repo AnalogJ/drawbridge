@@ -1,11 +1,11 @@
 package project_test
 
 import (
-	"path"
+	"github.com/analogj/drawbridge/pkg/config"
+	"github.com/analogj/drawbridge/pkg/project"
 	"github.com/stretchr/testify/require"
-	"drawbridge/pkg/project"
+	"path"
 	"testing"
-	"drawbridge/pkg/config"
 )
 
 func TestProjectList_WithEmptyAnswersList(t *testing.T) {
@@ -55,7 +55,6 @@ func TestProjectList_WithEmptyConfigDir(t *testing.T) {
 
 }
 
-
 func TestProjectList_GetIndex(t *testing.T) {
 	t.Parallel()
 
@@ -70,7 +69,6 @@ func TestProjectList_GetIndex(t *testing.T) {
 	_, startErr := projList.GetIndex(0)
 	_, lastErr := projList.GetIndex(4)
 	_, lenthErr := projList.GetIndex(projList.Length())
-
 
 	//assert
 	require.Equal(t, 5, projList.Length(), "should correctly load provided answers")

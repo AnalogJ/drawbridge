@@ -1,9 +1,9 @@
 package actions
 
 import (
-	"drawbridge/pkg/config"
-	"drawbridge/pkg/utils"
 	"fmt"
+	"github.com/analogj/drawbridge/pkg/config"
+	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/fatih/color"
 	"path"
 	"strings"

@@ -1,6 +1,9 @@
 package config
 
-import "drawbridge/pkg/config/template"
+import (
+	"github.com/analogj/drawbridge/pkg/config/template"
+	"github.com/spf13/viper"
+)
 
 // Create mock using:
 // mockgen -source=pkg/config/interface.go -destination=pkg/config/mock/mock_config.go
@@ -16,7 +19,7 @@ type Interface interface {
 	GetInt(key string) int
 	GetString(key string) string
 	GetStringSlice(key string) []string
-	UnmarshalKey(key string, rawVal interface{}) error
+	UnmarshalKey(key string, rawVal interface{}, decoderOpts ...viper.DecoderConfigOption) error
 
 	GetProvidedAnswerList() ([]map[string]interface{}, error)
 	InternalQuestionKeys() []string

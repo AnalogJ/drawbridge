@@ -1,10 +1,10 @@
 package project
 
 import (
-	"drawbridge/pkg/errors"
-	"drawbridge/pkg/utils"
 	"fmt"
 	"github.com/Jeffail/gabs"
+	"github.com/analogj/drawbridge/pkg/errors"
+	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/fatih/color"
 	"github.com/xlab/treeprint"
 	"sort"
@@ -88,8 +88,7 @@ func (p *ProjectList) Prompt(message string) (map[string]interface{}, error) {
 }
 
 func (p *ProjectList) PrintTree(startMessage string) {
-	treeprint.EdgeTypeStart = "Rendered Drawbridge Configs:"
-
+	p.groupedTree.SetValue("Rendered Drawbridge Configs:")
 	fmt.Println(p.groupedTree.String())
 }
 

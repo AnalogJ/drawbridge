@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.10
-    working_directory: /go/src/drawbridge
+    working_directory: /go/src/github.com/analogj/drawbridge
     steps:
       - checkout
 
@@ -11,12 +11,14 @@ jobs:
           keys:
             - v1-pkg-cache
 
-      # Normally, this step would be in a custom primary image;
-      # we've added it here for the sake of explanation.
-      - run: go get github.com/Masterminds/glide
-
-      # install dependencies
-      - run: glide install
+      - run:
+          name: download-libraries
+          command: |
+            if [ ! -d /go/src/github.com/analogj/drawbridge/vendor ]; then
+                curl -L -s https://github.com/golang/dep/releases/download/v0.5.3/dep-linux-amd64 -o /go/bin/dep
+                chmod +x /go/bin/dep
+                /go/bin/dep ensure
+            fi
 
       - run:
           name: Run unit tests
@@ -38,7 +40,7 @@ jobs:
       - save_cache:
           key: v1-pkg-cache
           paths:
-            - "/go/src/drawbridge/vendor"
+            - "/go/src/github.com/analogj/drawbridge/vendor"
 
       - run:
           name: Merge coverage reports and submit
