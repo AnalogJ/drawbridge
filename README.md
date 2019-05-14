@@ -259,7 +259,7 @@ Check the [example.drawbridge.yml](https://github.com/AnalogJ/drawbridge/blob/ma
 
 # Testing [![Circle CI](https://img.shields.io/circleci/project/github/AnalogJ/drawbridge.svg?style=flat-square)](https://circleci.com/gh/AnalogJ/drawbridge)
 Drawbridge provides an extensive test-suite based on `go test`.
-You can run all the integration & unit tests with `go test $(glide novendor)`
+You can run all the integration & unit tests with `go test $(go list ./... | grep -v /vendor/)`
 
 CircleCI is used for continuous integration testing: https://circleci.com/gh/AnalogJ/drawbridge
 

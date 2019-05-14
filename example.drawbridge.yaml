@@ -133,6 +133,46 @@ questions:
 answers: []
 
 ######################################################################
+# Template Functions
+#
+# The following functions are available for use in the templates, mapping to
+# Go functions.
+#
+#
+#       TEMPLATE FUNCTION      GO FUNCTION
+#
+#       "uniquePort":          UniquePort,
+#  		"expandPath":          ExpandPath,
+#  		"stringsCompare":      strings.Compare,
+#  		"stringsContains":     strings.Contains,
+#  		"stringsContainsAny":  strings.ContainsAny,
+#  		"stringsCount":        strings.Count,
+#  		"stringsEqualFold":    strings.EqualFold,
+#  		"stringsHasPrefix":    strings.HasPrefix,
+#  		"stringsHasSuffix":    strings.HasSuffix,
+#  		"stringsIndex":        strings.Index,
+#  		"stringsIndexAny":     strings.IndexAny,
+#  		"stringsJoin":         strings.Join,
+#  		"stringsLastIndex":    strings.LastIndex,
+#  		"stringsLastIndexAny": strings.LastIndexAny,
+#  		"stringsRepeat":       strings.Repeat,
+#  		"stringsReplace":      strings.Replace,
+#  		"stringsSplit":        strings.Split,
+#  		"stringsSplitAfter":   strings.SplitAfter,
+#  		"stringsSplitAfterN":  strings.SplitAfterN,
+#  		"stringsSplitN":       strings.SplitN,
+#  		"stringsTitle":        strings.Title,
+#  		"stringsToLower":      strings.ToLower,
+#  		"stringsToTitle":      strings.ToTitle,
+#  		"stringsToUpper":      strings.ToUpper,
+#  		"stringsTrim":         strings.Trim,
+#  		"stringsTrimLeft":     strings.TrimLeft,
+#  		"stringsTrimPrefix":   strings.TrimPrefix,
+#  		"stringsTrimRight":    strings.TrimRight,
+#		"stringsTrimSpace":    strings.TrimSpace,
+#		"stringsTrimSuffix":   strings.TrimSuffix,
+
+######################################################################
 # SSH Config Templates
 #
 # Once all the questions have been answered (via CLI flags, CLI prompts or using defaults) these answers are then merged
