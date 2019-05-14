@@ -1,14 +1,14 @@
 package template_test
 
 import (
-	"drawbridge/pkg/config/template"
-	"drawbridge/pkg/utils"
+	"fmt"
+	"github.com/analogj/drawbridge/pkg/config/template"
+	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"path"
 	"testing"
-	"fmt"
 )
 
 func TestConfigTemplate_DeleteTemplate(t *testing.T) {
@@ -114,7 +114,7 @@ func TestConfigTemplate_WriteTemplate_ShouldGenerateValidPrefix(t *testing.T) {
 	# config_dir = %s
 	# pem_dir = %s
 	# template = map[pem_filepath:%s/1.pem]
-	config content`, parentPath, parentPath,parentPath)), string(actualContent), "test file prefix & content should match, and skip example key")
+	config content`, parentPath, parentPath, parentPath)), string(actualContent), "test file prefix & content should match, and skip example key")
 }
 
 //

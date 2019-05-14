@@ -1,7 +1,7 @@
 package config_test
 
 import (
-	"drawbridge/pkg/config"
+	"github.com/analogj/drawbridge/pkg/config"
 	"github.com/stretchr/testify/require"
 	"path"
 	"testing"

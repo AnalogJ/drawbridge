@@ -1,10 +1,10 @@
 package project
 
 import (
-	"drawbridge/pkg/errors"
-	"drawbridge/pkg/utils"
 	"fmt"
 	"github.com/Jeffail/gabs"
+	"github.com/analogj/drawbridge/pkg/errors"
+	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/fatih/color"
 	"github.com/xlab/treeprint"
 	"sort"

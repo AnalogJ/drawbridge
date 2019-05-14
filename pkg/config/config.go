@@ -2,10 +2,10 @@ package config
 
 import (
 	"bytes"
-	"drawbridge/pkg/config/template"
-	"drawbridge/pkg/errors"
-	"drawbridge/pkg/utils"
 	"fmt"
+	"github.com/analogj/drawbridge/pkg/config/template"
+	"github.com/analogj/drawbridge/pkg/errors"
+	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/spf13/viper"
 	"github.com/xeipuuv/gojsonschema"
 	"gopkg.in/yaml.v2"

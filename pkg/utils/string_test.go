@@ -1,7 +1,7 @@
 package utils_test
 
 import (
-	"drawbridge/pkg/utils"
+	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
@@ -34,7 +34,7 @@ func TestStringToInt(t *testing.T) {
 
 	//assert
 	require.NoError(t, err)
-	require.Equal(t, 1,convInt, "should correctly parse string")
+	require.Equal(t, 1, convInt, "should correctly parse string")
 }
 
 func TestStringToInt_InvalidString(t *testing.T) {
@@ -56,7 +56,6 @@ func TestStringToInt_EmptyString(t *testing.T) {
 	//assert
 	require.Error(t, err)
 }
-
 
 func TestStripIndent(t *testing.T) {
 	t.Parallel()

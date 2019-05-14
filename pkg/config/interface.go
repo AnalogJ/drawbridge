@@ -1,7 +1,7 @@
 package config
 
 import (
-	"drawbridge/pkg/config/template"
+	"github.com/analogj/drawbridge/pkg/config/template"
 	"github.com/spf13/viper"
 )
 

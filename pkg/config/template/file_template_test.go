@@ -1,8 +1,8 @@
 package template_test
 
 import (
-	"drawbridge/pkg/config/template"
-	"drawbridge/pkg/utils"
+	"github.com/analogj/drawbridge/pkg/config/template"
+	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"

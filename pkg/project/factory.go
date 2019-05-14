@@ -2,8 +2,8 @@ package project
 
 import (
 	"bytes"
-	"drawbridge/pkg/config"
-	"drawbridge/pkg/utils"
+	"github.com/analogj/drawbridge/pkg/config"
+	"github.com/analogj/drawbridge/pkg/utils"
 	"gopkg.in/yaml.v2"
 	"log"
 	"os"

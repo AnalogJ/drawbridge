@@ -1,15 +1,15 @@
 package actions_test
 
 import (
-	"testing"
+	"github.com/analogj/drawbridge/pkg/actions"
+	"github.com/analogj/drawbridge/pkg/config"
+	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
-	"drawbridge/pkg/actions"
-	"drawbridge/pkg/config"
-	"drawbridge/pkg/utils"
-	"path/filepath"
 	"path"
+	"path/filepath"
+	"testing"
 )
 
 func patchEnv(key, value string) func() {
@@ -46,16 +46,15 @@ func TestDeleteAction_One(t *testing.T) {
 	//test
 	err = deleteAction.One(map[string]interface{}{
 		"environment": "prod",
-		"stack_name": "app",
-		"shard": "us-east-1",
-		"shard_type": "idle",
-		"username": "aws",
+		"stack_name":  "app",
+		"shard":       "us-east-1",
+		"shard_type":  "idle",
+		"username":    "aws",
 		"config": map[string]interface{}{
 			"filepath": path.Join(drawbridgePath, "prod-app-idle-us-east-1"),
 		},
 		"config_dir": drawbridgePath,
 	}, true)
-
 
 	//assert
 	require.NoError(t, err, "should not raise an error when deleting answer file")
@@ -88,17 +87,16 @@ func TestDeleteAction_All(t *testing.T) {
 	err = deleteAction.All([]map[string]interface{}{
 		{
 			"environment": "prod",
-			"stack_name": "app",
-			"shard": "us-east-1",
-			"shard_type": "idle",
-			"username": "aws",
+			"stack_name":  "app",
+			"shard":       "us-east-1",
+			"shard_type":  "idle",
+			"username":    "aws",
 			"config": map[string]interface{}{
 				"filepath": path.Join(drawbridgePath, "prod-app-idle-us-east-1"),
 			},
 			"config_dir": drawbridgePath,
 		},
 	}, true)
-
 
 	//assert
 	require.NoError(t, err, "should not raise an error when deleting answer file")

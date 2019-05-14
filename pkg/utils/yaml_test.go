@@ -1,13 +1,13 @@
 package utils_test
 
 import (
-	"testing"
-	"github.com/stretchr/testify/require"
-	"path"
-	"os"
 	"bytes"
+	"github.com/analogj/drawbridge/pkg/utils"
+	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v2"
-	"drawbridge/pkg/utils"
+	"os"
+	"path"
+	"testing"
 )
 
 func TestStringifyYAMLMapKeys(t *testing.T) {
@@ -28,11 +28,11 @@ func TestStringifyYAMLMapKeys(t *testing.T) {
 
 	//assert
 	require.Equal(t, map[string]interface{}{
-		"test_key": "value",
+		"test_key":    "value",
 		"test_number": 1,
 		"test_nested": map[string]interface{}{
 			"test_level_1": "hellp",
 		},
-		"test_array": []interface{}{"hello","world"},
+		"test_array": []interface{}{"hello", "world"},
 	}, stringifiedMap, "should correctly stringify map")
 }

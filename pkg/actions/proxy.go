@@ -1,6 +1,6 @@
 package actions
 
-import "drawbridge/pkg/config"
+import "github.com/analogj/drawbridge/pkg/config"
 
 type ProxyAction struct {
 	Config config.Interface

@@ -1,12 +1,12 @@
 package actions
 
 import (
-	"drawbridge/pkg/config"
-	"drawbridge/pkg/errors"
-	"drawbridge/pkg/utils"
-	"drawbridge/pkg/version"
 	"encoding/json"
 	"fmt"
+	"github.com/analogj/drawbridge/pkg/config"
+	"github.com/analogj/drawbridge/pkg/errors"
+	"github.com/analogj/drawbridge/pkg/utils"
+	"github.com/analogj/drawbridge/pkg/version"
 	"github.com/fatih/color"
 	"github.com/inconshreveable/go-update"
 	"io/ioutil"

@@ -1,10 +1,10 @@
 package actions
 
 import (
-	"drawbridge/pkg/config"
-	"drawbridge/pkg/errors"
-	"drawbridge/pkg/utils"
 	"fmt"
+	"github.com/analogj/drawbridge/pkg/config"
+	"github.com/analogj/drawbridge/pkg/errors"
+	"github.com/analogj/drawbridge/pkg/utils"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -32,7 +32,6 @@ func (e *DownloadAction) Start(answerData map[string]interface{}, destHostname s
 	if err != nil {
 		return nil
 	}
-
 
 	//TODO: Print the lines we're running.
 
