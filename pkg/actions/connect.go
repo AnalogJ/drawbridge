@@ -35,18 +35,20 @@ func (e *ConnectAction) Start(answerData map[string]interface{}, destHostname st
 		return nil
 	}
 
-	tmplPemFilepath, err := utils.PopulatePathTemplate(filepath.Join(e.Config.GetString("options.pem_dir"), tmplData.PemFilePath), answerData)
-	if err != nil {
-		return nil
-	}
+	if tmplData.PemFilePath != "" {
+		tmplPemFilepath, err := utils.PopulatePathTemplate(filepath.Join(e.Config.GetString("options.pem_dir"), tmplData.PemFilePath), answerData)
+		if err != nil {
+			return nil
+		}
 
-	//TODO: Print the lines we're running.
+		//TODO: Print the lines we're running.
 
-	//TODO: Check that the bastion host is accessible.
+		//TODO: Check that the bastion host is accessible.
 
-	err = e.SshAgentAddPemKey(tmplPemFilepath)
-	if err != nil {
-		return err
+		err = e.SshAgentAddPemKey(tmplPemFilepath)
+		if err != nil {
+			return err
+		}
 	}
 
 	//https://gobyexample.com/execing-processes
