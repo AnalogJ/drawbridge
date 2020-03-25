@@ -49,36 +49,6 @@ func TestConfiguration_ReadConfig_Simple(t *testing.T) {
 
 }
 
-//func TestConfiguration_ReadConfig_Answers(t *testing.T) {
-//	t.Parallel()
-//
-//	//setup
-//	testConfig, _ := config.Create()
-//
-//	//test
-//	testConfig.ReadConfig(path.Join("testdata", "simple_config.yaml"))
-//
-//
-//	//assert
-//	require.Equal(t, "~/.ssh/drawbridge", testConfig.GetString("options.config_dir"), "should populate config_dir with default")
-//	require.Equal(t, "~/.ssh/drawbridge/pem", testConfig.GetString("options.pem_dir"), "should populate pem_dir with default")
-//}
-//
-//func TestConfiguration_ReadConfig_AnswersFile(t *testing.T) {
-//	t.Parallel()
-//
-//	//setup
-//	testConfig, _ := config.Create()
-//
-//	//test
-//	testConfig.ReadConfig(path.Join("testdata", "simple_config.yaml"))
-//
-//
-//	//assert
-//	require.Equal(t, "~/.ssh/drawbridge", testConfig.GetString("options.config_dir"), "should populate config_dir with default")
-//	require.Equal(t, "~/.ssh/drawbridge/pem", testConfig.GetString("options.pem_dir"), "should populate pem_dir with default")
-//}
-
 func TestConfiguration_ReadConfig_Questions(t *testing.T) {
 	t.Parallel()
 

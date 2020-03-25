@@ -15,7 +15,7 @@ config_templates:
       Host bastion
           Hostname bastion.example.com
           User {{.username}}
-          IdentityFile {{.pem_dir}}/{{.pem_filename}}
+          IdentityFile {{.template.pem_filepath}}
           LocalForward localhost:{{uniquePort .}} localhost:8080
           UserKnownHostsFile=/dev/null
           StrictHostKeyChecking=no
