@@ -473,7 +473,8 @@ func createFlagHandler(appConfig config.Interface, answerValues map[string]inter
 		//check if the key is set as an answer/default
 		if answerOptionValue, ok := answerValues[optionName]; ok {
 			//this answer is actuall for an option. lets set it.
-			appConfig.Set(fmt.Sprintf("options.%v", optionName), answerOptionValue)
+			//fmt.Printf("Setting Option from Answer: %v  (%v)", optionName, answerOptionValue)
+			appConfig.SetDefault(fmt.Sprintf("options.%v", optionName), answerOptionValue)
 		}
 	}
 
