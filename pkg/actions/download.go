@@ -5,6 +5,7 @@ import (
 	"github.com/analogj/drawbridge/pkg/config"
 	"github.com/analogj/drawbridge/pkg/errors"
 	"github.com/analogj/drawbridge/pkg/utils"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -17,6 +18,7 @@ type DownloadAction struct {
 }
 
 func (e *DownloadAction) Start(answerData map[string]interface{}, destHostname string, remoteFilePath string, localFilePath string) error {
+	log.Debugf("Answer Data: %v", answerData)
 
 	tmplData, err := e.Config.GetActiveConfigTemplate()
 	if err != nil {

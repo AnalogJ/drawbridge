@@ -107,11 +107,17 @@ func parseAnswerFile(answerFilePath string) (projectData, error) {
 
 	//TODO: warn the user if the answer data would no longer render the same answers.yaml file.
 
+	answerDataConfig := answerData["config"].(map[string]interface{})
+	pemFilePath := "" //this is an optional field (may be unset/nil in some configs)
+	if val, ok := answerDataConfig["pem_filepath"]; ok {
+		pemFilePath = val.(string)
+	}
+
 	return projectData{
 		Answers:        answerData,
 		AnswerFilePath: answerFilePath,
-		ConfigFilePath: answerData["config"].(map[string]interface{})["filepath"].(string),
-		PemFilePath:    answerData["config"].(map[string]interface{})["pem_filepath"].(string),
+		ConfigFilePath: answerDataConfig["filepath"].(string),
+		PemFilePath:    pemFilePath,
 	}, nil
 
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"time"
 
@@ -13,7 +14,6 @@ import (
 	"github.com/analogj/drawbridge/pkg/version"
 	"github.com/fatih/color"
 	"github.com/urfave/cli/v2"
-	"log"
 	"strings"
 )
 
@@ -99,6 +99,11 @@ OPTIONS:
 				//UsageText:   "doo - does the dooing",
 				Action: func(c *cli.Context) error {
 					fmt.Fprintln(c.App.Writer, c.Command.Usage)
+					if c.Bool("debug") {
+						log.SetLevel(log.DebugLevel)
+					} else {
+						log.SetLevel(log.InfoLevel)
+					}
 
 					projectList, err := project.CreateProjectListFromProvidedAnswers(config)
 					if err != nil {
@@ -206,6 +211,7 @@ OPTIONS:
 						destServer = ""
 					}
 
+					config.SetOptionsFromAnswers(answerData)
 					connectAction := actions.ConnectAction{Config: config}
 					return connectAction.Start(answerData, destServer)
 				},
@@ -276,6 +282,7 @@ OPTIONS:
 						}
 					}
 
+					config.SetOptionsFromAnswers(answerData)
 					downloadAction := actions.DownloadAction{Config: config}
 					return downloadAction.Start(answerData, strRemoteHostname, strRemotePath, strLocalPath)
 				},
@@ -320,7 +327,7 @@ OPTIONS:
 					}
 
 					//delete one config file.
-
+					config.SetOptionsFromAnswers(answerData)
 					deleteAction := actions.DeleteAction{Config: config}
 					err = deleteAction.One(answerData, c.Bool("force"))
 
@@ -404,6 +411,11 @@ func createFlags(appConfig config.Interface) ([]cli.Flag, error) {
 			Usage: "Dry Run mode. Will print files and paths to STDOUT rather than writing them to disk.",
 			Value: false,
 		},
+		&cli.BoolFlag{
+			Name:  "debug",
+			Usage: "Enable verbose logging for debugging",
+			Value: false,
+		},
 	}
 
 	configQuestions, err := appConfig.GetQuestions()
@@ -464,30 +476,40 @@ func createFlagHandler(appConfig config.Interface, answerValues map[string]inter
 	// flag override
 
 	//get default defaultOptions from the config
-	defaultOptions := map[string]interface{}{}
-	appConfig.UnmarshalKey("options", &defaultOptions)
+	options := map[string]interface{}{}
+	appConfig.UnmarshalKey("options", &options)
+	log.Debugf("\nDefault Options: %v", options)
+
+	optionKeys := []string{}
+	for key := range options {
+		optionKeys = append(optionKeys, key)
+	}
 
 	cliAnswers := answerValues
-	//find answer defaultOptions (and set them)
-	for optionName, _ := range defaultOptions {
+
+	//find optionKeys in answerValues
+	for _, optionKey := range optionKeys {
 		//check if the key is set as an answer/default
-		if answerOptionValue, ok := answerValues[optionName]; ok {
-			//this answer is actuall for an option. lets set it.
-			//fmt.Printf("Setting Option from Answer: %v  (%v)", optionName, answerOptionValue)
-			appConfig.SetDefault(fmt.Sprintf("options.%v", optionName), answerOptionValue)
+		if answerOptionValue, ok := answerValues[optionKey]; ok {
+			//this answer is actualy for an option. lets set it.
+			log.Debugf("\nSetting option from Answer: %v  (%v)", optionKey, answerOptionValue)
+			options[optionKey] = answerOptionValue
+			//appConfig.SetDefault(fmt.Sprintf("options.%v", optionKey), answerOptionValue)
 		}
 	}
 
 	for _, flagName := range cliFlags {
 
-		if _, ok := defaultOptions[flagName]; ok {
+		if utils.SliceIncludes(optionKeys, flagName) {
 			//this flag is actually an "option". Lets set it.
-			appConfig.Set(fmt.Sprintf("options.%v", flagName), c.String(flagName))
+			log.Debugf("\nSetting option from CLI: %v (%v)", flagName, c.String(flagName))
+			options[flagName] = c.String(flagName)
+			//appConfig.SetDefault(fmt.Sprintf("options.%v", flagName), c.String(flagName))
 			continue
 		}
 
-		//skip dryrun
-		if flagName == "dryrun" {
+		//skip dryrun & debug
+		if flagName == "dryrun" || flagName == "debug" {
 			continue
 		}
 
@@ -509,6 +531,15 @@ func createFlagHandler(appConfig config.Interface, answerValues map[string]inter
 		} else if questionType == "boolean" {
 			cliAnswers[questionKey] = c.Bool(questionKey)
 		}
+	}
+
+	//set the config options section
+	appConfig.Set("options", options)
+
+	if log.GetLevel() == log.DebugLevel {
+		afterOptions := map[string]interface{}{}
+		appConfig.UnmarshalKey("options", &afterOptions)
+		log.Debugf("\nOptions after overrides: %v", afterOptions)
 	}
 
 	return cliAnswers, nil

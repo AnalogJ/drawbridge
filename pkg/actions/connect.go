@@ -7,6 +7,7 @@ import (
 	"github.com/analogj/drawbridge/pkg/config"
 	"github.com/analogj/drawbridge/pkg/errors"
 	"github.com/analogj/drawbridge/pkg/utils"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
 	"io/ioutil"
@@ -22,8 +23,7 @@ type ConnectAction struct {
 }
 
 func (e *ConnectAction) Start(answerData map[string]interface{}, destHostname string) error {
-
-	//"-c", "command1; command2; command3; ..."
+	log.Debugf("Answer Data: %v", answerData)
 
 	tmplData, err := e.Config.GetActiveConfigTemplate()
 	if err != nil {

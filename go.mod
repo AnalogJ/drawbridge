@@ -8,6 +8,7 @@ require (
 	github.com/inconshreveable/go-update v0.0.0-20160112193335-8152e7eb6ccf
 	github.com/kvz/logstreamer v0.0.0-20150507115422-a635b98146f0
 	github.com/mitchellh/go-homedir v1.1.0
+	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/viper v1.6.2
 	github.com/stretchr/testify v1.5.1
 	github.com/urfave/cli/v2 v2.2.0

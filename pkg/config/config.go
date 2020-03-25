@@ -515,3 +515,28 @@ func (c *configuration) GetActiveCustomTemplates() ([]template.FileTemplate, err
 	}
 	return activeTemplates, nil
 }
+
+func (c *configuration) SetOptionsFromAnswers(answerValues map[string]interface{}) {
+
+	// get current options
+	options := map[string]interface{}{}
+	c.UnmarshalKey("options", &options)
+
+	optionKeys := []string{}
+	for key := range options {
+		optionKeys = append(optionKeys, key)
+	}
+
+	//find optionKeys in answerValues
+	for _, optionKey := range optionKeys {
+		//check if the key is set as an answer/default
+		if answerOptionValue, ok := answerValues[optionKey]; ok {
+			//this answer is actualy for an option. lets set it.
+			//logger.Debugf("\nSetting option from Answer: %v  (%v)", optionKey, answerOptionValue)
+			options[optionKey] = answerOptionValue
+		}
+	}
+
+	//set the updated options in the config.
+	c.Set("options", options)
+}
