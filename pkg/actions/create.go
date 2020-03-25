@@ -6,6 +6,7 @@ import (
 	"github.com/analogj/drawbridge/pkg/errors"
 	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/fatih/color"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 	"path"
 	"sort"
@@ -17,10 +18,12 @@ type CreateAction struct {
 }
 
 func (e *CreateAction) Start(cliAnswerData map[string]interface{}, dryRun bool) error {
+	log.Debugf("Answer Data: %v", cliAnswerData)
 
 	// prepare answer data with config.options
 	answerData := map[string]interface{}{}
 	e.Config.UnmarshalKey("options", &answerData)
+	log.Debugf("Current Options: %v", answerData)
 
 	// add defaults into answerData
 	questions, err := e.Config.GetQuestions()
@@ -45,6 +48,9 @@ func (e *CreateAction) Start(cliAnswerData map[string]interface{}, dryRun bool) 
 	questionKeys := utils.MapKeys(answerData)
 	for _, questionKey := range questionKeys {
 		if utils.SliceIncludes(e.Config.InternalQuestionKeys(), questionKey) {
+			log.Debugf("%v: %v\n",
+				questionKey,
+				color.GreenString(fmt.Sprintf("%v", answerData[questionKey])))
 			continue
 		}
 
@@ -158,7 +164,6 @@ func (e *CreateAction) queryResponse(questionKey string, question config.Questio
 		err = question.Validate(questionKey, answerTyped)
 		if err != nil {
 			color.HiRed("%v\n", err)
-			//fmt.Printf("%v\n", err)
 		} else {
 			return answerTyped
 		}

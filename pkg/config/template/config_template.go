@@ -30,19 +30,25 @@ func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignore
 		return nil, err
 	}
 
-	// modify/tweak the config template because its a known type.
-	//expand PemFilePath
-	t.PemFilePath = path.Join(answerData["pem_dir"].(string), t.PemFilePath)
-	templatedPemFilePath, err := utils.PopulatePathTemplate(t.PemFilePath, answerData)
-	if err != nil {
-		return nil, err
-	}
+	if t.PemFilePath != "" {
+		// modify/tweak the config template because its a known type.
+		//expand PemFilePath
+		t.PemFilePath = path.Join(answerData["pem_dir"].(string), t.PemFilePath)
+		templatedPemFilePath, err := utils.PopulatePathTemplate(t.PemFilePath, answerData)
+		if err != nil {
+			return nil, err
+		}
 
-	t.data["pem_filepath"] = templatedPemFilePath
-	answerData["template"] = t.data
+		t.data["pem_filepath"] = templatedPemFilePath
+		answerData["template"] = t.data
 
-	if !utils.FileExists(templatedPemFilePath) {
-		color.Yellow("WARNING: PEM file missing. Place it at the following location before attempting to connect. %v", templatedPemFilePath)
+		if !utils.FileExists(templatedPemFilePath) {
+			color.Yellow("WARNING: PEM file missing. Place it at the following location before attempting to connect. %v", templatedPemFilePath)
+		}
+	} else {
+		//pem file path is ""
+		color.Yellow("WARNING: No PEM filepath provided for this config.")
+
 	}
 
 	t.FilePath = path.Join(answerData["config_dir"].(string), t.FilePath)

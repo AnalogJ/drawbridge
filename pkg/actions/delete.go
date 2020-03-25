@@ -5,6 +5,7 @@ import (
 	"github.com/analogj/drawbridge/pkg/config"
 	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/fatih/color"
+	log "github.com/sirupsen/logrus"
 	"path"
 	"strings"
 )
@@ -24,6 +25,7 @@ func (e *DeleteAction) All(answerDataList []map[string]interface{}, force bool) 
 	return nil
 }
 func (e *DeleteAction) One(answerData map[string]interface{}, force bool) error {
+	log.Debugf("Answer Data: %v", answerData)
 
 	//delete the config file by answerData
 	renderedConfigFilePath := answerData["config"].(map[string]interface{})["filepath"].(string)

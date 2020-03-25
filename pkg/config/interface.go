@@ -12,6 +12,8 @@ type Interface interface {
 	ReadConfig(configFilePath string) error
 	Set(key string, value interface{})
 	SetDefault(key string, value interface{})
+	SetOptionsFromAnswers(answerValues map[string]interface{})
+
 	AllSettings() map[string]interface{}
 	IsSet(key string) bool
 	Get(key string) interface{}

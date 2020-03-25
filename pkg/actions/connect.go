@@ -7,6 +7,7 @@ import (
 	"github.com/analogj/drawbridge/pkg/config"
 	"github.com/analogj/drawbridge/pkg/errors"
 	"github.com/analogj/drawbridge/pkg/utils"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
 	"io/ioutil"
@@ -22,8 +23,7 @@ type ConnectAction struct {
 }
 
 func (e *ConnectAction) Start(answerData map[string]interface{}, destHostname string) error {
-
-	//"-c", "command1; command2; command3; ..."
+	log.Debugf("Answer Data: %v", answerData)
 
 	tmplData, err := e.Config.GetActiveConfigTemplate()
 	if err != nil {
@@ -35,18 +35,20 @@ func (e *ConnectAction) Start(answerData map[string]interface{}, destHostname st
 		return nil
 	}
 
-	tmplPemFilepath, err := utils.PopulatePathTemplate(filepath.Join(e.Config.GetString("options.pem_dir"), tmplData.PemFilePath), answerData)
-	if err != nil {
-		return nil
-	}
+	if tmplData.PemFilePath != "" {
+		tmplPemFilepath, err := utils.PopulatePathTemplate(filepath.Join(e.Config.GetString("options.pem_dir"), tmplData.PemFilePath), answerData)
+		if err != nil {
+			return nil
+		}
 
-	//TODO: Print the lines we're running.
+		//TODO: Print the lines we're running.
 
-	//TODO: Check that the bastion host is accessible.
+		//TODO: Check that the bastion host is accessible.
 
-	err = e.SshAgentAddPemKey(tmplPemFilepath)
-	if err != nil {
-		return err
+		err = e.SshAgentAddPemKey(tmplPemFilepath)
+		if err != nil {
+			return err
+		}
 	}
 
 	//https://gobyexample.com/execing-processes
