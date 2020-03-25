@@ -1,0 +1,54 @@
+version: 1
+options:
+  pem_dir: '~/.ssh/drawbridge/custom'
+  config_dir: '~/.ssh/drawbridge/custom/pem'
+  active_config_template: default
+  active_custom_templates:
+    - default
+config_templates:
+  default:
+    pem_filepath: '{{.environment}}-{{.username}}-pem'
+    filepath: '{{.environment}}-{{.username}}'
+    content: |
+      ForwardAgent yes
+      ForwardX11 no
+      HashKnownHosts yes
+      IdentitiesOnly yes
+      StrictHostKeyChecking no
+
+      Host bastion
+          Hostname bastion.example.com
+          User {{.username}}
+          IdentityFile {{.template.pem_filepath}}
+          LocalForward localhost:{{uniquePort .}} localhost:8080
+          UserKnownHostsFile=/dev/null
+          StrictHostKeyChecking=no
+  override:
+    pem_filepath: 'none'
+    filepath: '{{.username}}'
+    content: |
+      ForwardAgent yes
+      ForwardX11 no
+      HashKnownHosts yes
+      IdentitiesOnly yes
+      StrictHostKeyChecking no
+
+      Host bastion
+          Hostname override.example.com
+          User {{.username}}
+          IdentityFile {{.template.pem_filepath}}
+          UserKnownHostsFile=/dev/null
+          StrictHostKeyChecking=no
+custom_templates:
+  default:
+    filepath: "{{.config_dir}}/custom-template-{{.environment}}-{{.username}}"
+    content: |
+      # hello world
+
+
+answers:
+  - {environment: test, stack_name: tested, shard: us-east-1, shard_type: live, username: aws, active_config_template: 'override', active_custom_templates: []}
+  - {environment: test, stack_name: tested, shard: us-east-1, shard_type: idle, username: aws}
+  - {environment: test, stack_name: tested, shard: us-east-2, shard_type: live, username: aws}
+  - {environment: test, stack_name: tested, shard: us-east-2, shard_type: idle, username: aws}
+  - {environment: test, stack_name: test2, shard: us-east-1, shard_type: live, username: aws}

@@ -12,7 +12,7 @@ import (
 	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/analogj/drawbridge/pkg/version"
 	"github.com/fatih/color"
-	"gopkg.in/urfave/cli.v2"
+	"github.com/urfave/cli/v2"
 	"log"
 	"strings"
 )
@@ -390,14 +390,14 @@ OPTIONS:
 func createFlags(appConfig config.Interface) ([]cli.Flag, error) {
 	flags := []cli.Flag{
 		&cli.StringFlag{
-			Name:  "active_config_template",
-			Usage: "Active config_template",
-			Value: appConfig.GetString("options.active_config_template"),
+			Name:        "active_config_template",
+			Usage:       "Active config_template",
+			DefaultText: appConfig.GetString("options.active_config_template"),
 		},
 		&cli.StringSliceFlag{
-			Name:  "active_custom_templates",
-			Usage: "Activated custom_templates",
-			Value: cli.NewStringSlice(appConfig.GetStringSlice("options.active_custom_templates")...),
+			Name:        "active_custom_templates",
+			Usage:       "Activated custom_templates",
+			DefaultText: strings.Join(appConfig.GetStringSlice("options.active_custom_templates"), ", "),
 		},
 		&cli.BoolFlag{
 			Name:  "dryrun",
@@ -451,16 +451,36 @@ func createFlags(appConfig config.Interface) ([]cli.Flag, error) {
 	return flags, nil
 }
 
-func createFlagHandler(appConfig config.Interface, defaultValues map[string]interface{}, cliFlags []string, c *cli.Context) (map[string]interface{}, error) {
+func createFlagHandler(appConfig config.Interface, answerValues map[string]interface{}, cliFlags []string, c *cli.Context) (map[string]interface{}, error) {
+	//there's 4 special cases we need to handle for "defaultOptions":
+	//case 1: no flag override and no answer option
+	//case 2: flag override and no answer option
+	//case 3: no flag override and answer option
+	//case 4: flag override and answer option
 
-	cliAnswers := defaultValues
+	// the override order is:
+	// default value from config
+	// answer value from config
+	// flag override
+
+	//get default defaultOptions from the config
+	defaultOptions := map[string]interface{}{}
+	appConfig.UnmarshalKey("options", &defaultOptions)
+
+	cliAnswers := answerValues
+	//find answer defaultOptions (and set them)
+	for optionName, _ := range defaultOptions {
+		//check if the key is set as an answer/default
+		if answerOptionValue, ok := answerValues[optionName]; ok {
+			//this answer is actuall for an option. lets set it.
+			appConfig.Set(fmt.Sprintf("options.%v", optionName), answerOptionValue)
+		}
+	}
 
 	for _, flagName := range cliFlags {
-		//handle options
-		options := map[string]interface{}{}
-		appConfig.UnmarshalKey("options", &options)
-		if _, ok := options[flagName]; ok {
-			//this flag is actually an option. Lets set it.
+
+		if _, ok := defaultOptions[flagName]; ok {
+			//this flag is actually an "option". Lets set it.
 			appConfig.Set(fmt.Sprintf("options.%v", flagName), c.String(flagName))
 			continue
 		}
