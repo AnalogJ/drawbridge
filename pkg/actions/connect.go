@@ -62,7 +62,7 @@ func (e *ConnectAction) Start(answerData map[string]interface{}, destHostname st
 
 	configHost := "bastion"
 	if len(destHostname) > 0 {
-		configHost = fmt.Sprintf("%v+%v", configHost, destHostname)
+		configHost = fmt.Sprintf("%v.in", destHostname)
 	}
 	args := []string{"ssh", configHost, "-F", tmplConfigFilepath}
 
