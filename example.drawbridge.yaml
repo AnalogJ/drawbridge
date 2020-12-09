@@ -218,8 +218,8 @@ config_templates:
           UserKnownHostsFile=/dev/null
           StrictHostKeyChecking=no
 
-      Host bastion+*
-          ProxyCommand ssh -F {{.template.filepath}} -W $(echo %h |cut -d+ -f2):%p bastion
+      Host *.in
+          ProxyCommand ssh -F {{.template.filepath}} -W $(echo %h |cut -d. -f1):%p bastion
           User {{if eq .username "aws"}}cloud-user{{else}}{{.username}}{{end}}
           IdentityFile {{.template.pem_filepath}}
           LogLevel INFO
