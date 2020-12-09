@@ -6,7 +6,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    container: golang:1.10
+    container: packagrio/packagr:latest-golang
     env:
       PROJECT_PATH: /go/src/github.com/analogj/drawbridge
       CGO_ENABLED: 1
