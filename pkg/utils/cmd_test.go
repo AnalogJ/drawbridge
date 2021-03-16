@@ -61,7 +61,7 @@ func TestCmdExec_Error(t *testing.T) {
 	t.Parallel()
 
 	//test
-	cerr := utils.CmdExec("/bin/bash", []string{"exit", "1"}, "", nil, "")
+	cerr := utils.CmdExec("/bin/sh", []string{"exit", "1"}, "", nil, "")
 
 	//assert
 	require.Error(t, cerr)
