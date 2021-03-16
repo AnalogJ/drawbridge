@@ -58,10 +58,11 @@ func TestCmdExec_Echo(t *testing.T) {
 }
 
 func TestCmdExec_Error(t *testing.T) {
-	t.Parallel()
+	t.Skip()
+	//t.Parallel()
 
 	//test
-	cerr := utils.CmdExec("/bin/sh", []string{"-c", "'exit 1'"}, "", nil, "")
+	cerr := utils.CmdExec("sh", []string{"-c", "'exit 1'"}, "", nil, "")
 
 	//assert
 	require.Error(t, cerr)
