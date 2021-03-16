@@ -1,5 +1,4 @@
-// +build linux
-// +build darwin
+// +build linux darwin
 
 package actions
 
