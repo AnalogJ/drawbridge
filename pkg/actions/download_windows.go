@@ -1,5 +1,4 @@
-// +build linux
-// +build darwin
+// +build windows
 package actions
 
 import (
@@ -11,7 +10,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"syscall"
 )
 
 type DownloadAction struct {
@@ -49,12 +47,17 @@ func (e *DownloadAction) Start(answerData map[string]interface{}, destHostname s
 	}
 
 	fmt.Println("Begin downloading file through bastion")
-	scpBin, lookErr := exec.LookPath("scp")
+	_, lookErr := exec.LookPath("scp")
 	if lookErr != nil {
 		return errors.DependencyMissingError("scp is missing")
 	}
 
 	args := []string{"scp", "-F", tmplConfigFilepath, fmt.Sprintf("%v.in:%v", destHostname, remoteFilePath), localFilePath}
 
-	return syscall.Exec(scpBin, args, os.Environ())
+	// windows does not support exec -- simulate exec by running the command with the I/O wired to the parent process
+	cmd := exec.Command(args[0], args[1:len(args)]...)
+	cmd.Stdout = os.Stdout
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }

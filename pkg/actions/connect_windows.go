@@ -1,5 +1,4 @@
-// +build linux
-// +build darwin
+// +build windows
 package actions
 
 import (
@@ -17,7 +16,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"syscall"
 )
 
 type ConnectAction struct {
@@ -57,7 +55,7 @@ func (e *ConnectAction) Start(answerData map[string]interface{}, destHostname st
 	//https://groob.io/posts/golang-execve/
 
 	fmt.Println("Opening ssh tunnel")
-	sshBin, lookErr := exec.LookPath("ssh")
+	_, lookErr := exec.LookPath("ssh")
 	if lookErr != nil {
 		return errors.DependencyMissingError("ssh is missing")
 	}
@@ -68,7 +66,12 @@ func (e *ConnectAction) Start(answerData map[string]interface{}, destHostname st
 	}
 	args := []string{"ssh", configHost, "-F", tmplConfigFilepath}
 
-	return syscall.Exec(sshBin, args, os.Environ())
+	// windows does not support exec -- simulate exec by running the command with the I/O wired to the parent process
+	cmd := exec.Command(args[0], args[1:len(args)]...)
+	cmd.Stdout = os.Stdout
+	cmd.Stdin = os.Stdin
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }
 
 func (e *ConnectAction) SshAgentAddPemKey(pemFilepath string) error {
