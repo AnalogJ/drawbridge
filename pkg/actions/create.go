@@ -8,7 +8,7 @@ import (
 	"github.com/fatih/color"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
-	"path"
+	"path/filepath"
 	"sort"
 	"strconv"
 )
@@ -107,10 +107,10 @@ func (e *CreateAction) Start(cliAnswerData map[string]interface{}, dryRun bool) 
 	}
 
 	// write the answers.yaml file
-	return e.WriteAnswersFile(path.Base(activeConfigTemplate.FilePath), answerData, dryRun)
+	return e.WriteAnswersFile(filepath.Base(activeConfigTemplate.FilePath), answerData, dryRun)
 }
 func (e *CreateAction) WriteAnswersFile(baseName string, answerData map[string]interface{}, dryRun bool) error {
-	answersFilePath, err := utils.PopulatePathTemplate(path.Join(e.Config.GetString("options.config_dir"), fmt.Sprintf(".%v.answers.yaml", baseName)), answerData)
+	answersFilePath, err := utils.PopulatePathTemplate(filepath.Join(e.Config.GetString("options.config_dir"), fmt.Sprintf(".%v.answers.yaml", baseName)), answerData)
 	if err != nil {
 		return nil
 	}

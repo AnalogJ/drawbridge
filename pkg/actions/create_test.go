@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
-	"path"
 	"path/filepath"
 	"testing"
 )
@@ -18,7 +17,7 @@ func TestCreateAction_Start_AnswersFileWithOverrides(t *testing.T) {
 	configData, err := config.Create()
 	require.NoError(t, err)
 	//read test config file w/Answers
-	err = configData.ReadConfig(path.Join("testdata", "create", "valid_answers_override_active_custom_template.yaml"))
+	err = configData.ReadConfig(filepath.Join("testdata", "create", "valid_answers_override_active_custom_template.yaml"))
 
 	parentPath, err := ioutil.TempDir("", "")
 	defer os.RemoveAll(parentPath)

@@ -4,7 +4,6 @@ import (
 	"github.com/analogj/drawbridge/pkg/config"
 	"github.com/analogj/drawbridge/pkg/project"
 	"github.com/stretchr/testify/require"
-	"path"
 	"path/filepath"
 	"testing"
 )
@@ -46,7 +45,7 @@ func TestCreateProjectListFromProvidedAnswers(t *testing.T) {
 
 	//setup
 	testConfig, _ := config.Create()
-	err := testConfig.ReadConfig(path.Join("testdata", "valid_configfile_with_answers.yaml"))
+	err := testConfig.ReadConfig(filepath.Join("testdata", "valid_configfile_with_answers.yaml"))
 	require.NoError(t, err, "should allow overriding default config template.")
 
 	//test

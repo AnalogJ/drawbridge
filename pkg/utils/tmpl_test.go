@@ -5,7 +5,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
-	"path"
 	"path/filepath"
 	"testing"
 )
@@ -35,7 +34,7 @@ func TestPopulatePathTemplate_JoinedPath(t *testing.T) {
 	t.Parallel()
 
 	//test
-	actual, err := utils.PopulatePathTemplate(path.Join("/tmp", "{{.example}}"), map[string]interface{}{"example": "17"})
+	actual, err := utils.PopulatePathTemplate(filepath.Join("/tmp", "{{.example}}"), map[string]interface{}{"example": "17"})
 
 	//assert
 	require.NoError(t, err, "should not throw an error")
@@ -51,7 +50,7 @@ func TestPopulatePathTemplate_RelativePath(t *testing.T) {
 	defer patchEnv("HOME", parentPath)()
 
 	//test
-	actual, err := utils.PopulatePathTemplate(path.Join("~/", "{{.example}}"), map[string]interface{}{"example": "17"})
+	actual, err := utils.PopulatePathTemplate(filepath.Join("~/", "{{.example}}"), map[string]interface{}{"example": "17"})
 
 	//assert
 	require.NoError(t, err, "should not throw an error")

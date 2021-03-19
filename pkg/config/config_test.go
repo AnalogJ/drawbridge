@@ -3,7 +3,7 @@ package config_test
 import (
 	"github.com/analogj/drawbridge/pkg/config"
 	"github.com/stretchr/testify/require"
-	"path"
+	"path/filepath"
 	"testing"
 )
 
@@ -25,7 +25,7 @@ func TestConfiguration_ReadConfig_InvalidFilePath(t *testing.T) {
 	t.Parallel()
 	//setup
 	testConfig, _ := config.Create()
-	err := testConfig.ReadConfig(path.Join("does", "not", "exist.yml"))
+	err := testConfig.ReadConfig(filepath.Join("does", "not", "exist.yml"))
 
 	//assert
 	require.Error(t, err, "should raise an error")
@@ -39,7 +39,7 @@ func TestConfiguration_ReadConfig_Simple(t *testing.T) {
 	require.NoError(t, err, "should create valid default config file")
 
 	//test
-	err = testConfig.ReadConfig(path.Join("testdata", "valid_simple_config.yaml"))
+	err = testConfig.ReadConfig(filepath.Join("testdata", "valid_simple_config.yaml"))
 
 	//assert
 	require.NoError(t, err, "should be valid config file")
@@ -56,7 +56,7 @@ func TestConfiguration_ReadConfig_Questions(t *testing.T) {
 	testConfig, _ := config.Create()
 
 	//test
-	err := testConfig.ReadConfig(path.Join("testdata", "valid_questions.yaml"))
+	err := testConfig.ReadConfig(filepath.Join("testdata", "valid_questions.yaml"))
 
 	//assert
 	require.NoError(t, err, "should correctly parse config file.")
@@ -69,7 +69,7 @@ func TestConfiguration_ReadConfig_QuestionsWithMissingTypeReturnsError(t *testin
 	testConfig, _ := config.Create()
 
 	//test
-	err := testConfig.ReadConfig(path.Join("testdata", "invalid_questions_missing_type.yaml"))
+	err := testConfig.ReadConfig(filepath.Join("testdata", "invalid_questions_missing_type.yaml"))
 
 	//assert
 	require.Error(t, err, "should return an error if the question type is missing.")
@@ -82,7 +82,7 @@ func TestConfiguration_ReadConfig_QuestionsWithEmptyTypeReturnsError(t *testing.
 	testConfig, _ := config.Create()
 
 	//test
-	err := testConfig.ReadConfig(path.Join("testdata", "invalid_questions_empty_type.yaml"))
+	err := testConfig.ReadConfig(filepath.Join("testdata", "invalid_questions_empty_type.yaml"))
 
 	//assert
 	require.Error(t, err, "should return an error if the question type is empty.")
@@ -95,7 +95,7 @@ func TestConfiguration_ReadConfig_UnsupportedTopLevelKey(t *testing.T) {
 	testConfig, _ := config.Create()
 
 	//test
-	err := testConfig.ReadConfig(path.Join("testdata", "invalid_unsupported_top_level_key.yaml"))
+	err := testConfig.ReadConfig(filepath.Join("testdata", "invalid_unsupported_top_level_key.yaml"))
 
 	//assert
 	require.Error(t, err, "should return an error if there is an unsupported top level key.")
@@ -108,7 +108,7 @@ func TestConfiguration_ReadConfig_DuplicateActiveTemplates(t *testing.T) {
 	testConfig, _ := config.Create()
 
 	//test
-	err := testConfig.ReadConfig(path.Join("testdata", "invalid_active_templates.yaml"))
+	err := testConfig.ReadConfig(filepath.Join("testdata", "invalid_active_templates.yaml"))
 
 	//assert
 	require.Error(t, err, "should return an error if there is an duplicate active template")
@@ -121,7 +121,7 @@ func TestConfiguration_ReadConfig_OverrideDefaultConfigTemplate(t *testing.T) {
 	testConfig, _ := config.Create()
 
 	//test
-	err := testConfig.ReadConfig(path.Join("testdata", "valid_config_template.yaml"))
+	err := testConfig.ReadConfig(filepath.Join("testdata", "valid_config_template.yaml"))
 	require.NoError(t, err, "should allow overriding default config template.")
 
 	configTmpl, err := testConfig.GetActiveConfigTemplate()

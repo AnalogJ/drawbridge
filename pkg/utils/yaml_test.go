@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v2"
 	"os"
-	"path"
+	"path/filepath"
 	"testing"
 )
 
@@ -14,7 +14,7 @@ func TestStringifyYAMLMapKeys(t *testing.T) {
 	t.Parallel()
 
 	//setup
-	testData, err := os.Open(path.Join("testdata", "test.yaml"))
+	testData, err := os.Open(filepath.Join("testdata", "test.yaml"))
 	require.NoError(t, err, "should not throw an error")
 
 	buf := new(bytes.Buffer)

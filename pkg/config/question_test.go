@@ -3,7 +3,7 @@ package config_test
 import (
 	"github.com/analogj/drawbridge/pkg/config"
 	"github.com/stretchr/testify/require"
-	"path"
+	"path/filepath"
 	"testing"
 )
 
@@ -13,7 +13,7 @@ func TestConfiguration_GetQuestion(t *testing.T) {
 	testConfig, _ := config.Create()
 
 	//test
-	err := testConfig.ReadConfig(path.Join("testdata", "valid_questions.yaml"))
+	err := testConfig.ReadConfig(filepath.Join("testdata", "valid_questions.yaml"))
 	question, err := testConfig.GetQuestion("environment")
 
 	//assert
@@ -27,7 +27,7 @@ func TestConfiguration_GetQuestion_Invalid(t *testing.T) {
 	testConfig, _ := config.Create()
 
 	//test
-	err := testConfig.ReadConfig(path.Join("testdata", "valid_questions.yaml"))
+	err := testConfig.ReadConfig(filepath.Join("testdata", "valid_questions.yaml"))
 	_, err = testConfig.GetQuestion("invalidkey")
 
 	//assert
@@ -40,7 +40,7 @@ func TestQuestion_Validate(t *testing.T) {
 	testConfig, _ := config.Create()
 
 	//test
-	err := testConfig.ReadConfig(path.Join("testdata", "valid_questions.yaml"))
+	err := testConfig.ReadConfig(filepath.Join("testdata", "valid_questions.yaml"))
 	question, err := testConfig.GetQuestion("environment")
 	err = question.Validate("environment", "testing")
 
@@ -54,7 +54,7 @@ func TestQuestion_Validate_LengthRuleBroken(t *testing.T) {
 	testConfig, _ := config.Create()
 
 	//test
-	err := testConfig.ReadConfig(path.Join("testdata", "valid_questions.yaml"))
+	err := testConfig.ReadConfig(filepath.Join("testdata", "valid_questions.yaml"))
 	question, err := testConfig.GetQuestion("environment")
 	err = question.Validate("environment", "testing.this.value.is.too.long")
 
@@ -68,7 +68,7 @@ func TestQuestion_Required(t *testing.T) {
 	testConfig, _ := config.Create()
 
 	//test
-	err := testConfig.ReadConfig(path.Join("testdata", "valid_questions.yaml"))
+	err := testConfig.ReadConfig(filepath.Join("testdata", "valid_questions.yaml"))
 	question, err := testConfig.GetQuestion("environment")
 	actual := question.Required()
 
@@ -83,7 +83,7 @@ func TestQuestion_GetType(t *testing.T) {
 	testConfig, _ := config.Create()
 
 	//test
-	err := testConfig.ReadConfig(path.Join("testdata", "valid_questions.yaml"))
+	err := testConfig.ReadConfig(filepath.Join("testdata", "valid_questions.yaml"))
 	question, err := testConfig.GetQuestion("environment")
 	actual := question.GetType()
 

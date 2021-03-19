@@ -61,7 +61,13 @@ func (e *UpdateAction) Start() error {
 
 	//see if theres a binary for this OS/Arch
 	assetUrl := ""
-	requiredOsArch := fmt.Sprintf("drawbridge-%v-%v", runtime.GOOS, runtime.GOARCH)
+	var requiredOsArch string
+	if runtime.GOOS == "windows" {
+		requiredOsArch = fmt.Sprintf("drawbridge-%v-%v.exe", runtime.GOOS, runtime.GOARCH)
+	} else {
+		requiredOsArch = fmt.Sprintf("drawbridge-%v-%v", runtime.GOOS, runtime.GOARCH)
+	}
+
 	for _, asset := range releaseInfo.Assets {
 		if asset.Name == requiredOsArch {
 			assetUrl = asset.Url
