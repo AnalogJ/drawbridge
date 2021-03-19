@@ -5,7 +5,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
-	"path"
+	"path/filepath"
 	"testing"
 )
 
@@ -26,7 +26,7 @@ func TestFileWrite(t *testing.T) {
 	//setup
 	parentPath, err := ioutil.TempDir("", "")
 	defer os.RemoveAll(parentPath)
-	testFilePath := path.Join(parentPath, "testfile.txt")
+	testFilePath := filepath.Join(parentPath, "testfile.txt")
 
 	//test
 	err = utils.FileWrite(testFilePath, "test content", 0666, false)
@@ -42,7 +42,7 @@ func TestFileWrite_DryRun(t *testing.T) {
 	//setup
 	parentPath, err := ioutil.TempDir("", "")
 	defer os.RemoveAll(parentPath)
-	testFilePath := path.Join(parentPath, "testfile_dryrun.txt")
+	testFilePath := filepath.Join(parentPath, "testfile_dryrun.txt")
 
 	//test
 	err = utils.FileWrite(testFilePath, "test content", 0666, true)
@@ -78,7 +78,7 @@ func TestFileDelete(t *testing.T) {
 	//setup
 	parentPath, err := ioutil.TempDir("", "")
 	defer os.RemoveAll(parentPath)
-	testFilePath := path.Join(parentPath, "testfile-delete.txt")
+	testFilePath := filepath.Join(parentPath, "testfile-delete.txt")
 
 	//test
 	err = utils.FileWrite(testFilePath, "test content", 0666, false)

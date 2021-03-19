@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/fatih/color"
-	"path"
+	"path/filepath"
 )
 
 // for configs `filepath`, must be relative to config_dir
@@ -15,7 +15,7 @@ type ConfigTemplate struct {
 }
 
 func (t *ConfigTemplate) DeleteTemplate(answerData map[string]interface{}) error {
-	t.FilePath = path.Join(answerData["config_dir"].(string), t.FilePath)
+	t.FilePath = filepath.Join(answerData["config_dir"].(string), t.FilePath)
 	return t.FileTemplate.DeleteTemplate(answerData)
 }
 
@@ -33,7 +33,7 @@ func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignore
 	if t.PemFilePath != "" {
 		// modify/tweak the config template because its a known type.
 		//expand PemFilePath
-		t.PemFilePath = path.Join(answerData["pem_dir"].(string), t.PemFilePath)
+		t.PemFilePath = filepath.Join(answerData["pem_dir"].(string), t.PemFilePath)
 		templatedPemFilePath, err := utils.PopulatePathTemplate(t.PemFilePath, answerData)
 		if err != nil {
 			return nil, err
@@ -51,7 +51,7 @@ func (t *ConfigTemplate) WriteTemplate(answerData map[string]interface{}, ignore
 
 	}
 
-	t.FilePath = path.Join(answerData["config_dir"].(string), t.FilePath)
+	t.FilePath = filepath.Join(answerData["config_dir"].(string), t.FilePath)
 	t.Content = configTemplatePrefix(answerData, ignoreKeys) + t.Content
 
 	_, err = t.FileTemplate.WriteTemplate(answerData, dryRun)

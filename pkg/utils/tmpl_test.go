@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"testing"
 )
 
@@ -54,7 +55,7 @@ func TestPopulatePathTemplate_RelativePath(t *testing.T) {
 
 	//assert
 	require.NoError(t, err, "should not throw an error")
-	require.Equal(t, path.Join(parentPath, "17"), actual, "should populate a template correctly")
+	require.Equal(t, filepath.Join(parentPath, "17"), actual, "should populate a template correctly")
 }
 
 func TestPopulateTemplate(t *testing.T) {

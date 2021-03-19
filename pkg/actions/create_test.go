@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"testing"
 )
 
@@ -41,8 +42,8 @@ func TestCreateAction_Start_AnswersFileWithOverrides(t *testing.T) {
 
 	//assert
 	require.NoError(t, err, "should not raise an error when adding writing answer file")
-	require.FileExists(t, path.Join(parentPath, "aws"))
-	require.NoFileExists(t, path.Join(parentPath, "custom-template-test-aws"))
+	require.FileExists(t, filepath.Join(parentPath, "aws"))
+	require.NoFileExists(t, filepath.Join(parentPath, "custom-template-test-aws"))
 }
 
 func TestCreateAction_WriteAnswersFile(t *testing.T) {

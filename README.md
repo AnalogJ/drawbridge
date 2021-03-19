@@ -268,7 +268,7 @@ If you'd like to help improve Drawbridge, clone the project with Git and install
 
 ```
 $ git clone git://github.com/AnalogJ/drawbridge
-$ glide install
+$ go mod vendor
 ```
 
 Work your magic and then submit a pull request. We love pull requests!

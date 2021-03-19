@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
-	"path"
 	"path/filepath"
 	"testing"
 )
@@ -32,8 +31,8 @@ func TestDeleteAction_One(t *testing.T) {
 	parentPath, err := ioutil.TempDir("", "")
 	defer os.RemoveAll(parentPath)
 	defer patchEnv("HOME", parentPath)()
-	drawbridgePath := path.Join(parentPath, "drawbridge")
-	err = utils.CopyDir(path.Join("testdata", "delete"), drawbridgePath)
+	drawbridgePath := filepath.Join(parentPath, "drawbridge")
+	err = utils.CopyDir(filepath.Join("testdata", "delete"), drawbridgePath)
 	require.NoError(t, err, "should not raise an error when deleting answer file")
 
 	configData.Set("options.config_dir", drawbridgePath)
@@ -51,7 +50,7 @@ func TestDeleteAction_One(t *testing.T) {
 		"shard_type":  "idle",
 		"username":    "aws",
 		"config": map[string]interface{}{
-			"filepath": path.Join(drawbridgePath, "prod-app-idle-us-east-1"),
+			"filepath": filepath.Join(drawbridgePath, "prod-app-idle-us-east-1"),
 		},
 		"config_dir": drawbridgePath,
 	}, true)
@@ -72,8 +71,8 @@ func TestDeleteAction_All(t *testing.T) {
 	parentPath, err := ioutil.TempDir("", "")
 	defer os.RemoveAll(parentPath)
 	defer patchEnv("HOME", parentPath)()
-	drawbridgePath := path.Join(parentPath, "drawbridge")
-	err = utils.CopyDir(path.Join("testdata", "delete"), drawbridgePath)
+	drawbridgePath := filepath.Join(parentPath, "drawbridge")
+	err = utils.CopyDir(filepath.Join("testdata", "delete"), drawbridgePath)
 	require.NoError(t, err, "should not raise an error when deleting answer file")
 
 	configData.Set("options.config_dir", drawbridgePath)
@@ -92,7 +91,7 @@ func TestDeleteAction_All(t *testing.T) {
 			"shard_type":  "idle",
 			"username":    "aws",
 			"config": map[string]interface{}{
-				"filepath": path.Join(drawbridgePath, "prod-app-idle-us-east-1"),
+				"filepath": filepath.Join(drawbridgePath, "prod-app-idle-us-east-1"),
 			},
 			"config_dir": drawbridgePath,
 		},

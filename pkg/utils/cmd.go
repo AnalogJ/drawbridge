@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"path"
+	"path/filepath"
 )
 
 //http://craigwickesser.com/2015/02/golang-cmd-with-custom-environment/
@@ -42,7 +42,7 @@ func CmdExec(cmdName string, cmdArgs []string, workingDir string, environ []stri
 	if environ != nil {
 		cmd.Env = environ
 	}
-	if workingDir != "" && path.IsAbs(workingDir) {
+	if workingDir != "" && filepath.IsAbs(workingDir) {
 		cmd.Dir = workingDir
 	} else if workingDir != "" {
 		return stderrors.New("Working Directory must be an absolute path")

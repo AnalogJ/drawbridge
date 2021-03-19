@@ -88,6 +88,7 @@ func parseAnswerFile(answerFilePath string) (projectData, error) {
 		log.Printf("Error reading answer file: %s", err)
 		return projectData{}, err
 	}
+	defer answerFileData.Close()
 
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(answerFileData)

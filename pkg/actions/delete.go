@@ -6,7 +6,7 @@ import (
 	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/fatih/color"
 	log "github.com/sirupsen/logrus"
-	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -74,7 +74,7 @@ func (e *DeleteAction) One(answerData map[string]interface{}, force bool) error 
 	}
 	//delete the .answers.yaml
 	fmt.Println("Deleting answers file")
-	answersFilePath := path.Join(answerData["config_dir"].(string), fmt.Sprintf(".%v.answers.yaml", path.Base(renderedConfigFilePath)))
+	answersFilePath := filepath.Join(answerData["config_dir"].(string), fmt.Sprintf(".%v.answers.yaml", filepath.Base(renderedConfigFilePath)))
 	if utils.FileExists(answersFilePath) {
 		utils.FileDelete(answersFilePath)
 	} else {

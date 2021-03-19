@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
-	"path"
+	"path/filepath"
 	"testing"
 )
 
@@ -17,8 +17,8 @@ func TestFileTemplate_DeleteTemplate(t *testing.T) {
 	parentPath, err := ioutil.TempDir("", "")
 	defer os.RemoveAll(parentPath)
 
-	testFilePathTemplate := path.Join(parentPath, "{{.example}}.text")
-	testFilePath := path.Join(parentPath, "1.text")
+	testFilePathTemplate := filepath.Join(parentPath, "{{.example}}.text")
+	testFilePath := filepath.Join(parentPath, "1.text")
 	err = utils.FileWrite(testFilePath, "test content", 0666, false)
 	require.NoError(t, err, "should not raise an error when writing test file.")
 
@@ -46,7 +46,7 @@ func TestFileTemplate_DeleteTemplate_WhenFileDoesNotExist(t *testing.T) {
 	parentPath, err := ioutil.TempDir("", "")
 	defer os.RemoveAll(parentPath)
 
-	testFilePathTemplate := path.Join(parentPath, "{{.example}}/{{.example2}}.text")
+	testFilePathTemplate := filepath.Join(parentPath, "{{.example}}/{{.example2}}.text")
 
 	fileTemplate := template.FileTemplate{
 		FilePath: testFilePathTemplate,
@@ -72,8 +72,8 @@ func TestFileTemplate_WriteTemplate(t *testing.T) {
 	parentPath, err := ioutil.TempDir("", "")
 	defer os.RemoveAll(parentPath)
 
-	testFilePathTemplate := path.Join(parentPath, "{{.example}}/{{.example2}}.text")
-	testFilePath := path.Join(parentPath, "1/2.text")
+	testFilePathTemplate := filepath.Join(parentPath, "{{.example}}/{{.example2}}.text")
+	testFilePath := filepath.Join(parentPath, "1/2.text")
 
 	fileTemplate := template.FileTemplate{
 		FilePath: testFilePathTemplate,
@@ -102,8 +102,8 @@ func TestFileTemplate_WriteTemplate_WhenDestinationExists(t *testing.T) {
 	parentPath, err := ioutil.TempDir("", "")
 	defer os.RemoveAll(parentPath)
 
-	testFilePathTemplate := path.Join(parentPath, "{{.example}}.text")
-	testFilePath := path.Join(parentPath, "1.text")
+	testFilePathTemplate := filepath.Join(parentPath, "{{.example}}.text")
+	testFilePath := filepath.Join(parentPath, "1.text")
 	err = utils.FileWrite(testFilePath, "previous content", 0666, false)
 	require.NoError(t, err, "should not raise an error when writing test file.")
 

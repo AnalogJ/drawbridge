@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
-	"path"
+	"path/filepath"
 	"testing"
 )
 
@@ -18,7 +18,7 @@ func TestConfigTemplate_DeleteTemplate(t *testing.T) {
 	parentPath, err := ioutil.TempDir("", "")
 	defer os.RemoveAll(parentPath)
 
-	testFilePath := path.Join(parentPath, "1.text")
+	testFilePath := filepath.Join(parentPath, "1.text")
 	err = utils.FileWrite(testFilePath, "test content", 0666, false)
 	require.NoError(t, err, "should not raise an error when writing test file.")
 
@@ -49,7 +49,7 @@ func TestConfigTemplate_WriteTemplate(t *testing.T) {
 	parentPath, err := ioutil.TempDir("", "")
 	defer os.RemoveAll(parentPath)
 
-	testFilePath := path.Join(parentPath, "1.text")
+	testFilePath := filepath.Join(parentPath, "1.text")
 
 	fileTemplate := template.ConfigTemplate{
 		PemFilePath: "{{.example}}.pem",
@@ -81,7 +81,7 @@ func TestConfigTemplate_WriteTemplate_ShouldGenerateValidPrefix(t *testing.T) {
 	parentPath, err := ioutil.TempDir("", "")
 	defer os.RemoveAll(parentPath)
 
-	testFilePath := path.Join(parentPath, "1.text")
+	testFilePath := filepath.Join(parentPath, "1.text")
 
 	fileTemplate := template.ConfigTemplate{
 		PemFilePath: "{{.example}}.pem",

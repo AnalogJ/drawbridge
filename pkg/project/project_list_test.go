@@ -5,6 +5,7 @@ import (
 	"github.com/analogj/drawbridge/pkg/project"
 	"github.com/stretchr/testify/require"
 	"path"
+	"path/filepath"
 	"testing"
 )
 
@@ -36,9 +37,9 @@ func TestProjectList_WithEmptyConfigDir(t *testing.T) {
 
 	//setup
 	testConfig, _ := config.Create()
-	err := testConfig.ReadConfig(path.Join("testdata", "valid_configfile_no_answers.yaml"))
+	err := testConfig.ReadConfig(filepath.Join("testdata", "valid_configfile_no_answers.yaml"))
 	require.NoError(t, err, "should allow overriding default config template.")
-	testConfig.Set("options.config_dir", path.Join("testdata", "empty_config_dir"))
+	testConfig.Set("options.config_dir", filepath.Join("testdata", "empty_config_dir"))
 
 	//test
 	projList, err := project.CreateProjectListFromConfigDir(testConfig)
