@@ -28,7 +28,7 @@ jobs:
         id: bump_version
         uses: packagrio/action-bumpr-go@master
         env:
-          GITHUB_TOKEN: ${{ secrets.DRAWBRIDGE_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           version_bump_type: ${{ github.event.inputs.version_bump_type }}
           version_metadata_path: ${{ github.event.inputs.version_metadata_path }}
@@ -58,12 +58,12 @@ jobs:
         uses: packagrio/action-releasr-go@master
         env:
           # This is necessary in order to push a commit to the repo
-          GITHUB_TOKEN: ${{ secrets.DRAWBRIDGE_GITHUB_TOKEN }} # Leave this line unchanged
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
       - name: Publish Release
         id: publish
         uses: packagrio/action-publishr-go@master
         env:
           # This is necessary in order to push a commit to the repo
-          GITHUB_TOKEN: ${{ secrets.DRAWBRIDGE_GITHUB_TOKEN }} # Leave this line unchanged
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this line unchanged
         with:
           upload_assets: 'drawbridge-darwin-amd64 drawbridge-linux-amd64 drawbridge-windows-amd64.exe'
