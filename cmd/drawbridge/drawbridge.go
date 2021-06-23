@@ -213,13 +213,18 @@ OPTIONS:
 
 					config.SetOptionsFromAnswers(answerData)
 					connectAction := actions.ConnectAction{Config: config}
-					return connectAction.Start(answerData, destServer)
+					return connectAction.Start(answerData, destServer, c.Bool("debug"))
 				},
 
 				Flags: []cli.Flag{
 					&cli.StringFlag{
 						Name:  "dest",
 						Usage: "Specify the `hostname` of the destination/internal server you would like to connect to.",
+					},
+					&cli.BoolFlag{
+						Name:  "debug",
+						Value: false,
+						Usage: "Debug mode",
 					},
 				},
 			},

@@ -24,7 +24,7 @@ type ConnectAction struct {
 	Config config.Interface
 }
 
-func (e *ConnectAction) Start(answerData map[string]interface{}, destHostname string) error {
+func (e *ConnectAction) Start(answerData map[string]interface{}, destHostname string, debugMode bool) error {
 	log.Debugf("Answer Data: %v", answerData)
 
 	tmplData, err := e.Config.GetActiveConfigTemplate()
@@ -66,7 +66,12 @@ func (e *ConnectAction) Start(answerData map[string]interface{}, destHostname st
 	if len(destHostname) > 0 {
 		configHost = fmt.Sprintf("%v.in", destHostname)
 	}
+
 	args := []string{"ssh", configHost, "-F", tmplConfigFilepath}
+	if debugMode {
+		fmt.Printf("Debug mode enabled")
+		args = append(args, "-vvv")
+	}
 
 	return syscall.Exec(sshBin, args, os.Environ())
 }
