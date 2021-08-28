@@ -7,6 +7,8 @@ import (
 	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/fatih/color"
 	"github.com/xlab/treeprint"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"sort"
 	"strconv"
 	"strings"
@@ -57,9 +59,37 @@ func (p *ProjectList) GetIndex(index_0based int) (map[string]interface{}, error)
 	}
 }
 
-func (p *ProjectList) Prompt(message string) (map[string]interface{}, error) {
+func (p *ProjectList) SetAliasForIndex(index_0based int, alias string) (map[string]interface{}, error) {
+
+	answerYamlFile, err := ioutil.ReadFile(p.projects[index_0based].AnswerFilePath)
+	if err != nil {
+		return nil, errors.ConfigFileMissingError("could not open answerfile for config")
+	}
+
+	answerData := make(map[string]interface{})
+
+	err = yaml.Unmarshal(answerYamlFile, &answerData)
+	if err != nil {
+		return nil, errors.ConfigFileMissingError("could not parse answerfile")
+	}
+
+	if existingAlias, existingAliasOk := answerData["alias"]; existingAliasOk {
+		color.HiYellow("Warning: replacing existing alias (%s) with new value: %s", existingAlias, alias)
+	}
+	answerData["alias"] = alias
+
+	answersFileContent, err := yaml.Marshal(answerData)
+	if err != nil {
+		return nil, err
+	}
+	err = utils.FileWrite(p.projects[index_0based].AnswerFilePath, string(answersFileContent), 0640, false)
+
+	return answerData, err
+}
+
+func (p *ProjectList) Prompt(message string) (map[string]interface{}, int, error) {
 	if p.Length() == 0 {
-		return nil, errors.ProjectListEmptyError("No answers found, please call `drawbridge create` first")
+		return nil, 0, errors.ProjectListEmptyError("No answers found, please call `drawbridge create` first")
 	}
 
 	if len(p.groupedAnswersList) == 0 {
@@ -82,9 +112,9 @@ func (p *ProjectList) Prompt(message string) (map[string]interface{}, error) {
 			continue
 		}
 
-		return p.groupedAnswersList[index_1based-1], nil
+		return p.groupedAnswersList[index_1based-1], index_1based - 1, nil
 	}
-	return nil, nil
+	return nil, 0, nil
 }
 
 func (p *ProjectList) PrintTree(startMessage string) {

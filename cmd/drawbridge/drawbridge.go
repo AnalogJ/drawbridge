@@ -4,6 +4,7 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"os"
+	"regexp"
 	"time"
 
 	"github.com/analogj/drawbridge/pkg/actions"
@@ -113,7 +114,7 @@ OPTIONS:
 					answerData := map[string]interface{}{}
 					if projectList.Length() > 0 && utils.StdinQueryBoolean(fmt.Sprintf("Would you like to create a Drawbridge config using preconfigured answers? (%v available). [yes/no]", projectList.Length())) {
 
-						answerData, err = projectList.Prompt("Enter number to base your configuration from")
+						answerData, _, err = projectList.Prompt("Enter number to base your configuration from")
 						if err != nil {
 							return err
 						}
@@ -156,7 +157,7 @@ OPTIONS:
 						}
 
 					} else {
-						answerData, err = projectList.Prompt("Enter drawbridge config number to retrieve full info")
+						answerData, _, err = projectList.Prompt("Enter drawbridge config number to retrieve full info")
 						if err != nil {
 							return err
 						}
@@ -196,7 +197,7 @@ OPTIONS:
 						}
 
 					} else {
-						answerData, err = projectList.Prompt("Enter drawbridge config number to connect to")
+						answerData, _, err = projectList.Prompt("Enter drawbridge config number to connect to")
 						if err != nil {
 							return err
 						}
@@ -281,7 +282,7 @@ OPTIONS:
 						}
 
 					} else {
-						answerData, err = projectList.Prompt("Enter number of drawbridge config you would like to download from")
+						answerData, _, err = projectList.Prompt("Enter number of drawbridge config you would like to download from")
 						if err != nil {
 							return err
 						}
@@ -325,7 +326,7 @@ OPTIONS:
 
 					} else {
 						// prompt the user to determine which configs to delete.
-						answerData, err = projectList.Prompt("Enter drawbridge config number to delete")
+						answerData, _, err = projectList.Prompt("Enter drawbridge config number to delete")
 						if err != nil {
 							return err
 						}
@@ -387,6 +388,62 @@ OPTIONS:
 
 					updateAction := actions.UpdateAction{Config: config}
 					return updateAction.Start()
+				},
+			},
+			{
+				Name:      "alias",
+				Usage:     "Create a named alias for a Drawbridge config",
+				ArgsUsage: "[config_number] [alias]",
+				Action: func(c *cli.Context) error {
+					fmt.Fprintln(c.App.Writer, c.Command.Usage)
+
+					projectList, err := project.CreateProjectListFromConfigDir(config)
+					if err != nil {
+						return err
+					}
+
+					var answerData map[string]interface{}
+					var answerIndex int
+					if c.NArg() > 0 {
+
+						index, err := utils.StringToInt(c.Args().Get(0))
+						if err != nil {
+							return err
+						}
+						answerIndex = index - 1
+						answerData, err = projectList.GetIndex(answerIndex)
+						if err != nil {
+							return err
+						}
+
+					} else {
+						answerData, answerIndex, err = projectList.Prompt("Enter drawbridge config number to create alias for")
+						if err != nil {
+							return err
+						}
+					}
+
+					fmt.Print("\nAnswer Data:\n")
+					for k, v := range answerData {
+						fmt.Printf("\t%v: %v\n", color.YellowString(k), v)
+					}
+
+					//get the alias name (if provided)
+					var configAlias string
+					if c.NArg() >= 2 {
+						configAlias = c.Args().Get(1)
+						isValid, err := regexp.MatchString(`^[\w-\.]+$`, configAlias)
+						if err != nil || !isValid {
+							configAlias = utils.StdinQueryRegex("Please provide an alias for the configuration above", `^[\w-\.]+$`, "a-zA-Z0-9-_.")
+						}
+					} else {
+						configAlias = utils.StdinQueryRegex("Please provide an alias for the configuration above", `^[\w-\.]+$`, "a-zA-Z0-9-_.")
+					}
+
+					color.HiBlue("Setting alias (%s) for config (%d)\n", configAlias, answerIndex+1)
+					_, err = projectList.SetAliasForIndex(answerIndex, configAlias)
+
+					return err
 				},
 			},
 		},
