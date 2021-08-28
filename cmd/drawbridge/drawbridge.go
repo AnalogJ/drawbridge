@@ -338,7 +338,7 @@ OPTIONS:
 			{
 				Name:      "delete",
 				Usage:     "Delete drawbridge managed ssh config(s)",
-				ArgsUsage: "[config_number]",
+				ArgsUsage: "[config_number/alias]",
 				Action: func(c *cli.Context) error {
 					fmt.Fprintln(c.App.Writer, c.Command.Usage)
 
