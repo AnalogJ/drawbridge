@@ -43,9 +43,20 @@ func (p *ProjectList) GetAll() []map[string]interface{} {
 	return p.groupedAnswersList
 }
 
-func (p *ProjectList) GetIndex(index_0based int) (map[string]interface{}, error) {
+func (p *ProjectList) GetWithAliasOrIndex(aliasOrIndex string) (map[string]interface{}, int, error) {
+	index, err := utils.StringToInt(aliasOrIndex)
+	if err == nil {
+		//successfully parsed aliasOrIndex into an integer. Look up the
+		return p.GetWithIndex(index - 1)
+	} else {
+		//fallback, try to find the project by alias
+		return p.GetWithAlias(aliasOrIndex)
+	}
+}
+
+func (p *ProjectList) GetWithIndex(index_0based int) (map[string]interface{}, int, error) {
 	if p.Length() == 0 {
-		return nil, errors.ProjectListEmptyError("No answers found, please call `drawbridge create` first")
+		return nil, index_0based, errors.ProjectListEmptyError("No answers found, please call `drawbridge create` first")
 	}
 
 	if len(p.groupedAnswersList) == 0 {
@@ -53,10 +64,28 @@ func (p *ProjectList) GetIndex(index_0based int) (map[string]interface{}, error)
 	}
 
 	if index_0based < 0 || index_0based >= len(p.projects) {
-		return nil, errors.ProjectListIndexInvalidError(fmt.Sprintf("Selected index (%v) is invalid. Must be between %v-%v", index_0based+1, 1, p.Length()))
+		return nil, index_0based, errors.ProjectListIndexInvalidError(fmt.Sprintf("Selected index (%v) is invalid. Must be between %v-%v", index_0based+1, 1, p.Length()))
 	} else {
-		return p.groupedAnswersList[index_0based], nil
+		return p.groupedAnswersList[index_0based], index_0based, nil
 	}
+}
+
+func (p *ProjectList) GetWithAlias(alias string) (map[string]interface{}, int, error) {
+	if p.Length() == 0 {
+		return nil, 0, errors.ProjectListEmptyError("No answers found, please call `drawbridge create` first")
+	}
+
+	if len(p.groupedAnswersList) == 0 {
+		p.initGroups()
+	}
+
+	for ndx, groupedAnswers := range p.GetAll() {
+		if answerAlias, answerAliasOk := groupedAnswers["alias"]; answerAliasOk && answerAlias.(string) == alias {
+			//answer has alias, and matches the requested alias
+			return groupedAnswers, ndx, nil
+		}
+	}
+	return nil, 0, errors.ProjectListEmptyError("Alias not found")
 }
 
 func (p *ProjectList) SetAliasForIndex(index_0based int, alias string) (map[string]interface{}, error) {
@@ -101,18 +130,14 @@ func (p *ProjectList) Prompt(message string) (map[string]interface{}, int, error
 	for true {
 
 		//prompt the user to enter a valid choice
-		index_1based, err := utils.StdinQueryInt(fmt.Sprintf("%v (%v-%v):", message, 1, p.Length()))
+		message := utils.StdinQuery(fmt.Sprintf("%v (%v-%v, alias):", message, 1, p.Length()))
+		answerData, foundIndex, err := p.GetWithAliasOrIndex(message)
 		if err != nil {
 			color.HiRed("ERROR: %v", err)
 			continue
 		}
 
-		if !(index_1based > 0 && index_1based <= p.Length()) {
-			color.HiRed("Invalid selection. Must be between %v-%v", 1, p.Length())
-			continue
-		}
-
-		return p.groupedAnswersList[index_1based-1], index_1based - 1, nil
+		return answerData, foundIndex, err
 	}
 	return nil, 0, nil
 }

@@ -26,7 +26,7 @@ func TestProjectList_WithEmptyAnswersList(t *testing.T) {
 	require.Equal(t, 0, projList.Length(), "should correctly load provided answers")
 	require.Equal(t, 0, len(actualSortedList), "should correcty populate sorted list after grouping")
 
-	_, err = projList.GetIndex(0)
+	_, _, err = projList.GetWithIndex(0)
 	require.Error(t, err, "should raise an error if attempting to access an empty list ProjectListEmptyError")
 
 }
@@ -50,7 +50,7 @@ func TestProjectList_WithEmptyConfigDir(t *testing.T) {
 	require.Equal(t, 0, projList.Length(), "should correctly load provided answers")
 	require.Equal(t, 0, len(actualSortedList), "should correcty populate sorted list after grouping")
 
-	_, err = projList.GetIndex(0)
+	_, _, err = projList.GetWithIndex(0)
 	require.Error(t, err, "should raise an error if attempting to access an empty list ProjectListEmptyError")
 
 }
@@ -66,9 +66,9 @@ func TestProjectList_GetIndex(t *testing.T) {
 	//test
 	projList, err := project.CreateProjectListFromProvidedAnswers(testConfig)
 	require.NoError(t, err, "should correctly load project list")
-	_, startErr := projList.GetIndex(0)
-	_, lastErr := projList.GetIndex(4)
-	_, lenthErr := projList.GetIndex(projList.Length())
+	_, _, startErr := projList.GetWithIndex(0)
+	_, _, lastErr := projList.GetWithIndex(4)
+	_, _, lenthErr := projList.GetWithIndex(projList.Length())
 
 	//assert
 	require.Equal(t, 5, projList.Length(), "should correctly load provided answers")

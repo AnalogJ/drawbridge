@@ -51,6 +51,7 @@ Drawbridge aims to solve this problem in a flexible and scalable way.
 - Cleanup utility is built-in
 - `drawbridge update` lets you update the binary inplace.
 - Pretty colors. The CLI is all colorized to make it easy to skim for errors/warnings
+- Assign memorable aliases to commonly used configurations
 
 # Getting Started
 
@@ -87,6 +88,7 @@ COMMANDS:
      create         Create a drawbridge managed ssh config & associated files
      list           List all drawbridge managed ssh configs
      connect        Connect to a drawbridge managed ssh config
+     alias          Create a named alias for a drawbridge config
      download, scp  Download a file from an internal server using drawbridge managed ssh config, syntax is similar to scp command.
      delete         Delete drawbridge managed ssh config(s)
      proxy          Build/Rebuild a Proxy auto-config (PAC) file to access websites through Drawbridge tunnels
@@ -166,7 +168,7 @@ Rendered Drawbridge Configs:
             ├── [9]  shard_type: idle, username: aws
             └── [10]  shard_type: live, username: aws
 
-Enter number of drawbridge config you would like to connect to (1-10):
+Enter number of drawbridge config you would like to connect to (1-10, alias):
 ```
 
 `drawbridge connect` will connect you to the bastion/jump host using a specified Drawbridge config file. It'll also add
@@ -175,6 +177,47 @@ the associated PEM key to your `ssh-agent`.
 If you want to connect directly to a internal server, you can do so by selecting a config id and specifying the hostname/short name
 
 `drawbridge connect 1 database-1`
+
+You can also connect directly to a environment using an alias
+
+`drawbridge connect my_custom_alias database-1`
+
+## Alias
+
+You can assign an alias to a commonly used drawbridge configuration by using the `drawbridge alias` command.
+
+```
+$ drawbridge alias
+...
+        └── [us-east-2]  shard
+            ├── [9]  shard_type: idle, username: aws
+            └── [10]  shard_type: live, username: aws
+
+Enter drawbridge config number to create alias for (1-2, alias):
+10
+Please provide an alias for the configuration above (a-zA-Z0-9-_.):
+my_new_alias
+Setting alias (my_new_alias) for config (10)
+
+```
+Now when you run `drawbridge connect`, `drawbridge list` or most other drawbridge commands, you can use the alias instead of the id.
+
+```
+$ drawbridge alias
+...
+        └── [us-east-2]  shard
+            ├── [9]  shard_type: idle, username: aws
+            └── [10, my_new_alias]  shard_type: live, username: aws
+```
+
+You can also set the alias for a configuration in one command:
+
+```
+$ drawbridge alias 10 my_custom_alias
+
+Setting alias (my_custom_alias) for config (10)
+Warning: replacing existing alias (my_new_alias) with new value: my_custom_alias
+```
 
 ## Delete
 

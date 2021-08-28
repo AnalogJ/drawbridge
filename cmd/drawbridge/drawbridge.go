@@ -135,7 +135,7 @@ OPTIONS:
 			{
 				Name:      "list",
 				Usage:     "List all drawbridge managed ssh configs",
-				ArgsUsage: "[config_number]",
+				ArgsUsage: "[config_number/alias]",
 				Action: func(c *cli.Context) error {
 					fmt.Fprintln(c.App.Writer, c.Command.Usage)
 
@@ -146,18 +146,13 @@ OPTIONS:
 
 					var answerData map[string]interface{}
 					if c.NArg() > 0 {
-
-						index, err := utils.StringToInt(c.Args().Get(0))
-						if err != nil {
-							return err
-						}
-						answerData, err = projectList.GetIndex(index - 1)
+						answerData, _, err = projectList.GetWithAliasOrIndex(c.Args().Get(0))
 						if err != nil {
 							return err
 						}
 
 					} else {
-						answerData, _, err = projectList.Prompt("Enter drawbridge config number to retrieve full info")
+						answerData, _, err = projectList.Prompt("Enter drawbridge config number or alias to retrieve full info")
 						if err != nil {
 							return err
 						}
@@ -175,7 +170,7 @@ OPTIONS:
 			{
 				Name:      "connect",
 				Usage:     "Connect to a drawbridge managed ssh config",
-				ArgsUsage: "[config_number] [dest_server_hostname]",
+				ArgsUsage: "[config_number/alias] [dest_server_hostname]",
 				Action: func(c *cli.Context) error {
 					fmt.Fprintln(c.App.Writer, c.Command.Usage)
 
@@ -187,11 +182,7 @@ OPTIONS:
 					var answerData map[string]interface{}
 					if c.NArg() > 0 {
 
-						index, err := utils.StringToInt(c.Args().Get(0))
-						if err != nil {
-							return err
-						}
-						answerData, err = projectList.GetIndex(index - 1)
+						answerData, _, err = projectList.GetWithAliasOrIndex(c.Args().Get(0))
 						if err != nil {
 							return err
 						}
@@ -230,12 +221,74 @@ OPTIONS:
 				},
 			},
 			{
+				Name:      "alias",
+				Usage:     "Create a named alias for a drawbridge config",
+				ArgsUsage: "[config_number] [alias]",
+				Action: func(c *cli.Context) error {
+					fmt.Fprintln(c.App.Writer, c.Command.Usage)
+
+					projectList, err := project.CreateProjectListFromConfigDir(config)
+					if err != nil {
+						return err
+					}
+
+					var answerData map[string]interface{}
+					var answerIndex int
+					if c.NArg() > 0 {
+
+						answerData, _, err = projectList.GetWithAliasOrIndex(c.Args().Get(0))
+						if err != nil {
+							return err
+						}
+
+					} else {
+						answerData, answerIndex, err = projectList.Prompt("Enter drawbridge config number to create alias for")
+						if err != nil {
+							return err
+						}
+					}
+
+					fmt.Print("\nAnswer Data:\n")
+					for k, v := range answerData {
+						fmt.Printf("\t%v: %v\n", color.YellowString(k), v)
+					}
+
+					//get the alias name (if provided)
+					var configAlias string
+					if c.NArg() >= 2 {
+						configAlias = c.Args().Get(1)
+						isValid, err := regexp.MatchString(`^[A-Za-z][\w-\.]+$`, configAlias)
+						if err != nil || !isValid {
+							configAlias = utils.StdinQueryRegex("Please provide an alias for the configuration above", `^[A-Za-z][\w-\.]+$`, "a-zA-Z0-9-_.")
+						}
+					} else {
+						configAlias = utils.StdinQueryRegex("Please provide an alias for the configuration above", `^[A-Za-z][\w-\.]+$`, "a-zA-Z0-9-_.")
+					}
+
+					_, _, aliasErr := projectList.GetWithAlias(configAlias)
+					if aliasErr == nil {
+						return errors.ConfigValidationError("alias already exists.")
+					}
+
+					color.HiBlue("Setting alias (%s) for config (%d)\n", configAlias, answerIndex+1)
+
+					_, err = projectList.SetAliasForIndex(answerIndex, configAlias)
+
+					return err
+				},
+			},
+			{
 				Name:      "download",
 				Aliases:   []string{"scp"},
 				Usage:     "Download a file from an internal server using drawbridge managed ssh config, syntax is similar to scp command. ",
-				ArgsUsage: "[config_number] destination_hostname:remote_filepath local_filepath",
+				ArgsUsage: "[config_number/alias] destination_hostname:remote_filepath local_filepath",
 				Action: func(c *cli.Context) error {
 					fmt.Fprintln(c.App.Writer, c.Command.Usage)
+
+					projectList, err := project.CreateProjectListFromConfigDir(config)
+					if err != nil {
+						return err
+					}
 
 					// PARSE ARGS
 					if c.NArg() < 2 || c.NArg() > 3 {
@@ -249,10 +302,12 @@ OPTIONS:
 
 					args := c.Args().Slice()
 
+					var answerData map[string]interface{}
+
 					if c.NArg() == 3 {
-						index, err = utils.StringToInt(c.Args().First())
+						answerData, index, err = projectList.GetWithAliasOrIndex(c.Args().Get(0))
 						if err != nil {
-							return errors.InvalidArgumentsError("Invalid `config_id`, please specify a number")
+							return err
 						}
 						args = c.Args().Tail()
 					}
@@ -267,21 +322,8 @@ OPTIONS:
 
 					strLocalPath = args[1]
 
-					// select answer data.
-					projectList, err := project.CreateProjectListFromConfigDir(config)
-					if err != nil {
-						return err
-					}
-
-					var answerData map[string]interface{}
-					if index > 0 {
-
-						answerData, err = projectList.GetIndex(index - 1)
-						if err != nil {
-							return err
-						}
-
-					} else {
+					//index is unset, lets prompt for the answerData
+					if index == 0 {
 						answerData, _, err = projectList.Prompt("Enter number of drawbridge config you would like to download from")
 						if err != nil {
 							return err
@@ -315,11 +357,7 @@ OPTIONS:
 					} else if c.NArg() > 0 {
 						//check if the user specified a config number in the args.
 
-						index, err := utils.StringToInt(c.Args().Get(0))
-						if err != nil {
-							return err
-						}
-						answerData, err = projectList.GetIndex(index - 1)
+						answerData, _, err = projectList.GetWithAliasOrIndex(c.Args().Get(0))
 						if err != nil {
 							return err
 						}
@@ -388,62 +426,6 @@ OPTIONS:
 
 					updateAction := actions.UpdateAction{Config: config}
 					return updateAction.Start()
-				},
-			},
-			{
-				Name:      "alias",
-				Usage:     "Create a named alias for a Drawbridge config",
-				ArgsUsage: "[config_number] [alias]",
-				Action: func(c *cli.Context) error {
-					fmt.Fprintln(c.App.Writer, c.Command.Usage)
-
-					projectList, err := project.CreateProjectListFromConfigDir(config)
-					if err != nil {
-						return err
-					}
-
-					var answerData map[string]interface{}
-					var answerIndex int
-					if c.NArg() > 0 {
-
-						index, err := utils.StringToInt(c.Args().Get(0))
-						if err != nil {
-							return err
-						}
-						answerIndex = index - 1
-						answerData, err = projectList.GetIndex(answerIndex)
-						if err != nil {
-							return err
-						}
-
-					} else {
-						answerData, answerIndex, err = projectList.Prompt("Enter drawbridge config number to create alias for")
-						if err != nil {
-							return err
-						}
-					}
-
-					fmt.Print("\nAnswer Data:\n")
-					for k, v := range answerData {
-						fmt.Printf("\t%v: %v\n", color.YellowString(k), v)
-					}
-
-					//get the alias name (if provided)
-					var configAlias string
-					if c.NArg() >= 2 {
-						configAlias = c.Args().Get(1)
-						isValid, err := regexp.MatchString(`^[\w-\.]+$`, configAlias)
-						if err != nil || !isValid {
-							configAlias = utils.StdinQueryRegex("Please provide an alias for the configuration above", `^[\w-\.]+$`, "a-zA-Z0-9-_.")
-						}
-					} else {
-						configAlias = utils.StdinQueryRegex("Please provide an alias for the configuration above", `^[\w-\.]+$`, "a-zA-Z0-9-_.")
-					}
-
-					color.HiBlue("Setting alias (%s) for config (%d)\n", configAlias, answerIndex+1)
-					_, err = projectList.SetAliasForIndex(answerIndex, configAlias)
-
-					return err
 				},
 			},
 		},
