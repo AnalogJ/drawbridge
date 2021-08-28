@@ -218,8 +218,14 @@ func (p *ProjectList) recursivePopulateGroupListAndTree(level int, parentTree tr
 				p.groupedAnswersList = append(p.groupedAnswersList, answer.(map[string]interface{}))
 
 				//answerStr := printAnswer(len(e.OrderedAnswers), answer.(map[string]interface{}), e.Config.GetStringSlice("options.ui_question_hidden"), e.Config.GetStringSlice("options.ui_group_priority"))
+				alias, aliasOk := answer.(map[string]interface{})["alias"]
+				answerIndex := strconv.Itoa(len(p.groupedAnswersList))
+				if aliasOk {
+					answerIndex = fmt.Sprintf("%s, %s", answerIndex, alias)
+				}
+
 				currentTree.AddMetaNode(
-					color.YellowString(strconv.Itoa(len(p.groupedAnswersList))),
+					color.YellowString(answerIndex),
 					p.answerString(groupByKeys[level], answer.(map[string]interface{})))
 			}
 		default:
