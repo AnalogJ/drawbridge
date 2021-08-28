@@ -203,11 +203,15 @@ Setting alias (my_new_alias) for config (10)
 Now when you run `drawbridge connect`, `drawbridge list` or most other drawbridge commands, you can use the alias instead of the id.
 
 ```
-$ drawbridge alias
+$ drawbridge list
 ...
         └── [us-east-2]  shard
             ├── [9]  shard_type: idle, username: aws
             └── [10, my_new_alias]  shard_type: live, username: aws
+
+
+$ drawbridge connect my_new_alias
+...
 ```
 
 You can also set the alias for a configuration in one command:
