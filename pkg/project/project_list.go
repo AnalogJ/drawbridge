@@ -85,7 +85,7 @@ func (p *ProjectList) GetWithAlias(alias string) (map[string]interface{}, int, e
 			return groupedAnswers, ndx, nil
 		}
 	}
-	return nil, 0, errors.ProjectListEmptyError("Alias not found")
+	return nil, 0, errors.ProjectListIndexInvalidError("Alias not found")
 }
 
 func (p *ProjectList) SetAliasForIndex(index_0based int, alias string) (map[string]interface{}, error) {
