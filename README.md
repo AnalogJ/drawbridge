@@ -328,14 +328,8 @@ If you don't have the time to work on Drawbridge, but found something we should 
 
 We're actively looking for pull requests in the following areas:
 
-
-- the ability to open the ssh tunnel, with http port binding locally (connect)
-	- local ports chosen will be dynamic and depend on the hash of the config filepath (unique on the config level) https://stats.stackexchange.com/questions/26344/how-to-uniformly-project-a-hash-to-a-fixed-number-of-buckets
-	- the ability to create/update a pac file, which points to a proxy server inside behind the bastion (--pac)
-- support for answerfiles
 - RDP/VNC generation & viewer.
 - Secure storage of PEM keys in keychain/keyring
-
 
 
 # Versioning
