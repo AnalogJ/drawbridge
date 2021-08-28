@@ -7,6 +7,8 @@ import (
 	"github.com/analogj/drawbridge/pkg/utils"
 	"github.com/fatih/color"
 	"github.com/xlab/treeprint"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"sort"
 	"strconv"
 	"strings"
@@ -41,9 +43,20 @@ func (p *ProjectList) GetAll() []map[string]interface{} {
 	return p.groupedAnswersList
 }
 
-func (p *ProjectList) GetIndex(index_0based int) (map[string]interface{}, error) {
+func (p *ProjectList) GetWithAliasOrIndex(aliasOrIndex string) (map[string]interface{}, int, error) {
+	index, err := utils.StringToInt(aliasOrIndex)
+	if err == nil {
+		//successfully parsed aliasOrIndex into an integer. Look up the
+		return p.GetWithIndex(index - 1)
+	} else {
+		//fallback, try to find the project by alias
+		return p.GetWithAlias(aliasOrIndex)
+	}
+}
+
+func (p *ProjectList) GetWithIndex(index_0based int) (map[string]interface{}, int, error) {
 	if p.Length() == 0 {
-		return nil, errors.ProjectListEmptyError("No answers found, please call `drawbridge create` first")
+		return nil, index_0based, errors.ProjectListEmptyError("No answers found, please call `drawbridge create` first")
 	}
 
 	if len(p.groupedAnswersList) == 0 {
@@ -51,15 +64,61 @@ func (p *ProjectList) GetIndex(index_0based int) (map[string]interface{}, error)
 	}
 
 	if index_0based < 0 || index_0based >= len(p.projects) {
-		return nil, errors.ProjectListIndexInvalidError(fmt.Sprintf("Selected index (%v) is invalid. Must be between %v-%v", index_0based+1, 1, p.Length()))
+		return nil, index_0based, errors.ProjectListIndexInvalidError(fmt.Sprintf("Selected index (%v) is invalid. Must be between %v-%v", index_0based+1, 1, p.Length()))
 	} else {
-		return p.groupedAnswersList[index_0based], nil
+		return p.groupedAnswersList[index_0based], index_0based, nil
 	}
 }
 
-func (p *ProjectList) Prompt(message string) (map[string]interface{}, error) {
+func (p *ProjectList) GetWithAlias(alias string) (map[string]interface{}, int, error) {
 	if p.Length() == 0 {
-		return nil, errors.ProjectListEmptyError("No answers found, please call `drawbridge create` first")
+		return nil, 0, errors.ProjectListEmptyError("No answers found, please call `drawbridge create` first")
+	}
+
+	if len(p.groupedAnswersList) == 0 {
+		p.initGroups()
+	}
+
+	for ndx, groupedAnswers := range p.GetAll() {
+		if answerAlias, answerAliasOk := groupedAnswers["alias"]; answerAliasOk && answerAlias.(string) == alias {
+			//answer has alias, and matches the requested alias
+			return groupedAnswers, ndx, nil
+		}
+	}
+	return nil, 0, errors.ProjectListEmptyError("Alias not found")
+}
+
+func (p *ProjectList) SetAliasForIndex(index_0based int, alias string) (map[string]interface{}, error) {
+
+	answerYamlFile, err := ioutil.ReadFile(p.projects[index_0based].AnswerFilePath)
+	if err != nil {
+		return nil, errors.ConfigFileMissingError("could not open answerfile for config")
+	}
+
+	answerData := make(map[string]interface{})
+
+	err = yaml.Unmarshal(answerYamlFile, &answerData)
+	if err != nil {
+		return nil, errors.ConfigFileMissingError("could not parse answerfile")
+	}
+
+	if existingAlias, existingAliasOk := answerData["alias"]; existingAliasOk {
+		color.HiYellow("Warning: replacing existing alias (%s) with new value: %s", existingAlias, alias)
+	}
+	answerData["alias"] = alias
+
+	answersFileContent, err := yaml.Marshal(answerData)
+	if err != nil {
+		return nil, err
+	}
+	err = utils.FileWrite(p.projects[index_0based].AnswerFilePath, string(answersFileContent), 0640, false)
+
+	return answerData, err
+}
+
+func (p *ProjectList) Prompt(message string) (map[string]interface{}, int, error) {
+	if p.Length() == 0 {
+		return nil, 0, errors.ProjectListEmptyError("No answers found, please call `drawbridge create` first")
 	}
 
 	if len(p.groupedAnswersList) == 0 {
@@ -71,20 +130,16 @@ func (p *ProjectList) Prompt(message string) (map[string]interface{}, error) {
 	for true {
 
 		//prompt the user to enter a valid choice
-		index_1based, err := utils.StdinQueryInt(fmt.Sprintf("%v (%v-%v):", message, 1, p.Length()))
+		message := utils.StdinQuery(fmt.Sprintf("%v (%v-%v, alias):", message, 1, p.Length()))
+		answerData, foundIndex, err := p.GetWithAliasOrIndex(message)
 		if err != nil {
 			color.HiRed("ERROR: %v", err)
 			continue
 		}
 
-		if !(index_1based > 0 && index_1based <= p.Length()) {
-			color.HiRed("Invalid selection. Must be between %v-%v", 1, p.Length())
-			continue
-		}
-
-		return p.groupedAnswersList[index_1based-1], nil
+		return answerData, foundIndex, err
 	}
-	return nil, nil
+	return nil, 0, nil
 }
 
 func (p *ProjectList) PrintTree(startMessage string) {
@@ -188,8 +243,14 @@ func (p *ProjectList) recursivePopulateGroupListAndTree(level int, parentTree tr
 				p.groupedAnswersList = append(p.groupedAnswersList, answer.(map[string]interface{}))
 
 				//answerStr := printAnswer(len(e.OrderedAnswers), answer.(map[string]interface{}), e.Config.GetStringSlice("options.ui_question_hidden"), e.Config.GetStringSlice("options.ui_group_priority"))
+				alias, aliasOk := answer.(map[string]interface{})["alias"]
+				answerIndex := strconv.Itoa(len(p.groupedAnswersList))
+				if aliasOk {
+					answerIndex = fmt.Sprintf("%s, %s", answerIndex, alias)
+				}
+
 				currentTree.AddMetaNode(
-					color.YellowString(strconv.Itoa(len(p.groupedAnswersList))),
+					color.YellowString(answerIndex),
 					p.answerString(groupByKeys[level], answer.(map[string]interface{})))
 			}
 		default:

@@ -53,7 +53,7 @@ func TestCreateProjectListFromProvidedAnswers(t *testing.T) {
 	require.NoError(t, err, "should correctly load project list")
 
 	actualSortedList := projList.GetAll()
-	actualFirstAnswer, err := projList.GetIndex(0)
+	actualFirstAnswer, _, err := projList.GetWithIndex(0)
 	require.NoError(t, err, "should correctly get item at index")
 
 	//assert
@@ -85,7 +85,7 @@ func TestCreateProjectListFromConfigDir(t *testing.T) {
 	require.NoError(t, err, "should correctly load project list")
 
 	actualSortedList := projList.GetAll()
-	actualFirstAnswer, err := projList.GetIndex(0)
+	actualFirstAnswer, _, err := projList.GetWithIndex(0)
 	require.NoError(t, err, "should correctly get item at index")
 
 	//assert

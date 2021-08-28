@@ -6,6 +6,7 @@ import (
 	"github.com/fatih/color"
 	"golang.org/x/crypto/ssh/terminal"
 	"os"
+	"regexp"
 	"strings"
 	"syscall"
 )
@@ -50,4 +51,25 @@ func StdinQueryInt(question string) (int, error) {
 
 	text := StdinQuery(question)
 	return StringToInt(text)
+}
+
+func StdinQueryRegex(message string, regexPattern string, friendlyPattern string) string {
+	for true {
+
+		//prompt the user to enter a valid choice
+		text := StdinQuery(fmt.Sprintf("%v (%s):", message, friendlyPattern))
+
+		isValid, err := regexp.MatchString(regexPattern, text)
+
+		if err != nil {
+			color.HiRed("ERROR: %v", err)
+			continue
+		} else if !isValid {
+			color.HiRed("Invalid alias. Must match pattern: %s", friendlyPattern)
+			continue
+		}
+
+		return text
+	}
+	return ""
 }
